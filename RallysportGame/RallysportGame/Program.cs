@@ -9,10 +9,37 @@ using OpenTK.Graphics.OpenGL;
 using System.Drawing;
 using OpenTK.Input;
 
+
+
 namespace RallysportGame
 {
+
+
     class Program
     {
+        //*****************************************************************************
+        //	Useful constants
+        //*****************************************************************************
+        const float pi = MathHelper.Pi;
+        const Vector3 up = new Vector3(0.0f, 1.0f, 0.0f);
+
+
+        //*****************************************************************************
+        //	Camera state variables
+        //*****************************************************************************
+        float camera_theta = pi / 6.0f;
+        float camera_phi = pi / 4.0f;
+        float camera_r = 30.0f;
+        float camera_target_altitude = 5.2f;
+
+        // Helper function to turn spherical coordinates into cartesian (x,y,z)
+        Vector3 sphericalToCartesian(float theta, float phi, float r)
+        {
+            return new Vector3( (float)(r * Math.Sin(theta) * Math.Sin(phi)),
+                                (float)(r * Math.Cos(phi)),
+                                (float)(r * Math.Cos(theta) * Math.Sin(phi)));
+        }
+
         static void Main(string[] args)
         {
             using (var game = new GameWindow())
