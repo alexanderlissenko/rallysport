@@ -21,19 +21,21 @@ namespace RallysportGame
         //	Useful constants
         //*****************************************************************************
         const float pi = MathHelper.Pi;
-        const Vector3 up = new Vector3(0.0f, 1.0f, 0.0f);
+        static Vector3 up = new Vector3(0.0f, 1.0f, 0.0f);
 
 
         //*****************************************************************************
         //	Camera state variables
         //*****************************************************************************
-        float camera_theta = pi / 6.0f;
-        float camera_phi = pi / 4.0f;
-        float camera_r = 30.0f;
-        float camera_target_altitude = 5.2f;
+        static float camera_theta = pi / 6.0f;
+        static float camera_phi = pi / 4.0f;
+        static float camera_r = 30.0f;
+        static float camera_target_altitude = 5.2f;
+        static float camera_horizontal_delta = 0.1f;
+        static float camera_vertical_delta = 0.1f;
 
         // Helper function to turn spherical coordinates into cartesian (x,y,z)
-        Vector3 sphericalToCartesian(float theta, float phi, float r)
+        static Vector3 sphericalToCartesian(float theta, float phi, float r)
         {
             return new Vector3( (float)(r * Math.Sin(theta) * Math.Sin(phi)),
                                 (float)(r * Math.Cos(phi)),
@@ -61,6 +63,20 @@ namespace RallysportGame
                     if (game.Keyboard[Key.Escape])
                     {
                         game.Exit();
+                    }else if(game.Keyboard[Key.A]){
+                        camera_theta -= camera_horizontal_delta;
+                    }
+                    else if (game.Keyboard[Key.D])
+                    {
+                        camera_theta += camera_horizontal_delta;
+                    }
+                    else if (game.Keyboard[Key.W])
+                    {
+                        camera_r -= camera_vertical_delta;
+                    }
+                    else if (game.Keyboard[Key.S])
+                    {
+                        camera_r += camera_vertical_delta;
                     }
                 };
 
@@ -69,18 +85,25 @@ namespace RallysportGame
                     // render graphics
                     GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
+
+                    Vector3 camera_position = sphericalToCartesian(camera_theta, camera_phi, camera_r);
+                    Vector3 camera_lookAt = new Vector3(0.0f, camera_target_altitude, 0.0f);
+                    Matrix4 viewMatrix = Matrix4.LookAt(camera_position, camera_lookAt, up);
+                    Matrix4 projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(pi/4, game.Width/game.Height, 0.1f, 1000f);
+
+                    GL.MatrixMode(MatrixMode.Modelview);
+                    GL.LoadMatrix(ref viewMatrix);
                     GL.MatrixMode(MatrixMode.Projection);
-                    GL.LoadIdentity();
-                    GL.Ortho(-1.0, 1.0, -1.0, 1.0, 0.0, 4.0);
+                    GL.LoadMatrix(ref projectionMatrix);
 
                     GL.Begin(PrimitiveType.Triangles);
 
                     GL.Color3(Color.MidnightBlue);
-                    GL.Vertex2(-1.0f, 1.0f);
+                    GL.Vertex3(0.0f, 3.0f, 0.0f);
                     GL.Color3(Color.SpringGreen);
-                    GL.Vertex2(0.0f, -1.0f);
+                    GL.Vertex3(2.0f, 0.0f, 0.0f);
                     GL.Color3(Color.Ivory);
-                    GL.Vertex2(1.0f, 1.0f);
+                    GL.Vertex3(-2.0f, 0.0f, 0.0f);
 
                     GL.End();
 
