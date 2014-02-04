@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Collections;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
@@ -34,6 +35,8 @@ namespace RallysportGame
         static float camera_horizontal_delta = 0.1f;
         static float camera_vertical_delta = 0.1f;
 
+        static ArrayList keyList = new ArrayList();
+
         // Helper function to turn spherical coordinates into cartesian (x,y,z)
         static Vector3 sphericalToCartesian(float theta, float phi, float r)
         {
@@ -42,14 +45,68 @@ namespace RallysportGame
                                 (float)(r * Math.Cos(theta) * Math.Sin(phi)));
         }
 
-        static void Main(string[] args)
+        /// <summary>
+        /// Will handle key events so multiple keys can be triggered at once
+        /// 
+        /// alla loopar kan säkert optimeras och borde kanske ses över detta e mest som ett snabb test 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+
+        static void handleKeyDown(object sender, KeyboardKeyEventArgs e)
         {
+            if(!keyList.Contains(e.Key)) /// FULHACK tydligen så kan den annars generera 30+ keydown events om man håller inne
+                keyList.Add(e.Key);
+        }
+        static void handleKeyUp(object sender, KeyboardKeyEventArgs e)
+        {
+            
+            for(int i = 0; i < keyList.Count;i++)  
+            {
+                if(keyList[i].Equals(e.Key))
+                {
+                    keyList.RemoveAt(i);
+                }
+            }
+        }
+
+        static void updateCamera()
+        {
+            foreach(Key key in keyList)
+            {
+                switch(key)
+                {
+                    case Key.A:
+                        camera_theta -= camera_horizontal_delta;
+                        break;
+                    case Key.D:
+                        camera_theta += camera_horizontal_delta;
+                        break;
+                    case Key.W:
+                        camera_r -= camera_vertical_delta;
+                        break;
+                    case Key.S:
+                        camera_r += camera_vertical_delta;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        static void Main(string[] args)
+        { 
+          
             using (var game = new GameWindow())
             {
+                
+
                 game.Load += (sender, e) =>
                 {
                     // setup settings, load textures, sounds
                     game.VSync = VSyncMode.On;
+                    game.KeyDown += handleKeyDown;
+                    game.KeyUp += handleKeyUp;
                 };
 
                 game.Resize += (sender, e) =>
@@ -63,7 +120,12 @@ namespace RallysportGame
                     if (game.Keyboard[Key.Escape])
                     {
                         game.Exit();
-                    }else if(game.Keyboard[Key.A]){
+                    }
+
+
+                    updateCamera();
+                    
+                    /*else if(game.Keyboard[Key.A]){
                         camera_theta -= camera_horizontal_delta;
                     }
                     else if (game.Keyboard[Key.D])
@@ -77,7 +139,7 @@ namespace RallysportGame
                     else if (game.Keyboard[Key.S])
                     {
                         camera_r += camera_vertical_delta;
-                    }
+                    }*/
                 };
 
                 game.RenderFrame += (sender, e) =>
