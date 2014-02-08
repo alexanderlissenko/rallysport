@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
@@ -33,6 +34,12 @@ namespace RallysportGame
         static float camera_target_altitude = 5.2f;
         static float camera_horizontal_delta = 0.1f;
         static float camera_vertical_delta = 0.1f;
+        static Vector4 camera_lookAt = new Vector4(0.0f, camera_target_altitude, 0.0f, 1.0f);
+        static Matrix4 camera_rotation_matrix = Matrix4.Identity;
+
+        static Entity myDog;
+
+
 
         // Helper function to turn spherical coordinates into cartesian (x,y,z)
         static Vector3 sphericalToCartesian(float theta, float phi, float r)
@@ -50,6 +57,8 @@ namespace RallysportGame
                 {
                     // setup settings, load textures, sounds
                     game.VSync = VSyncMode.On;
+                    myDog = new Entity(new Meshomatic.ObjLoader().LoadFile("dog.obj"));
+                
                 };
 
                 game.Resize += (sender, e) =>
@@ -59,6 +68,7 @@ namespace RallysportGame
 
                 game.UpdateFrame += (sender, e) =>
                 {
+                    camera_rotation_matrix = Matrix4.Identity;
                     // add game logic, input handling
                     if (game.Keyboard[Key.Escape])
                     {
@@ -78,6 +88,22 @@ namespace RallysportGame
                     {
                         camera_r += camera_vertical_delta;
                     }
+                    else if (game.Keyboard[Key.Up])
+                    {
+                        Matrix4.CreateRotationX(0.1f, out camera_rotation_matrix);
+                    }
+                    else if (game.Keyboard[Key.Down])
+                    {
+                        Matrix4.CreateRotationX(-0.1f, out camera_rotation_matrix);
+                    }
+                    else if (game.Keyboard[Key.Left])
+                    {
+                        Matrix4.CreateRotationY(0.1f, out camera_rotation_matrix);
+                    }
+                    else if (game.Keyboard[Key.Right])
+                    {
+                        Matrix4.CreateRotationY(-0.1f, out camera_rotation_matrix);
+                    }
                 };
 
                 game.RenderFrame += (sender, e) =>
@@ -87,8 +113,9 @@ namespace RallysportGame
 
 
                     Vector3 camera_position = sphericalToCartesian(camera_theta, camera_phi, camera_r);
-                    Vector3 camera_lookAt = new Vector3(0.0f, camera_target_altitude, 0.0f);
-                    Matrix4 viewMatrix = Matrix4.LookAt(camera_position, camera_lookAt, up);
+                    //camera_lookAt = new Vector3(0.0f, camera_target_altitude, 0.0f);
+                    camera_lookAt = Vector4.Transform(camera_lookAt, camera_rotation_matrix);
+                    Matrix4 viewMatrix = Matrix4.LookAt(camera_position, new Vector3(camera_lookAt),up);
                     Matrix4 projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(pi/4, game.Width/game.Height, 0.1f, 1000f);
 
                     GL.MatrixMode(MatrixMode.Modelview);
@@ -96,6 +123,8 @@ namespace RallysportGame
                     GL.MatrixMode(MatrixMode.Projection);
                     GL.LoadMatrix(ref projectionMatrix);
 
+                    myDog.render();
+                    /*
                     GL.Begin(PrimitiveType.Triangles);
 
                     GL.Color3(Color.MidnightBlue);
@@ -106,7 +135,7 @@ namespace RallysportGame
                     GL.Vertex3(-2.0f, 0.0f, 0.0f);
 
                     GL.End();
-
+                    */
                     game.SwapBuffers();
                 };
 
