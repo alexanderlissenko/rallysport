@@ -24,6 +24,11 @@ namespace RallysportGame
         const float pi = MathHelper.Pi;
         static Vector3 up = new Vector3(0.0f, 1.0f, 0.0f);
 
+        //*****************************************************************************
+        //	Global variables
+        //*****************************************************************************
+        static int basicShaderProgram;
+        static Vector3 lightPosition;
 
         //*****************************************************************************
         //	Camera state variables
@@ -49,6 +54,30 @@ namespace RallysportGame
                                 (float)(r * Math.Cos(theta) * Math.Sin(phi)));
         }
 
+        static void loadShaderProgram(int shaderProgram, String vShaderPath, String fShaderPath)
+        {
+            int vShader = GL.CreateShader(ShaderType.VertexShader);
+            int fShader = GL.CreateShader(ShaderType.FragmentShader);
+            using (StreamReader vertReader = new StreamReader(vShaderPath), 
+                                fragReader = new StreamReader(fShaderPath))
+            {
+                GL.ShaderSource(vShader, vertReader.ReadToEnd());
+                GL.ShaderSource(fShader, fragReader.ReadToEnd());
+            }
+            GL.CompileShader(vShader);
+            GL.CompileShader(fShader);
+
+            shaderProgram = GL.CreateProgram();
+            GL.AttachShader(shaderProgram, vShader);
+            GL.DeleteShader(vShader);
+            GL.AttachShader(shaderProgram, fShader);
+            GL.DeleteShader(fShader);
+            ErrorCode error = GL.GetError();
+            if (error != 0)
+                Console.WriteLine(error);
+        }
+        
+
         static void Main(string[] args)
         {
             using (var game = new GameWindow())
@@ -58,7 +87,15 @@ namespace RallysportGame
                     // setup settings, load textures, sounds
                     game.VSync = VSyncMode.On;
                     myDog = new Entity(new Meshomatic.ObjLoader().LoadFile("dog.obj"));
-                
+
+                    //Set up shaders
+                    loadShaderProgram(basicShaderProgram, "vertexShader.vert", "fragmentShader.frag");
+                    GL.BindAttribLocation(basicShaderProgram, 0, "position");
+                    GL.BindFragDataLocation(basicShaderProgram, 0, "fragmentColor");
+                    GL.LinkProgram(basicShaderProgram);
+
+                    lightPosition = new Vector3(up);
+                    
                 };
 
                 game.Resize += (sender, e) =>
@@ -108,15 +145,21 @@ namespace RallysportGame
 
                 game.RenderFrame += (sender, e) =>
                 {
-                    // render graphics
+                    GL.ClearColor(0.2f, 0.2f, 0.8f, 1.0f);
                     GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+                    int w = game.Width;
+                    int h = game.Height;
 
+                    GL.UseProgram(basicShaderProgram);
 
                     Vector3 camera_position = sphericalToCartesian(camera_theta, camera_phi, camera_r);
                     //camera_lookAt = new Vector3(0.0f, camera_target_altitude, 0.0f);
                     camera_lookAt = Vector4.Transform(camera_lookAt, camera_rotation_matrix);
                     Matrix4 viewMatrix = Matrix4.LookAt(camera_position, new Vector3(camera_lookAt),up);
-                    Matrix4 projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(pi/4, game.Width/game.Height, 0.1f, 1000f);
+                    Matrix4 projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(pi/4, w/h, 0.1f, 1000f);
+                    // Here we start getting into the lighting model
+                    //GL.ProgramUniformMatrix3
+
 
                     GL.MatrixMode(MatrixMode.Modelview);
                     GL.LoadMatrix(ref viewMatrix);
@@ -124,18 +167,6 @@ namespace RallysportGame
                     GL.LoadMatrix(ref projectionMatrix);
 
                     myDog.render();
-                    /*
-                    GL.Begin(PrimitiveType.Triangles);
-
-                    GL.Color3(Color.MidnightBlue);
-                    GL.Vertex3(0.0f, 3.0f, 0.0f);
-                    GL.Color3(Color.SpringGreen);
-                    GL.Vertex3(2.0f, 0.0f, 0.0f);
-                    GL.Color3(Color.Ivory);
-                    GL.Vertex3(-2.0f, 0.0f, 0.0f);
-
-                    GL.End();
-                    */
                     game.SwapBuffers();
                 };
 

@@ -7,13 +7,16 @@ using Meshomatic;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
-using MVec = Meshomatic.Vector3; //So I don't have to type as much
+/*
+ * Class representing a generic entity, basically anything loaded from
+ * an .obj file that should be shaded. The render method should be basically
+ * the same for any subclasses.
+ * */
 
 namespace RallysportGame
 {
     class Entity
     {
-       
         private uint vertexArrayObject;
         private uint positionBuffer;
         public uint indexBuffer;
@@ -27,18 +30,22 @@ namespace RallysportGame
             this.mesh = mesh;
             numOfTri = mesh.Tris.Length;
             makeVAO();
-            Console.WriteLine(mesh.ToString());
         }
 
-
+        /*
+         *  Duh, renders the object using whatever shaders you've set up. 
+         */
         public void render(){
             GL.BindVertexArray(vertexArrayObject);
             GL.DrawElements(PrimitiveType.Triangles, numOfTri, DrawElementsType.UnsignedInt, 0);
         }
         
+        /*
+         *  I made this a separate method to make things a bit more readable. 
+         *  Only called once for initialization
+         */
         unsafe private void makeVAO()
         {
-
             float[] vertices = mesh.VertexArray();
             float[] normals = mesh.NormalArray();
             List<int> vertIndices = new List<int>();
@@ -55,7 +62,7 @@ namespace RallysportGame
             //Sizes of the arrays, a bit less clutter here outside the calls
             IntPtr posSize = (IntPtr) ((sizeof(float))*mesh.VertexArray().Length);
             IntPtr indSize = (IntPtr) (sizeof(int)*vertIndices.Count);
-            IntPtr norSize = (IntPtr) (sizeof(MVec)*mesh.Normals.Length);
+            IntPtr norSize = (IntPtr) (sizeof(Meshomatic.Vector3)*mesh.Normals.Length);
 
             //Workaround, C# seems weird about pointers
             fixed(uint* pbp = &positionBuffer, ibp = &indexBuffer, nbp = &normalBuffer, vaop = &vertexArrayObject){
@@ -63,7 +70,7 @@ namespace RallysportGame
             GL.GenBuffers(1, pbp);
             GL.BindBuffer(BufferTarget.ArrayBuffer, *pbp);
             GL.BufferData(BufferTarget.ArrayBuffer, posSize, mesh.VertexArray(), BufferUsageHint.StaticDraw);
-            //Buffer for the triangle indices
+            //Buffer for indices into the vertex buffer. This is how we define the faces of our triangles.
             GL.GenBuffers(1, ibp);
             GL.BindBuffer(BufferTarget.ArrayBuffer, *ibp);
             GL.BufferData(BufferTarget.ArrayBuffer, indSize, vertIndices.ToArray(), BufferUsageHint.StaticDraw );
@@ -81,7 +88,6 @@ namespace RallysportGame
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, *ibp);
             GL.EnableVertexAttribArray(0);
             GL.EnableVertexAttribArray(1);
-
             }
 
            }

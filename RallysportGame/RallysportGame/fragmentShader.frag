@@ -9,8 +9,9 @@ in vec4 colorOut;
 in vec2 texCoord;
 out vec4 fragmentColor;
 ///////////////////////////////
-
 // new implemantations
+
+uniform vec3 lightPosition;
 
 
 
