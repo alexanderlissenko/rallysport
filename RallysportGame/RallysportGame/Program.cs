@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Collections;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
@@ -46,6 +47,8 @@ namespace RallysportGame
 
 
 
+        static ArrayList keyList = new ArrayList();
+
         // Helper function to turn spherical coordinates into cartesian (x,y,z)
         static Vector3 sphericalToCartesian(float theta, float phi, float r)
         {
@@ -78,8 +81,58 @@ namespace RallysportGame
         }
         
 
-        static void Main(string[] args)
+        /// <summary>
+        /// Will handle key events so multiple keys can be triggered at once
+        /// 
+        /// alla loopar kan säkert optimeras och borde kanske ses över detta e mest som ett snabb test 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+
+        static void handleKeyDown(object sender, KeyboardKeyEventArgs e)
         {
+            if(!keyList.Contains(e.Key)) /// FULHACK tydligen så kan den annars generera 30+ keydown events om man håller inne
+                keyList.Add(e.Key);
+        }
+        static void handleKeyUp(object sender, KeyboardKeyEventArgs e)
+        {
+            
+            for(int i = 0; i < keyList.Count;i++)  
+            {
+                if(keyList[i].Equals(e.Key))
+                {
+                    keyList.RemoveAt(i);
+                }
+            }
+        }
+
+        static void updateCamera()
+        {
+            foreach(Key key in keyList)
+            {
+                switch(key)
+                {
+                    case Key.A:
+                        camera_theta -= camera_horizontal_delta;
+                        break;
+                    case Key.D:
+                        camera_theta += camera_horizontal_delta;
+                        break;
+                    case Key.W:
+                        camera_r -= camera_vertical_delta;
+                        break;
+                    case Key.S:
+                        camera_r += camera_vertical_delta;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        static void Main(string[] args)
+        { 
+          
             using (var game = new GameWindow())
             {
                 game.Load += (sender, e) =>
@@ -95,7 +148,9 @@ namespace RallysportGame
                     GL.LinkProgram(basicShaderProgram);
 
                     lightPosition = new Vector3(up);
-                    
+           
+                    game.KeyDown += handleKeyDown;
+                    game.KeyUp += handleKeyUp;
                 };
 
                 game.Resize += (sender, e) =>
@@ -110,37 +165,8 @@ namespace RallysportGame
                     if (game.Keyboard[Key.Escape])
                     {
                         game.Exit();
-                    }else if(game.Keyboard[Key.A]){
-                        camera_theta -= camera_horizontal_delta;
                     }
-                    else if (game.Keyboard[Key.D])
-                    {
-                        camera_theta += camera_horizontal_delta;
-                    }
-                    else if (game.Keyboard[Key.W])
-                    {
-                        camera_r -= camera_vertical_delta;
-                    }
-                    else if (game.Keyboard[Key.S])
-                    {
-                        camera_r += camera_vertical_delta;
-                    }
-                    else if (game.Keyboard[Key.Up])
-                    {
-                        Matrix4.CreateRotationX(0.1f, out camera_rotation_matrix);
-                    }
-                    else if (game.Keyboard[Key.Down])
-                    {
-                        Matrix4.CreateRotationX(-0.1f, out camera_rotation_matrix);
-                    }
-                    else if (game.Keyboard[Key.Left])
-                    {
-                        Matrix4.CreateRotationY(0.1f, out camera_rotation_matrix);
-                    }
-                    else if (game.Keyboard[Key.Right])
-                    {
-                        Matrix4.CreateRotationY(-0.1f, out camera_rotation_matrix);
-                    }
+                    updateCamera();
                 };
 
                 game.RenderFrame += (sender, e) =>
@@ -158,7 +184,7 @@ namespace RallysportGame
                     Matrix4 viewMatrix = Matrix4.LookAt(camera_position, new Vector3(camera_lookAt),up);
                     Matrix4 projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(pi/4, w/h, 0.1f, 1000f);
                     // Here we start getting into the lighting model
-                    //GL.ProgramUniformMatrix3
+                    //GL.ProgramUniformMatrix3(GL.GetUniformLocation(basicShaderProgram, ));
 
 
                     GL.MatrixMode(MatrixMode.Modelview);

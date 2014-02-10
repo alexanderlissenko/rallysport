@@ -15,7 +15,8 @@ uniform mat4 modelViewMatrix;
 
 void main()
 {
-	position = modelViewMatrix* vec4(posiition,1); // model to view space for eatch vertex
-	colorOut = vec4(colorIn,1);
+	position = modelViewMatrix* vec4(position,1); // model to view space for each vertex
+	//colorOut = vec4(colorIn,1);
+	colorOut = vec4(1.0, 0.0, 0.0, 1.0);
 	texCoord = texCoordIn; 
 }

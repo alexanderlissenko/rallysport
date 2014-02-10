@@ -9,7 +9,7 @@ in vec4 colorOut;
 in vec2 texCoord;
 out vec4 fragmentColor;
 ///////////////////////////////
-// new implemantations
+// new implementations
 
 uniform vec3 lightPosition;
 
@@ -20,5 +20,6 @@ uniform vec3 lightPosition;
 
 void main()
 {
-	fragmentColor = texture(colortexture, texCordIn.xy);
+	//fragmentColor = texture(colortexture, texCordIn.xy);
+	fragmentColor = colorOut;
 }
