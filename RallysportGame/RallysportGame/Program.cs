@@ -57,8 +57,9 @@ namespace RallysportGame
                                 (float)(r * Math.Cos(theta) * Math.Sin(phi)));
         }
 
-        static void loadShaderProgram(int shaderProgram, String vShaderPath, String fShaderPath)
+        static int loadShaderProgram(String vShaderPath, String fShaderPath)
         {
+            int shaderProgram;
             int vShader = GL.CreateShader(ShaderType.VertexShader);
             int fShader = GL.CreateShader(ShaderType.FragmentShader);
             using (StreamReader vertReader = new StreamReader(vShaderPath), 
@@ -78,6 +79,7 @@ namespace RallysportGame
             ErrorCode error = GL.GetError();
             if (error != 0)
                 Console.WriteLine(error);
+            return shaderProgram;
         }
         
 
@@ -142,7 +144,7 @@ namespace RallysportGame
                     myDog = new Entity(new Meshomatic.ObjLoader().LoadFile("dog.obj"));
 
                     //Set up shaders
-                    loadShaderProgram(basicShaderProgram, "vertexShader.vert", "fragmentShader.frag");
+                    basicShaderProgram = loadShaderProgram("vertexShader.vert", "fragmentShader.frag");
                     GL.BindAttribLocation(basicShaderProgram, 0, "position");
                     GL.BindFragDataLocation(basicShaderProgram, 0, "fragmentColor");
                     GL.LinkProgram(basicShaderProgram);
@@ -171,7 +173,7 @@ namespace RallysportGame
 
                 game.RenderFrame += (sender, e) =>
                 {
-                    GL.ClearColor(0.2f, 0.2f, 0.8f, 1.0f);
+                    //GL.ClearColor(0.2f, 0.2f, 0.8f, 1.0f);
                     GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
                     int w = game.Width;
                     int h = game.Height;
@@ -194,6 +196,8 @@ namespace RallysportGame
 
                     myDog.render();
                     game.SwapBuffers();
+                    GL.UseProgram(0);
+
                 };
 
                 // Run the game at 60 updates per second
