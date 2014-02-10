@@ -36,14 +36,14 @@ namespace RallysportGame
         //*****************************************************************************
         static float camera_theta = pi / 6.0f;
         static float camera_phi = pi / 4.0f;
-        static float camera_r = 30.0f;
+        static float camera_r = 100.0f;
         static float camera_target_altitude = 5.2f;
         static float camera_horizontal_delta = 0.1f;
-        static float camera_vertical_delta = 0.1f;
+        static float camera_vertical_delta = 1.0f;
         static Vector4 camera_lookAt = new Vector4(0.0f, camera_target_altitude, 0.0f, 1.0f);
         static Matrix4 camera_rotation_matrix = Matrix4.Identity;
 
-        static Entity myDog;
+        static Entity myCar;
 
 
 
@@ -141,7 +141,7 @@ namespace RallysportGame
                 {
                     // setup settings, load textures, sounds
                     game.VSync = VSyncMode.On;
-                    myDog = new Entity(new Meshomatic.ObjLoader().LoadFile("dog.obj"));
+                    myCar = new Entity(new Meshomatic.ObjLoader().LoadFile("Teapotcar\\Teapot-no-materials.obj"));
 
                     //Set up shaders
                     basicShaderProgram = loadShaderProgram("vertexShader.vert", "fragmentShader.frag");
@@ -194,7 +194,7 @@ namespace RallysportGame
                     GL.MatrixMode(MatrixMode.Projection);
                     GL.LoadMatrix(ref projectionMatrix);
 
-                    myDog.render();
+                    myCar.render();
                     game.SwapBuffers();
                     GL.UseProgram(0);
 
