@@ -7,6 +7,7 @@ using System.Collections;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
+using OpenTK.Audio;
 using System.Drawing;
 using OpenTK.Input;
 using System.IO;
@@ -38,6 +39,10 @@ namespace RallysportGame
 
         static ArrayList keyList = new ArrayList();
 
+        static int source = 0;
+        static bool musicPaused;
+        static bool keyHandled = false;
+
         // Helper function to turn spherical coordinates into cartesian (x,y,z)
         static Vector3 sphericalToCartesian(float theta, float phi, float r)
         {
@@ -61,7 +66,7 @@ namespace RallysportGame
         }
         static void handleKeyUp(object sender, KeyboardKeyEventArgs e)
         {
-            
+            keyHandled = false;
             for(int i = 0; i < keyList.Count;i++)  
             {
                 if(keyList[i].Equals(e.Key))
@@ -107,18 +112,36 @@ namespace RallysportGame
 
 
         static void Main(string[] args)
-        { 
-          
+        {
+
             using (var game = new GameWindow())
             {
-                
 
+                
                 game.Load += (sender, e) =>
                 {
+
                     // setup settings, load textures, sounds
                     game.VSync = VSyncMode.On;
                     game.KeyDown += handleKeyDown;
                     game.KeyUp += handleKeyUp;
+
+                    try
+                    {
+                        AudioContext AC = new AudioContext();
+                    }
+                    catch (AudioException ex)
+                    { // problem with Device or Context, cannot continue
+                        game.Exit();
+                    }
+
+                    //Music
+                    int[] bs = Audio.generateBS();
+                    source = bs[1];
+                    Audio.loadSound(bs[0], bs[1]);
+                    Audio.playSound(source);
+                    musicPaused = false;
+                    
                 };
 
                 game.Resize += (sender, e) =>
@@ -133,25 +156,43 @@ namespace RallysportGame
                     {
                         game.Exit();
                     }
-
-
-                    updateCamera();
+                    else if(game.Keyboard[Key.Number9])
+                    {
+                        if (!keyHandled)
+                        {
+                            Audio.increaseGain(source);
+                            keyHandled = !keyHandled;
+                        }
+                    }
+                    else if(game.Keyboard[Key.Number0])
+                    {
+                        if (!keyHandled)
+                        {
+                            Audio.decreaseGain(source);
+                            keyHandled = !keyHandled;
+                        }
+                    }
+                    else if(game.Keyboard[Key.Space])
+                    {
+                        if (!keyHandled)
+                        {
+                            if (musicPaused)
+                            {
+                                Audio.playSound(source);
+                                musicPaused = !musicPaused;
+                                keyHandled = !keyHandled;
+                            }
+                            else
+                            {
+                                Audio.pauseSound(source);
+                                musicPaused = !musicPaused;
+                                keyHandled = !keyHandled;
+                            }
+                        }
+                    }
                     
-                    /*else if(game.Keyboard[Key.A]){
-                        camera_theta -= camera_horizontal_delta;
-                    }
-                    else if (game.Keyboard[Key.D])
-                    {
-                        camera_theta += camera_horizontal_delta;
-                    }
-                    else if (game.Keyboard[Key.W])
-                    {
-                        camera_r -= camera_vertical_delta;
-                    }
-                    else if (game.Keyboard[Key.S])
-                    {
-                        camera_r += camera_vertical_delta;
-                    }*/
+                    updateCamera();
+
                 };
 
                 game.RenderFrame += (sender, e) =>
