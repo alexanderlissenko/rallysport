@@ -86,7 +86,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\Documents\OpenTK\Meshomatic-0.3.0\Meshomatic\Meshomatic\Meshomatic.csproj">
+    <ProjectReference Include="..\Meshomatic\Meshomatic\Meshomatic.csproj">
       <Project>{d52f55a8-08e5-488e-ad0f-bf49b1f29a5f}</Project>
       <Name>Meshomatic</Name>
     </ProjectReference>
