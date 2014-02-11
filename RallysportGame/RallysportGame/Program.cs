@@ -9,6 +9,7 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using System.Drawing;
 using OpenTK.Input;
+using System.IO;
 
 
 
@@ -94,6 +95,17 @@ namespace RallysportGame
             }
         }
 
+
+        void compileShader(int shader, string source)
+        {
+
+            String text = "";
+            text = File.ReadAllText(source);
+            GL.ShaderSource(shader, text);
+            GL.CompileShader(shader);
+        }
+
+
         static void Main(string[] args)
         { 
           
@@ -155,8 +167,23 @@ namespace RallysportGame
 
                     GL.MatrixMode(MatrixMode.Modelview);
                     GL.LoadMatrix(ref viewMatrix);
+
+                    /*            C# SUCKS, can't pass strings
+                    // creates a shader object.
+                    int shaderProgram = GL.CreateProgram();
+                    // creates shader objects.
+                    int vert = GL.CreateShader(ShaderType.VertexShader);
+                    int frag = GL.CreateShader(ShaderType.FragmentShader);
+                    string source = "\vertexShader.txt";
+                    compileShader(vert,source);
+                    string source = "\fragmentShader.txt";
+                    compileShader(frag, source);                    
+                    */
+
+
                     GL.MatrixMode(MatrixMode.Projection);
                     GL.LoadMatrix(ref projectionMatrix);
+
 
                     GL.Begin(PrimitiveType.Triangles);
 
