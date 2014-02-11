@@ -7,7 +7,6 @@ using System.Collections;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
-using OpenTK.Audio;
 using System.Drawing;
 using OpenTK.Input;
 using System.IO;
@@ -126,21 +125,9 @@ namespace RallysportGame
                     game.KeyDown += handleKeyDown;
                     game.KeyUp += handleKeyUp;
 
-                    try
-                    {
-                        AudioContext AC = new AudioContext();
-                    }
-                    catch (AudioException ex)
-                    { // problem with Device or Context, cannot continue
-                        game.Exit();
-                    }
 
                     //Music
-                    int[] bs = Audio.generateBS();
-                    source = bs[1];
-                    Audio.loadSound(bs[0], bs[1]);
-                    Audio.playSound(source);
-                    musicPaused = false;
+                    source = Audio.initSound();
                     
                 };
 
@@ -154,6 +141,7 @@ namespace RallysportGame
                     // add game logic, input handling
                     if (game.Keyboard[Key.Escape])
                     {
+                        Audio.deleteBS(source);
                         game.Exit();
                     }
                     else if(game.Keyboard[Key.Number9])
@@ -190,8 +178,24 @@ namespace RallysportGame
                             }
                         }
                     }
+                    else if (game.Keyboard[Key.O])
+                    {
+                        if (!keyHandled)
+                        {
+                            source = Audio.nextTrack(source);
+                            keyHandled = !keyHandled;
+                        }
+                    }
                     
                     updateCamera();
+
+
+                    //Audio management
+                    if (Audio.audioStatus(source) == 0)
+                        Audio.playSound(source);
+                    else if (Audio.audioStatus(source) == 3)
+                        source = Audio.nextTrack(source);
+
 
                 };
 

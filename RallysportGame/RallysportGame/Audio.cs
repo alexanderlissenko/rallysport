@@ -3,6 +3,8 @@ using System.Threading;
 using System.IO;
 using System.Diagnostics;
 
+using System.Collections.Generic;
+
 using OpenTK.Audio;
 using OpenTK.Audio.OpenAL;
 
@@ -12,19 +14,33 @@ namespace RallysportGame
     {
 
 #if DEBUG 
-        static readonly string filename = Path.Combine(Directory.GetParent(Directory.GetParent(Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).ToString()).ToString()).ToString(), @"Audio/SM64_The_Alternate_Route.wav");
+        static readonly string filepath = Path.Combine(Directory.GetParent(Directory.GetParent(Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).ToString()).ToString()).ToString(),"Audio");//Path.Combine(Directory.GetParent(Directory.GetParent(Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).ToString()).ToString()).ToString(), @"Audio/SM64_The_Alternate_Route.wav");
 #else
-        static readonly string filename = Path.Combine(Path.Combine("Data", "Audio"), "SM64_The_Alternate_Route.wav");
+        static readonly string filepath = Path.Combine("Data", "Audio");//Path.Combine(Path.Combine("Data", "Audio"), "SM64_The_Alternate_Route.wav");
 #endif
         static float gain = 0.1f;
+        static int index = 0;
+        static string[] audioFiles;
 
-        public Audio()
+        static Dictionary<int, int> sourceToBuffer;
+        static Audio()
         {
-            
+            sourceToBuffer = new Dictionary<int,int>();
+            try
+            {
+                AudioContext AC = new AudioContext();
+            }
+            catch (AudioException ex)
+            { // problem with Device or Context, cannot continue
+                throw new System.ArgumentException("Issue with audio drivers");
+            }
+
+            audioFiles = Directory.GetFiles(filepath, "*.wav");
         }
 
+
         // Loads a wave/riff audio file.
-        public static byte[] LoadWave(Stream stream, out int channels, out int bits, out int rate)
+        private static byte[] LoadWave(Stream stream, out int channels, out int bits, out int rate)
         {
             if (stream == null)
                 throw new ArgumentNullException("stream");
@@ -69,7 +85,7 @@ namespace RallysportGame
             }
         }
 
-        public static ALFormat GetSoundFormat(int channels, int bits)
+        private static ALFormat GetSoundFormat(int channels, int bits)
         {
             switch (channels)
             {
@@ -82,27 +98,33 @@ namespace RallysportGame
         /// Generates buffer and source from openAL
         /// </summary>
         /// <returns>first element is the buffer index second is the source index</returns>
-        public static int[] generateBS()
+        public static int generateBS()
         {
             int[] output = new int[2];
 
             output[0] = AL.GenBuffer();
             output[1] = AL.GenSource();
 
-            return output;
+            sourceToBuffer.Add(output[1], output[0]);
+            
+            return output[1];
 
         }
 
         /// <summary>
         /// Deletes a Selected Buffer and Source
         /// </summary>
-        /// <param name="buffer"></param>
         /// <param name="source"></param>
-        public static void deleteBS(int buffer, int source)
+        public static void deleteBS(int source)
         {
+            int buffer;
+            if (audioStatus(source) != 3)
+                stopSound(source);
 
-            AL.DeleteSource(source);
+            AL.DeleteSource(source);            
+            sourceToBuffer.TryGetValue(source, out buffer);
             AL.DeleteBuffer(buffer);
+            sourceToBuffer.Remove(source);
 
         }
 
@@ -111,14 +133,31 @@ namespace RallysportGame
         /// </summary>
         /// <param name="buffer"></param>
         /// <param name="source"></param>
-        public static void loadSound(int buffer, int source)
+        public static void loadSound(int source,int index)
         {
+            string filename = audioFiles[index];
 
+            int buffer;
+            sourceToBuffer.TryGetValue(source, out buffer);
             int channels, bits_per_sample, sample_rate;
             byte[] sound_data = LoadWave(File.Open(filename, FileMode.Open), out channels, out bits_per_sample, out sample_rate);
             AL.BufferData(buffer, GetSoundFormat(channels, bits_per_sample), sound_data, sound_data.Length, sample_rate);
             AL.Source(source, ALSourcei.Buffer, buffer);
             AL.Source(source, ALSourcef.Gain, gain);
+        }
+        
+        /// <summary>
+        /// generates buffers, loads the sound
+        /// </summary>
+        /// <returns>the source thats used for the sound</returns>
+        public static int initSound()
+        {
+            int source = generateBS();
+
+            Audio.loadSound(source, index);
+
+            return source;
+
         }
 
         /// <summary>
@@ -171,6 +210,42 @@ namespace RallysportGame
                 gain -= 0.1f;
                 AL.Source(source, ALSourcef.Gain, gain);
             }
+        }
+
+        /// <summary>
+        /// An easier way of keeping track of sources outside of the Audio class
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns>value 0 = Initial, 1 = Playing, 2 = Paused, 3 = Stopped</returns>
+        public static int audioStatus(int source)
+        {
+            int stateValue = 0;
+            if (AL.GetSourceState(source) == ALSourceState.Playing)
+                stateValue = 1;
+            else if (AL.GetSourceState(source) == ALSourceState.Paused)
+                stateValue = 2;
+            else if (AL.GetSourceState(source) == ALSourceState.Stopped)
+                stateValue = 3;
+
+
+            return stateValue;
+        }
+
+        public static int nextTrack(int source)
+        {
+            deleteBS(source);
+
+            source = generateBS();
+
+            index++;
+            if(index == audioFiles.Length)
+                index = 0;
+            
+            loadSound(source,index);
+
+            playSound(source);
+
+            return source;
         }
     }
 }
