@@ -7,6 +7,7 @@ using System.Collections.Generic;
 
 using OpenTK.Audio;
 using OpenTK.Audio.OpenAL;
+using OpenTK;
 
 namespace RallysportGame
 {
@@ -246,6 +247,39 @@ namespace RallysportGame
             playSound(source);
 
             return source;
+        }
+        /// <summary>
+        /// The source must be a mono source for this to have any effect
+        /// Sets up the Position of the source in the world
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="position"></param>
+        public static void setUpSourcePos(int source,Vector3 position)
+        {
+            AL.Source(source, ALSource3f.Position, ref position);
+        }
+
+        /// <summary>
+        /// Sets the listeners position in the world, not that these values should be passed by referece
+        /// </summary>
+        /// <param name="position"></param>
+        /// <param name="direction"></param>
+        /// <param name="up"></param>
+        public static void setUpListener(ref Vector3 position,ref Vector3 direction,ref Vector3 up)
+        {
+            AL.Listener(ALListener3f.Position, ref position);
+            AL.Listener(ALListenerfv.Orientation, ref direction, ref up);
+        }
+
+        /// <summary>
+        /// Gets the current position of the listener for debugging purpouses
+        /// </summary>
+        /// <returns></returns>
+        public static Vector3 listenerPos()
+        {
+            float x,y,z;
+            AL.GetListener(ALListener3f.Position,out x,out y,out z);
+            return new Vector3(x, y, z);
         }
     }
 }
