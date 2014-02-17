@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 using System.Collections;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using System.Drawing;
 using OpenTK.Input;
-using System.IO;
 
 
 
@@ -25,16 +25,27 @@ namespace RallysportGame
         const float pi = MathHelper.Pi;
         static Vector3 up = new Vector3(0.0f, 1.0f, 0.0f);
 
+        //*****************************************************************************
+        //	Global variables
+        //*****************************************************************************
+        static int basicShaderProgram;
+        static Vector3 lightPosition;
 
         //*****************************************************************************
         //	Camera state variables
         //*****************************************************************************
         static float camera_theta = pi / 6.0f;
         static float camera_phi = pi / 4.0f;
-        static float camera_r = 30.0f;
+        static float camera_r = 100.0f;
         static float camera_target_altitude = 5.2f;
         static float camera_horizontal_delta = 0.1f;
-        static float camera_vertical_delta = 0.1f;
+        static float camera_vertical_delta = 1.0f;
+        static Vector4 camera_lookAt = new Vector4(0.0f, camera_target_altitude, 0.0f, 1.0f);
+        static Matrix4 camera_rotation_matrix = Matrix4.Identity;
+
+        static Entity myCar;
+
+
 
         static ArrayList keyList = new ArrayList();
 
@@ -49,6 +60,32 @@ namespace RallysportGame
                                 (float)(r * Math.Cos(phi)),
                                 (float)(r * Math.Cos(theta) * Math.Sin(phi)));
         }
+
+        static int loadShaderProgram(String vShaderPath, String fShaderPath)
+        {
+            int shaderProgram;
+            int vShader = GL.CreateShader(ShaderType.VertexShader);
+            int fShader = GL.CreateShader(ShaderType.FragmentShader);
+            using (StreamReader vertReader = new StreamReader(vShaderPath), 
+                                fragReader = new StreamReader(fShaderPath))
+            {
+                GL.ShaderSource(vShader, vertReader.ReadToEnd());
+                GL.ShaderSource(fShader, fragReader.ReadToEnd());
+            }
+            GL.CompileShader(vShader);
+            GL.CompileShader(fShader);
+
+            shaderProgram = GL.CreateProgram();
+            GL.AttachShader(shaderProgram, vShader);
+            GL.DeleteShader(vShader);
+            GL.AttachShader(shaderProgram, fShader);
+            GL.DeleteShader(fShader);
+            ErrorCode error = GL.GetError();
+            if (error != 0)
+                Console.WriteLine(error);
+            return shaderProgram;
+        }
+        
 
         /// <summary>
         /// Will handle key events so multiple keys can be triggered at once
@@ -111,17 +148,25 @@ namespace RallysportGame
 
 
         static void Main(string[] args)
-        {
-
+        { 
+          
             using (var game = new GameWindow())
             {
-
-                
                 game.Load += (sender, e) =>
                 {
 
                     // setup settings, load textures, sounds
                     game.VSync = VSyncMode.On;
+                    myCar = new Entity(new Meshomatic.ObjLoader().LoadFile("Teapotcar\\Teapot-no-materials.obj"));
+
+                    //Set up shaders
+                    basicShaderProgram = loadShaderProgram("vertexShader.vert", "fragmentShader.frag");
+                    GL.BindAttribLocation(basicShaderProgram, 0, "position");
+                    GL.BindFragDataLocation(basicShaderProgram, 0, "fragmentColor");
+                    GL.LinkProgram(basicShaderProgram);
+
+                    lightPosition = new Vector3(up);
+           
                     game.KeyDown += handleKeyDown;
                     game.KeyUp += handleKeyUp;
 
@@ -138,6 +183,7 @@ namespace RallysportGame
 
                 game.UpdateFrame += (sender, e) =>
                 {
+                    camera_rotation_matrix = Matrix4.Identity;
                     // add game logic, input handling
                     if (game.Keyboard[Key.Escape])
                     {
@@ -201,47 +247,31 @@ namespace RallysportGame
 
                 game.RenderFrame += (sender, e) =>
                 {
-                    // render graphics
+                    //GL.ClearColor(0.2f, 0.2f, 0.8f, 1.0f);
                     GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+                    int w = game.Width;
+                    int h = game.Height;
 
+                    GL.UseProgram(basicShaderProgram);
 
                     Vector3 camera_position = sphericalToCartesian(camera_theta, camera_phi, camera_r);
-                    Vector3 camera_lookAt = new Vector3(0.0f, camera_target_altitude, 0.0f);
-                    Matrix4 viewMatrix = Matrix4.LookAt(camera_position, camera_lookAt, up);
-                    Matrix4 projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(pi/4, game.Width/game.Height, 0.1f, 1000f);
+                    //camera_lookAt = new Vector3(0.0f, camera_target_altitude, 0.0f);
+                    camera_lookAt = Vector4.Transform(camera_lookAt, camera_rotation_matrix);
+                    Matrix4 viewMatrix = Matrix4.LookAt(camera_position, new Vector3(camera_lookAt),up);
+                    Matrix4 projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(pi/4, w/h, 0.1f, 1000f);
+                    // Here we start getting into the lighting model
+                    //GL.ProgramUniformMatrix3(GL.GetUniformLocation(basicShaderProgram, ));
+
 
                     GL.MatrixMode(MatrixMode.Modelview);
                     GL.LoadMatrix(ref viewMatrix);
-
-                    /*            C# SUCKS, can't pass strings
-                    // creates a shader object.
-                    int shaderProgram = GL.CreateProgram();
-                    // creates shader objects.
-                    int vert = GL.CreateShader(ShaderType.VertexShader);
-                    int frag = GL.CreateShader(ShaderType.FragmentShader);
-                    string source = "\vertexShader.txt";
-                    compileShader(vert,source);
-                    string source = "\fragmentShader.txt";
-                    compileShader(frag, source);                    
-                    */
-
-
                     GL.MatrixMode(MatrixMode.Projection);
                     GL.LoadMatrix(ref projectionMatrix);
 
-
-                    GL.Begin(PrimitiveType.Triangles);
-
-                    GL.Color3(Color.MidnightBlue);
-                    GL.Vertex3(0.0f, 3.0f, 0.0f);
-                    GL.Color3(Color.SpringGreen);
-                    GL.Vertex3(2.0f, 0.0f, 0.0f);
-                    GL.Color3(Color.Ivory);
-                    GL.Vertex3(-2.0f, 0.0f, 0.0f);
-
-                    GL.End();
-
+                    myCar.render();
                     game.SwapBuffers();
+                    GL.UseProgram(0);
+
                 };
 
                 // Run the game at 60 updates per second
