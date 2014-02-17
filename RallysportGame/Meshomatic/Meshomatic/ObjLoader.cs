@@ -53,6 +53,11 @@ namespace Meshomatic {
 					// Face
 					tris.AddRange(parseFace(parameters));
 					break;
+
+                case "#":
+                    break;
+                default:
+                    break;
 				}
 			}
 			
