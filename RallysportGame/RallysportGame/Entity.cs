@@ -32,6 +32,11 @@ namespace RallysportGame
             makeVAO();
         }
 
+        public Entity()
+        {
+
+        }
+
         /*
          *  Duh, renders the object using whatever shaders you've set up. 
          */
