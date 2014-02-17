@@ -33,19 +33,23 @@ namespace RallysportGame
         //	Global variables
         //*****************************************************************************
         static int basicShaderProgram;
-        static Vector3 lightPosition;
+        //static Vector3 lightPosition;
 
         //*****************************************************************************
         //	Camera state variables
         //*****************************************************************************
         static float camera_theta = pi / 6.0f;
         static float camera_phi = pi / 4.0f;
-        static float camera_r = 100.0f;
+        static float camera_r = 20.0f;
         static float camera_target_altitude = 5.2f;
         static float camera_horizontal_delta = 0.1f;
         static float camera_vertical_delta = 1.0f;
-        static Vector4 camera_lookAt = new Vector4(0.0f, camera_target_altitude, 0.0f, 1.0f);
+        //static Vector4 camera_lookAt = new Vector4(0.0f, camera_target_altitude, 0.0f, 1.0f);
         static Matrix4 camera_rotation_matrix = Matrix4.Identity;
+
+        static float light_theta = pi / 6.0f;
+        static float light_phi = pi / 4.0f;
+        static float light_r = 100.0f;
 
         static Entity myCar;
 
@@ -77,9 +81,9 @@ namespace RallysportGame
                 GL.ShaderSource(fShader, fragReader.ReadToEnd());
             }
             GL.CompileShader(vShader);
-            Console.WriteLine(GL.GetShaderInfoLog(vShader));
+            Console.WriteLine("Vertex Shader: "+GL.GetShaderInfoLog(vShader));
             GL.CompileShader(fShader);
-            Console.WriteLine(GL.GetShaderInfoLog(fShader));
+            Console.WriteLine("Fragment Shader: "+GL.GetShaderInfoLog(fShader));
 
             shaderProgram = GL.CreateProgram();
             GL.AttachShader(shaderProgram, vShader);
@@ -150,20 +154,26 @@ namespace RallysportGame
             {
                 game.Load += (sender, e) =>
                 {
-
+                    Console.WriteLine(GL.GetString(StringName.ShadingLanguageVersion));
                     // setup settings, load textures, sounds
                     game.VSync = VSyncMode.On;
-                    myCar = new Entity(new Meshomatic.ObjLoader().LoadFile(modelsDir + "TeapotCar\\Teapot car\\Teapot-no-materials-tri.obj"));//+ "Cube\\koobe.obj"));//+ "map\\uggly_test_track_Triangulate.obj"));//
+                    myCar = new Entity(new Meshomatic.ObjLoader().LoadFile(modelsDir +"Cube\\koobe.obj"));//+"map\\uggly_test_track_Triangulate.obj"));//));//"TeapotCar\\Teapot car\\Teapot-no-materials-tri.obj"));//
 
                     //Set up shaders
                     basicShaderProgram = loadShaderProgram(shaderDir+"Simple_VS.glsl",shaderDir+"Simple_FS.glsl");
                     GL.BindAttribLocation(basicShaderProgram, 0, "position");
+                    GL.BindAttribLocation(basicShaderProgram, 1, "normalIn");
+                    GL.BindAttribLocation(basicShaderProgram, 2, "textCoordIn");
                     GL.BindFragDataLocation(basicShaderProgram, 0, "fragmentColor");
                     GL.LinkProgram(basicShaderProgram);
 
                     Console.WriteLine(GL.GetProgramInfoLog(basicShaderProgram));
                     
-                    lightPosition = new Vector3(up);
+                    //Set up Uniforms
+
+
+
+                    //lightPosition = new Vector3(up);
            
                     game.KeyDown += handleKeyDown;
                     game.KeyUp += handleKeyUp;
@@ -253,22 +263,37 @@ namespace RallysportGame
 
                     Vector3 camera_position = sphericalToCartesian(camera_theta, camera_phi, camera_r);
                     //camera_lookAt = new Vector3(0.0f, camera_target_altitude, 0.0f);
-                    camera_lookAt = Vector4.Transform(camera_lookAt, camera_rotation_matrix);
-                    Matrix4 viewMatrix = Matrix4.LookAt(camera_position, new Vector3(camera_lookAt),up);
-                    Matrix4 projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(pi/4, w/h, 0.1f, 1000f);
+                    Vector3 camera_lookAt = new Vector3(0.0f, 0.0f, 0.0f);//Vector4.Transform(camera_lookAt, camera_rotation_matrix);
+                    Matrix4 viewMatrix = Matrix4.LookAt(camera_position, camera_lookAt,up);
+                    Matrix4 projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(pi/4, (float)w/(float)h, 0.1f, 1000f);
+                    Matrix4 modelMatrix = Matrix4.Identity;
                     // Here we start getting into the lighting model
-                    //GL.ProgramUniformMatrix3(GL.GetUniformLocation(basicShaderProgram, ));
+                    Matrix4 modelViewMatrix = modelMatrix*viewMatrix ; //I know this is opposite see down why
+                    GL.UniformMatrix4(GL.GetUniformLocation(basicShaderProgram, "modelViewMatrix"), false, ref modelViewMatrix);
+                    Matrix4 modelViewProjectionMatrix = modelViewMatrix*projectionMatrix; ///VAFAN??!??!? varför blir det fel annars?
+                    GL.UniformMatrix4(GL.GetUniformLocation(basicShaderProgram, "modelViewProjectionMatrix"), false, ref modelViewProjectionMatrix);
+                    
 
 
+
+                    Matrix4 normalMatrix = Matrix4.Invert(Matrix4.Transpose(viewMatrix*modelMatrix));
+                    GL.UniformMatrix4(GL.GetUniformLocation(basicShaderProgram,"normalMatrix"),false,ref normalMatrix );
+
+                    Vector4 lightPosition = new Vector4(sphericalToCartesian(light_theta, light_phi, light_r), 1.0f);
+                    Matrix4 lightView = Matrix4.LookAt(lightPosition.Xyz, camera_lookAt, up);
+                    Vector4 viewSpaceLightPosition = Vector4.Transform(lightPosition, lightView);
+                    GL.Uniform3(GL.GetUniformLocation(basicShaderProgram, "viewSpaceLightPosition"), viewSpaceLightPosition.Xyz);
+                    
+                    /*
                     GL.MatrixMode(MatrixMode.Modelview);
                     GL.LoadMatrix(ref viewMatrix);
                     GL.MatrixMode(MatrixMode.Projection);
                     GL.LoadMatrix(ref projectionMatrix);
-
+                    */
 
                     GL.Enable(EnableCap.DepthTest);
                     GL.Enable(EnableCap.CullFace);
-
+                    
 
                     myCar.render();
                     GL.End();
