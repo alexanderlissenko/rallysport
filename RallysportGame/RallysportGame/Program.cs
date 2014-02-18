@@ -40,7 +40,7 @@ namespace RallysportGame
         //*****************************************************************************
         static float camera_theta = pi / 6.0f;
         static float camera_phi = pi / 4.0f;
-        static float camera_r = 20.0f;
+        static float camera_r = 500.0f;
         static float camera_target_altitude = 5.2f;
         static float camera_horizontal_delta = 0.1f;
         static float camera_vertical_delta = 1.0f;
@@ -49,7 +49,7 @@ namespace RallysportGame
 
         static float light_theta = pi / 6.0f;
         static float light_phi = pi / 4.0f;
-        static float light_r = 100.0f;
+        static float light_r = 500.0f;
 
         static Entity myCar;
 
@@ -157,7 +157,7 @@ namespace RallysportGame
                     Console.WriteLine(GL.GetString(StringName.ShadingLanguageVersion));
                     // setup settings, load textures, sounds
                     game.VSync = VSyncMode.On;
-                    myCar = new Entity(new Meshomatic.ObjLoader().LoadFile(modelsDir +"Cube\\koobe.obj"));//+"map\\uggly_test_track_Triangulate.obj"));//));//"TeapotCar\\Teapot car\\Teapot-no-materials-tri.obj"));//
+                    myCar = new Entity(new Meshomatic.ObjLoader().LoadFile(modelsDir + "TeapotCar\\Teapot car\\Teapot-no-materials-tri.obj"));//"Cube\\koobe.obj"));//+"map\\uggly_test_track_Triangulate.obj"));//));//
 
                     //Set up shaders
                     basicShaderProgram = loadShaderProgram(shaderDir+"Simple_VS.glsl",shaderDir+"Simple_FS.glsl");
@@ -280,8 +280,7 @@ namespace RallysportGame
                     GL.UniformMatrix4(GL.GetUniformLocation(basicShaderProgram,"normalMatrix"),false,ref normalMatrix );
 
                     Vector4 lightPosition = new Vector4(sphericalToCartesian(light_theta, light_phi, light_r), 1.0f);
-                    Matrix4 lightView = Matrix4.LookAt(lightPosition.Xyz, camera_lookAt, up);
-                    Vector4 viewSpaceLightPosition = Vector4.Transform(lightPosition, lightView);
+                    Vector4 viewSpaceLightPosition = Vector4.Transform(lightPosition, modelViewMatrix);
                     GL.Uniform3(GL.GetUniformLocation(basicShaderProgram, "viewSpaceLightPosition"), viewSpaceLightPosition.Xyz);
                     
                     /*
