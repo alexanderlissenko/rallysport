@@ -1,4 +1,4 @@
-#version 440
+#version 420
 /* Copies incoming fragment color without change. */
 
 in vec2 textCoord;

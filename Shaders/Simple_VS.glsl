@@ -1,4 +1,4 @@
-#version 440
+#version 420
 /* Copies incoming vertex color without change.
  * Applies the transformation matrix to vertex position.
  */
