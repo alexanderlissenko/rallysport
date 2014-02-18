@@ -1,3 +1,4 @@
+#version 440
 /* Copies incoming vertex color without change.
  * Applies the transformation matrix to vertex position.
  */
@@ -22,7 +23,6 @@ void main()
 	viewSpaceNormal = (normalMatrix*vec4(normalIn,0.0)).xyz;
 	viewSpacePosition = (modelViewMatrix *vec4(position,1)).xyz;
 
-    gl_FrontColor = gl_Color;
     gl_Position = modelViewProjectionMatrix*vec4(position,1); 
 	textCoord = textCoordIn;
 }

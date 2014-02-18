@@ -1,9 +1,11 @@
-
+#version 440
 /* Copies incoming fragment color without change. */
 
 in vec2 textCoord;
 in vec3 viewSpaceNormal;
 in vec3 viewSpacePosition;
+
+out vec4 fragmentColor;
 
 uniform vec3 viewSpaceLightPosition;
 
@@ -43,6 +45,6 @@ void main()
 					+ calculateSpecular(scene_light, fresnelSpecular,material_shininess,normal,directionToLight,directionFromEye)
 					+ emissive;
 
-	gl_FragColor = vec4(shading,1.0);
+	fragmentColor = vec4(shading,1.0);
 
 }
