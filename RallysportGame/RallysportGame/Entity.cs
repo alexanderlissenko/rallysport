@@ -7,6 +7,12 @@ using Meshomatic;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
+//for mtl reading might need to move that out later
+using System.IO;
+using System.Globalization;
+using System.Drawing;
+using System.Drawing.Imaging;
+
 /*
  * Class representing a generic entity, basically anything loaded from
  * an .obj file that should be shaded. The render method should be basically
@@ -17,6 +23,12 @@ namespace RallysportGame
 {
     class Entity
     {
+        private OpenTK.Vector3 ambient, diffuse, specular, emisive; 
+        String modelsDir = @"..\..\..\..\Models\";
+        String fileName; 
+        String texturePath;
+        private float shininess;
+
         private uint vertexArrayObject;
         private uint positionBuffer;
         public uint indexBuffer;
@@ -24,10 +36,15 @@ namespace RallysportGame
         public int numOfTri;
         
         private MeshData mesh;
-
-        public Entity(MeshData mesh)
+        /// <summary>
+        /// Constructor for Entity
+        /// Make sure that the .obj file and .mtl is named the same
+        /// </summary>
+        /// <param name="name">Name of the file starting from the model path no .obj its added automaticly</param>
+        public Entity(String name)
         {
-            this.mesh = mesh;
+            fileName = name;
+            this.mesh = new Meshomatic.ObjLoader().LoadFile(modelsDir+name +".obj");
             numOfTri = mesh.Tris.Length;
             makeVAO();
         }
@@ -39,7 +56,116 @@ namespace RallysportGame
             GL.BindVertexArray(vertexArrayObject);
             GL.DrawElements(PrimitiveType.Triangles, numOfTri*3, DrawElementsType.UnsignedInt, 0);
         }
-        
+        /// <summary>
+        /// sets the mtl to load the uniforms for the shaders
+        /// </summary>
+        public void setUpMtl(int program)
+        {
+
+            FileStream stream = new FileStream(modelsDir +fileName + ".mtl", FileMode.Open);
+            StreamReader reader = new StreamReader(stream);
+            String texturePath="";
+            string line;
+            char[] splitChars = { ' ' };
+            while ((line = reader.ReadLine()) != null)
+            {
+                line = line.Trim(splitChars);
+                line = line.Replace("  ", " ");
+
+                string[] parameters = line.Split(splitChars);
+
+                switch (parameters[0])
+                {
+                    case "Ka":
+                        //ambient
+                        float ar = float.Parse(parameters[1], CultureInfo.InvariantCulture.NumberFormat);
+                        float ab = float.Parse(parameters[1], CultureInfo.InvariantCulture.NumberFormat);
+                        float ag = float.Parse(parameters[1], CultureInfo.InvariantCulture.NumberFormat);
+                        ambient = new OpenTK.Vector3(ar, ab, ag);
+                        break;
+                    
+                    case "Kd":
+                        //diffuse
+                        float dr = float.Parse(parameters[1], CultureInfo.InvariantCulture.NumberFormat);
+                        float db = float.Parse(parameters[1], CultureInfo.InvariantCulture.NumberFormat);
+                        float dg = float.Parse(parameters[1], CultureInfo.InvariantCulture.NumberFormat);
+                        diffuse = new OpenTK.Vector3(dr, db, dg);
+                        break;
+
+                    case "Ks":
+                        //specular
+                        float sr = float.Parse(parameters[1], CultureInfo.InvariantCulture.NumberFormat);
+                        float sb = float.Parse(parameters[1], CultureInfo.InvariantCulture.NumberFormat);
+                        float sg = float.Parse(parameters[1], CultureInfo.InvariantCulture.NumberFormat);
+                        specular = new OpenTK.Vector3(sr, sb, sg);
+                        break;
+
+                    case "Ke":
+                        //emisive
+                        float er = float.Parse(parameters[1], CultureInfo.InvariantCulture.NumberFormat);
+                        float eb = float.Parse(parameters[1], CultureInfo.InvariantCulture.NumberFormat);
+                        float eg = float.Parse(parameters[1], CultureInfo.InvariantCulture.NumberFormat);
+                        emisive = new OpenTK.Vector3(er, eb, eg);
+                        break;
+
+                    case "Ns":
+                        //Shininess
+                        shininess = float.Parse(parameters[1], CultureInfo.InvariantCulture.NumberFormat);
+                        break;
+
+                    case "map_Kd":
+                        texturePath = parameters[1];
+                        break;
+                    
+                    default:
+                        break;
+                }
+            }
+
+            GL.Uniform3(GL.GetUniformLocation(program, "material_diffuse_color"), diffuse);
+            GL.Uniform3(GL.GetUniformLocation(program, "material_specular_color"), specular);
+            GL.Uniform3(GL.GetUniformLocation(program, "material_emissive_color"), emisive);
+            GL.Uniform1(GL.GetUniformLocation(program, "material_shininess"), shininess);
+            int texture = loadTexture(modelsDir + texturePath);
+        }
+
+        private int loadTexture(String filename)
+        {
+            TextureTarget Target = TextureTarget.Texture2D;
+
+            int texture;
+            GL.GenTextures(1, out texture);
+            GL.BindTexture(Target, texture);
+
+            Version version = new Version(GL.GetString(StringName.Version).Substring(0, 3));
+            Version target = new Version(1, 4);
+            if (version >= target)
+            {
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.GenerateMipmap, (int)All.True);
+                GL.TexParameter(Target, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);
+            }
+            else
+            {
+                GL.TexParameter(Target, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+            }
+            GL.TexParameter(Target, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+
+            GL.TexParameter(Target, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
+            GL.TexParameter(Target, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
+
+            Bitmap bitmap = new Bitmap(filename);
+            BitmapData data = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            GL.TexImage2D(Target, 0, PixelInternalFormat.Rgba, data.Width, data.Height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
+            GL.Finish();
+            bitmap.UnlockBits(data);
+            
+
+            if (GL.GetError() != ErrorCode.NoError)
+                throw new Exception("Error loading texture " + filename);
+
+            return texture;
+        }
+
         /*
          *  I made this a separate method to make things a bit more readable. 
          *  Only called once for initialization
@@ -51,10 +177,11 @@ namespace RallysportGame
             List<int> vertIndices = new List<int>();
             List<float> normIndices = new List<float>();
             // TODO tex coords
-            Point[] points;
+            Meshomatic.Point[] points;
             for(int i=0; i<mesh.Tris.Length; i++){
                 points = mesh.Tris[i].Points();
-                foreach(Point p in points){
+                foreach (Meshomatic.Point p in points)
+                {
                     vertIndices.Add(p.Vertex);
                 }
             }

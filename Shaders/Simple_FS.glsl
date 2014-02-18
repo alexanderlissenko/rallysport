@@ -9,6 +9,11 @@ out vec4 fragmentColor;
 
 uniform vec3 viewSpaceLightPosition;
 
+uniform float material_shininess = 25.0;
+uniform vec3 material_diffuse_color = vec3(1.0); 
+uniform vec3 material_specular_color = vec3(0.0); 
+uniform vec3 material_emissive_color = vec3(0.0); 
+
 //constants
 uniform vec3 scene_ambient_light = vec3(0.2,0.2,0.2);
 uniform vec3 scene_light = vec3(0.6,0.6,0.6);
@@ -33,10 +38,9 @@ void main()
 	vec3 directionToLight = normalize(viewSpaceLightPosition-viewSpacePosition);
     vec3 directionFromEye = normalize(viewSpacePosition);
 	
-	vec3 diffuse = vec3(1.0);
-	vec3 specular = vec3(0.5);
-	vec3 emissive = vec3(0.0);
-	float material_shininess = 25.0;
+	vec3 diffuse = material_diffuse_color;//vec3(1.0);
+	vec3 specular = material_specular_color;//vec3(0.5);
+	vec3 emissive = material_emissive_color;//vec3(0.0);
 
 	vec3 fresnelSpecular = calculateFresnel(specular,normal, directionFromEye);
 

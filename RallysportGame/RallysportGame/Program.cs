@@ -26,7 +26,6 @@ namespace RallysportGame
         //*****************************************************************************
         const float pi = MathHelper.Pi;
         static Vector3 up = new Vector3(0.0f, 1.0f, 0.0f);
-        static String modelsDir = @"..\..\..\..\Models\";
         static String shaderDir = @"..\..\..\..\Shaders\";
 
         //*****************************************************************************
@@ -157,7 +156,7 @@ namespace RallysportGame
                     Console.WriteLine(GL.GetString(StringName.ShadingLanguageVersion));
                     // setup settings, load textures, sounds
                     game.VSync = VSyncMode.On;
-                    myCar = new Entity(new Meshomatic.ObjLoader().LoadFile(modelsDir + "TeapotCar\\Teapot car\\Teapot-no-materials-tri.obj"));//"Cube\\koobe.obj"));//+"map\\uggly_test_track_Triangulate.obj"));//));//
+                    myCar = new Entity("map\\uggly_test_track_Triangulate");//"Cube\\koobe");//"TeapotCar\\Teapot car\\Teapot-no-materials-tri");//
 
                     //Set up shaders
                     basicShaderProgram = loadShaderProgram(shaderDir+"Simple_VS.glsl",shaderDir+"Simple_FS.glsl");
@@ -170,9 +169,9 @@ namespace RallysportGame
                     Console.WriteLine(GL.GetProgramInfoLog(basicShaderProgram));
                     
                     //Set up Uniforms
-
-
-
+                    GL.UseProgram(basicShaderProgram);
+                    myCar.setUpMtl(basicShaderProgram);
+                    GL.UseProgram(0);
                     //lightPosition = new Vector3(up);
            
                     game.KeyDown += handleKeyDown;
