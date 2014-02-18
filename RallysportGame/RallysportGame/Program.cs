@@ -40,7 +40,7 @@ namespace RallysportGame
         //*****************************************************************************
         static float camera_theta = pi / 6.0f;
         static float camera_phi = pi / 4.0f;
-        static float camera_r = 500.0f;
+        static float camera_r = 300.0f;
         static float camera_target_altitude = 5.2f;
         static float camera_horizontal_delta = 0.1f;
         static float camera_vertical_delta = 1.0f;
@@ -49,7 +49,7 @@ namespace RallysportGame
 
         static float light_theta = pi / 6.0f;
         static float light_phi = pi / 4.0f;
-        static float light_r = 500.0f;
+        static float light_r = 300.0f;
 
         static Entity myCar;
 
