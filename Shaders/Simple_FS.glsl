@@ -7,6 +7,8 @@ in vec3 viewSpacePosition;
 
 out vec4 fragmentColor;
 
+uniform sampler2D diffuse_texture;
+
 uniform vec3 viewSpaceLightPosition;
 
 uniform float material_shininess = 25.0;
@@ -43,7 +45,7 @@ void main()
 	vec3 emissive = material_emissive_color;//vec3(0.0);
 
 	vec3 fresnelSpecular = calculateFresnel(specular,normal, directionFromEye);
-
+	vec3 texturesampler = texture( diffuse_texture, textCoord ).xyz;
 	vec3 shading = (vec3(1.0,0,0)*scene_ambient_light)
 					+ calculateDiffuse(scene_light,diffuse,normal,directionToLight)
 					+ calculateSpecular(scene_light, fresnelSpecular,material_shininess,normal,directionToLight,directionFromEye)
