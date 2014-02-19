@@ -49,10 +49,10 @@ namespace Meshomatic {
 	    /// So {<1,1,1>, <2,2,2>} will turn into {1,1,1,2,2,2}
 		/// </summary>
 		/// <returns>
-		/// A <see cref="System.Double[]"/>
+		/// A <see cref="System.float[]"/>
 		/// </returns>
-		public double[] VertexArray() {
-			double[] verts = new double[Vertices.Length*3];
+		public float[] VertexArray() {
+			float[] verts = new float[Vertices.Length*3];
 			for(int i = 0; i < Vertices.Length; i++) {
 				verts[i*3] = Vertices[i].X;
 				verts[i*3+1] = Vertices[i].Y;
@@ -66,10 +66,10 @@ namespace Meshomatic {
 		/// Returns an array containing the coordinates of the <value>Normals<,value>, similar to VertexArray.
 		/// </summary>
 		/// <returns>
-		/// A <see cref="System.Double[]"/>
+		/// A <see cref="System.float[]"/>
 		/// </returns>
-		public double[] NormalArray() {
-			double[] norms = new double[Normals.Length * 3];
+		public float[] NormalArray() {
+			float[] norms = new float[Normals.Length * 3];
 			for(int i = 0; i < Normals.Length; i++) {
 				norms[i * 3] = Normals[i].X;
 				norms[i * 3 + 1] = Normals[i].Y;
@@ -83,10 +83,10 @@ namespace Meshomatic {
 		/// Returns an array containing the coordinates of the <value>TexCoords<value>, similar to VertexArray. 
 		/// </summary>
 		/// <returns>
-		/// A <see cref="System.Double[]"/>
+		/// A <see cref="System.float[]"/>
 		/// </returns>
-		public double[] TexcoordArray() {
-			double[] tcs = new double[TexCoords.Length*2];
+		public float[] TexcoordArray() {
+			float[] tcs = new float[TexCoords.Length*2];
 			for(int i = 0; i < TexCoords.Length; i++) {
 				tcs[i*3] = TexCoords[i].X;
 				tcs[i*3+1] = TexCoords[i].Y;
@@ -183,8 +183,8 @@ namespace Meshomatic {
 		// XXX: Might technically be incorrect, since a (malformed) file could have vertices
 		// that aren't actually in any face.
 		// XXX: Don't take the names of the out parameters too literally...
-		public void Dimensions(out double width, out double length, out double height) {
-			double maxx, minx, maxy, miny, maxz, minz;
+		public void Dimensions(out float width, out float length, out float height) {
+			float maxx, minx, maxy, miny, maxz, minz;
 			maxx = maxy = maxz = minx = miny = minz = 0;
 			foreach(Vector3 vert in Vertices) {
 				if(vert.X > maxx) maxx = vert.X;
@@ -226,9 +226,9 @@ namespace Meshomatic {
 	}
 	
 	public struct Vector2 {
-		public double X;
-		public double Y;
-		public Vector2(double x, double y) {
+		public float X;
+		public float Y;
+		public Vector2(float x, float y) {
 			X = x;
 			Y = y;
 		}
@@ -237,10 +237,10 @@ namespace Meshomatic {
 	}
 	
 	public struct Vector3 {
-		public double X;
-		public double Y;
-		public double Z;
-		public Vector3(double x, double y, double z) {
+		public float X;
+		public float Y;
+		public float Z;
+		public Vector3(float x, float y, float z) {
 			X = x;
 			Y = y;
 			Z = z;

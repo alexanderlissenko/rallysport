@@ -82,7 +82,7 @@ namespace Meshomatic {
 			r.ReadByte();  // Ignore boneId
 			r.ReadByte();  // Ignore referenceCount
 			
-			return new Vector3((double) x, (double) y, (double) z);
+			return new Vector3((float) x, (float) y, (float) z);
 		}
 		
 		private Ms3dTri[] ReadMs3dTris(BinaryReader r) {
@@ -103,25 +103,25 @@ namespace Meshomatic {
 			t.Verts[2] = (int) r.ReadUInt16();
 			
 			// Vertex normals
-			t.Normals[0].X = (double) r.ReadSingle();
-			t.Normals[0].Y = (double) r.ReadSingle();
-			t.Normals[0].Z = (double) r.ReadSingle();
+			t.Normals[0].X = (float) r.ReadSingle();
+			t.Normals[0].Y = (float) r.ReadSingle();
+			t.Normals[0].Z = (float) r.ReadSingle();
 			
-			t.Normals[1].X = (double) r.ReadSingle();
-			t.Normals[1].Y = (double) r.ReadSingle();
-			t.Normals[1].Z = (double) r.ReadSingle();
+			t.Normals[1].X = (float) r.ReadSingle();
+			t.Normals[1].Y = (float) r.ReadSingle();
+			t.Normals[1].Z = (float) r.ReadSingle();
 			
-			t.Normals[2].X = (double) r.ReadSingle();
-			t.Normals[2].Y = (double) r.ReadSingle();
-			t.Normals[2].Z = (double) r.ReadSingle();
+			t.Normals[2].X = (float) r.ReadSingle();
+			t.Normals[2].Y = (float) r.ReadSingle();
+			t.Normals[2].Z = (float) r.ReadSingle();
 			
 			// Vertex texcoords
-			t.TexCoords[0].X = (double) r.ReadSingle();
-			t.TexCoords[1].X = (double) r.ReadSingle();
-			t.TexCoords[2].X = (double) r.ReadSingle();
-			t.TexCoords[0].Y = 1 - (double) r.ReadSingle();
-			t.TexCoords[1].Y = 1 - (double) r.ReadSingle();
-			t.TexCoords[2].Y = 1 - (double) r.ReadSingle();
+			t.TexCoords[0].X = (float) r.ReadSingle();
+			t.TexCoords[1].X = (float) r.ReadSingle();
+			t.TexCoords[2].X = (float) r.ReadSingle();
+			t.TexCoords[0].Y = 1 - (float) r.ReadSingle();
+			t.TexCoords[1].Y = 1 - (float) r.ReadSingle();
+			t.TexCoords[2].Y = 1 - (float) r.ReadSingle();
 			
 			r.ReadByte(); // Ignore smoothingGroup
 			r.ReadByte(); // Ignore groupIndex
