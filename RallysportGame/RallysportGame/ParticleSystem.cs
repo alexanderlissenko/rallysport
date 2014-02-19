@@ -56,7 +56,7 @@ namespace RallysportGame
             int capacity = (int)Math.Ceiling(meanLiveTime.Seconds * spawnRate * 1.5); 
             particleList = new ArrayList(capacity); //might be bad, if memory seems suspicious, double check
         }
-
+         
         void startEmit()
         {
             emit = true;
@@ -66,14 +66,26 @@ namespace RallysportGame
         {
             emit = false;
         }
+        void render()
+        { 
+            foreach(Particle p in particleList){
 
+
+
+                // This method should render a particleObject at eatch particle possition
+                // This is how I whant it to wark, but dosen't as of yet
+               // particleObject.render(p.GetPosition().X, p.GetPosition().Y, p.GetPosition().Z);
+            }
+            
+        
+        }
         void tick()
         {
 
-            if (prevTime.Add(new TimeSpan(0, 0, 1)) <= DateTime.Now)
+            if (prevTime.Add(new TimeSpan(0, 0, 1)) <= DateTime.Now && emit)
             {
                 prevTime = DateTime.Now;
-                Vector3 velocity = new Vector3();
+
                 Vector4 tmpPos = new Vector4(frustumDir.X, frustumDir.Y, frustumDir.Z, 1.0f);
 
 
@@ -127,20 +139,20 @@ namespace RallysportGame
                                                 new Vector4((float)-Math.Sin(tmpAngle),(float)Math.Cos(tmpAngle),0,0),
                                                 new Vector4(0,0,0,1)
                                                 );
-                    
+ 
                     // rotate the vector
-                    Vector4 rotatedVector4 = Vector4.Transform((new Vector4(frustumDir.X, frustumDir.Y, frustumDir.Z, 1.0f)), transMatToOrigin*rotMatX *rotMatY*rotMatZ);
+                    Vector4 velocity4 = Vector4.Transform((new Vector4(frustumDir.X, frustumDir.Y, frustumDir.Z, 1.0f)), transMatToOrigin * rotMatX * rotMatY * rotMatZ);
                     //make it a 3 vec for the patricle constructor
-                    Vector3 rotatedVector3 = new Vector3(rotatedVector4.X, rotatedVector4.Y, rotatedVector4.Z);
+                    Vector3 velocity3 = new Vector3(velocity4.X, velocity4.Y, velocity4.Z);
                     // Spawn the particle
-                    particleList.Add(new Particle(rotatedVector3, emitterPos, meanLiveTime));
+                    particleList.Add(new Particle(velocity3, emitterPos, meanLiveTime));
                 }
             }
             foreach (Particle p in particleList)
             {
                 if (p.MoveAndDie())
                 {
-                    particleList.Remove(p);    
+                    particleList.Remove(p);  
                 }
             }
         
@@ -168,7 +180,12 @@ namespace RallysportGame
             double value = random.NextDouble() * 1.5 - 0.25;
             pLiveTime = new TimeSpan(0,0, Convert.ToInt32(liveTime.Seconds + value*liveTime.Seconds));
         }
-        // check if possibel to protect more
+        
+        
+        /// <summary>
+        /// MoveAndDie moves the particle and returns true if the particle has lived longer then it's intended live time
+        /// </summary>
+        /// <returns>true if it has lived long enugh</returns>
         public bool MoveAndDie()
         {
             pPosition += pVelocity;
@@ -181,5 +198,6 @@ namespace RallysportGame
                 return false;
             }
         }
+        public Vector3 GetPosition(){ return pPosition; }
     }
 }
