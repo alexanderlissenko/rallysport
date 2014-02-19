@@ -69,34 +69,81 @@ namespace RallysportGame
 
         void tick()
         {
+
             if (prevTime.Add(new TimeSpan(0, 0, 1)) <= DateTime.Now)
             {
                 prevTime = DateTime.Now;
                 Vector3 velocity = new Vector3();
                 Vector4 tmpPos = new Vector4(frustumDir.X, frustumDir.Y, frustumDir.Z, 1.0f);
-                Matrix4 transMat = new Matrix4(new Vector4(1,0,0,emitterPos.X),
-                                    new Vector4(0,1,0,emitterPos.Y),
-                                    new Vector4(0,0,1,emitterPos.Z),
-                                    new Vector4(0,0,0,1));
-                
+
+
                 for (int i = 0; i <= spawnRate; i++)
                 {
-                    double tmpAngle = random.NextDouble() * spawnFrustum - spawnFrustum/2;
-
-                    Matrix4 rotMatX = new Matrix4(new Vector4(1,0,0,0),
-                                    new Vector4(0, (float)Math.Cos(tmpAngle), (float)-(Math.Sin(tmpAngle)),0),
-                                    new Vector4(0, (float)Math.Sin(tmpAngle), (float)Math.Cos(tmpAngle),0),
-                                    new Vector4(0,0,0,1));
-
-                    //OBS! ANNAN TMPANGLE HÄR!!!
-                    Matrix4 rotMatY = new Matrix4(new Vector4((float)Math.Cos(tmpAngle),0,(float)Math.Sin(tmpAngle),0),
-                                    new Vector4(0,1,0,0),
-                                    new Vector4((float)-Math.Sin(tmpAngle),0,(float)Math.Cos(tmpAngle),0),
-                                    new Vector4(0,0,0,1));
                     
-                    particleList.Add(new Particle(new Vector3(1.0f,1.0f,1.0f), emitterPos, meanLiveTime));
+
+                    // this is soo that eatch vector has a different length and thus different speed
+                    // it's cast to float becuse Vector4 whants floats.
+                    float tempScaleingFactor=(float)random.NextDouble();
+                    // here the scaling is applied in the matrix that moves the vector from origin back to where it was.
+                    Matrix4 transMatToOrigin =  new Matrix4(new Vector4(tempScaleingFactor, 0, 0, -emitterPos.X),
+                                                            new Vector4(0, tempScaleingFactor, 0, -emitterPos.Y),
+                                                            new Vector4(0, 0, tempScaleingFactor, -emitterPos.Z),
+                                                            new Vector4(0, 0, 0, 1)
+                                                            );
+
+
+                    // uses random to select an angle in the interval +- spawnFrustum/2
+                    /*************************************
+                        * -spawnFrustum/2  +spawnFrustum/2  *
+                        *          |    |    |              *
+                        *           |   |   |               *
+                        *            |  |  |                *
+                        *             | | |                 *
+                        *              |||                  *
+                        *               |                   *
+                        *************************************/
+                    
+                    
+                    // pick angle and make rotation matrix
+                    double tmpAngle = random.NextDouble() * spawnFrustum - spawnFrustum/2;
+                    Matrix4 rotMatX = new Matrix4(new Vector4(1,0,0,0),
+                                                new Vector4(0, (float)Math.Cos(tmpAngle), (float)-(Math.Sin(tmpAngle)),0),
+                                                new Vector4(0, (float)Math.Sin(tmpAngle), (float)Math.Cos(tmpAngle),0),
+                                                new Vector4(0,0,0,1)
+                                                );
+                    // pick angle and make rotation matrix
+                    Matrix4 rotMatY = new Matrix4(new Vector4((float)Math.Cos(tmpAngle), 0, 0, (float)Math.Sin(tmpAngle)),
+                                                  new Vector4(0, 1, 0,0),
+                                                  new Vector4((float)-Math.Cos(tmpAngle),0,(float)Math.Sin(tmpAngle),1),
+                                                  new Vector4 (0,0,0,1)
+                                                  );
+                                                    
+
+
+                    // pick a new angle and make another rotation matrix
+                    tmpAngle = random.NextDouble()*spawnFrustum-spawnFrustum/2;
+                    Matrix4 rotMatZ = new Matrix4(new Vector4((float)Math.Cos(tmpAngle), (float)Math.Sin(tmpAngle),0, 0),
+                                                new Vector4(-(float)Math.Sin(tmpAngle), (float)Math.Cos(tmpAngle), 0, 0),
+                                                new Vector4((float)-Math.Sin(tmpAngle),(float)Math.Cos(tmpAngle),0,0),
+                                                new Vector4(0,0,0,1)
+                                                );
+                    
+                    // rotate the vector
+                    Vector4 rotatedVector4 = Vector4.Transform((new Vector4(frustumDir.X, frustumDir.Y, frustumDir.Z, 1.0f)), transMatToOrigin*rotMatX *rotMatY*rotMatZ);
+                    //make it a 3 vec for the patricle constructor
+                    Vector3 rotatedVector3 = new Vector3(rotatedVector4.X, rotatedVector4.Y, rotatedVector4.Z);
+                    // Spawn the particle
+                    particleList.Add(new Particle(rotatedVector3, emitterPos, meanLiveTime));
                 }
             }
+            foreach (Particle p in particleList)
+            {
+                if (p.MoveAndDie())
+                {
+                    particleList.Remove(p);    
+                }
+            }
+        
         }
     }
 
@@ -113,13 +160,26 @@ namespace RallysportGame
         {
 
         }
-
+       
         public Particle(Vector3 velocity, Vector3 position, TimeSpan liveTime)
         {
             pVelocity = velocity;
             pPosition = position;
             double value = random.NextDouble() * 1.5 - 0.25;
             pLiveTime = new TimeSpan(0,0, Convert.ToInt32(liveTime.Seconds + value*liveTime.Seconds));
+        }
+        // check if possibel to protect more
+        public bool MoveAndDie()
+        {
+            pPosition += pVelocity;
+            if (pBirthTime - DateTime.Now >= pLiveTime)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }
