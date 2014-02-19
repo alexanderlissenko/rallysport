@@ -27,6 +27,7 @@ namespace RallysportGame
         String modelsDir = @"..\..\..\..\Models\";
         String fileName; 
         String texturePath;
+        private int textureId;
         private float shininess;
 
         private uint vertexArrayObject;
@@ -52,19 +53,23 @@ namespace RallysportGame
         /*
          *  Duh, renders the object using whatever shaders you've set up. 
          */
-        public void render(){
+        public void render(int program){
+            GL.Uniform3(GL.GetUniformLocation(program, "material_diffuse_color"), diffuse);
+            GL.Uniform3(GL.GetUniformLocation(program, "material_specular_color"), specular);
+            GL.Uniform3(GL.GetUniformLocation(program, "material_emissive_color"), emisive);
+            GL.Uniform1(GL.GetUniformLocation(program, "material_shininess"), shininess);
+            
             GL.BindVertexArray(vertexArrayObject);
             GL.DrawElements(PrimitiveType.Triangles, numOfTri*3, DrawElementsType.UnsignedInt, 0);
         }
         /// <summary>
         /// sets the mtl to load the uniforms for the shaders
         /// </summary>
-        public void setUpMtl(int program)
+        public void setUpMtl()
         {
 
             FileStream stream = new FileStream(modelsDir +fileName + ".mtl", FileMode.Open);
             StreamReader reader = new StreamReader(stream);
-            String texturePath="";
             string line;
             char[] splitChars = { ' ' };
             while ((line = reader.ReadLine()) != null)
@@ -121,21 +126,18 @@ namespace RallysportGame
                         break;
                 }
             }
-
-            GL.Uniform3(GL.GetUniformLocation(program, "material_diffuse_color"), diffuse);
-            GL.Uniform3(GL.GetUniformLocation(program, "material_specular_color"), specular);
-            GL.Uniform3(GL.GetUniformLocation(program, "material_emissive_color"), emisive);
-            GL.Uniform1(GL.GetUniformLocation(program, "material_shininess"), shininess);
-            int texture = loadTexture(modelsDir + texturePath);
         }
 
-        private int loadTexture(String filename)
+        public void loadTexture()
         {
             TextureTarget Target = TextureTarget.Texture2D;
+            String filename = modelsDir + texturePath;
 
             int texture;
             GL.GenTextures(1, out texture);
             GL.BindTexture(Target, texture);
+
+
 
             Version version = new Version(GL.GetString(StringName.Version).Substring(0, 3));
             Version target = new Version(1, 4);
@@ -152,6 +154,7 @@ namespace RallysportGame
 
             GL.TexParameter(Target, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
             GL.TexParameter(Target, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
+            
 
             Bitmap bitmap = new Bitmap(filename);
             BitmapData data = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
@@ -163,9 +166,13 @@ namespace RallysportGame
             if (GL.GetError() != ErrorCode.NoError)
                 throw new Exception("Error loading texture " + filename);
 
-            return texture;
+            textureId= texture;
         }
 
+        public int getTextureId()
+        {
+            return textureId;
+        }
         /*
          *  I made this a separate method to make things a bit more readable. 
          *  Only called once for initialization

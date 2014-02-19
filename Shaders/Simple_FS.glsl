@@ -11,13 +11,13 @@ uniform sampler2D diffuse_texture;
 
 uniform vec3 viewSpaceLightPosition;
 
-uniform float material_shininess = 25.0;
+//uniform float material_shininess = 25.0;
 uniform vec3 material_diffuse_color = vec3(1.0); 
-uniform vec3 material_specular_color = vec3(0.0); 
+uniform vec3 material_specular_color = vec3(5.0); 
 uniform vec3 material_emissive_color = vec3(0.0); 
 
 //constants
-uniform vec3 scene_ambient_light = vec3(0.2,0.2,0.2);
+uniform vec3 scene_ambient_light = vec3(0.3,0.3,0.3);
 uniform vec3 scene_light = vec3(0.6,0.6,0.6);
 
 vec3 calculateDiffuse(vec3 diffuseLight, vec3 materialDiffuse, vec3 normal, vec3 directionToLight)
@@ -39,14 +39,14 @@ void main()
 	vec3 normal = normalize(viewSpaceNormal);
 	vec3 directionToLight = normalize(viewSpaceLightPosition-viewSpacePosition);
     vec3 directionFromEye = normalize(viewSpacePosition);
-	
-	vec3 diffuse = material_diffuse_color;//vec3(1.0);
-	vec3 specular = material_specular_color;//vec3(0.5);
-	vec3 emissive = material_emissive_color;//vec3(0.0);
+	float material_shininess = 25.0;
+	vec3 diffuse = vec3(1.0);//material_diffuse_color;//
+	vec3 specular = vec3(0.5);//material_specular_color;//
+	vec3 emissive = material_emissive_color;//vec3(0.0);//
 
 	vec3 fresnelSpecular = calculateFresnel(specular,normal, directionFromEye);
 	vec3 texturesampler = texture( diffuse_texture, textCoord ).xyz;
-	vec3 shading = (vec3(1.0,0,0)*scene_ambient_light)
+	vec3 shading = (vec3(1.0,0.0,0.0)*scene_ambient_light)
 					+ calculateDiffuse(scene_light,diffuse,normal,directionToLight)
 					+ calculateSpecular(scene_light, fresnelSpecular,material_shininess,normal,directionToLight,directionFromEye)
 					+ emissive;
