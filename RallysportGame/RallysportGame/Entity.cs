@@ -67,6 +67,13 @@ namespace RallysportGame
             GL.BindVertexArray(vertexArrayObject);
             GL.DrawElements(PrimitiveType.Triangles, numOfTri*3, DrawElementsType.UnsignedInt, 0);
         }
+        public void render(int program, OpenTK.Vector3 position)
+        {
+
+
+
+        }
+
         /// <summary>
         /// sets the mtl to load the uniforms for the shaders
         /// </summary>

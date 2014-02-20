@@ -51,6 +51,9 @@ namespace RallysportGame
         static float light_r = 30.0f;
 
         static Entity myCar;
+        //test particles
+        static ParticleSystem testPartSys;// = new ParticleSystem(new OpenTK.Vector3(0, 0, 0), 60f, 5, new TimeSpan(0, 0, 0, 4), new Entity());
+
 
 
 
@@ -128,9 +131,11 @@ namespace RallysportGame
                 switch(key)
                 {
                     case Key.A:
+                        testPartSys.stopEmit();
                         camera_theta -= camera_horizontal_delta;
                         break;
                     case Key.D:
+                        testPartSys.startEmit();
                         camera_theta += camera_horizontal_delta;
                         break;
                     case Key.W:
@@ -157,8 +162,9 @@ namespace RallysportGame
                     // setup settings, load textures, sounds
                     game.VSync = VSyncMode.On;
                     myCar = new Entity("Cube\\koobe");//"Cube\\koobe");//"TeapotCar\\Teapot car\\Teapot-no-materials-tri");//"map\\uggly_test_track_Triangulate");//
+                    testPartSys = new ParticleSystem(new OpenTK.Vector3(0, 0, 0), 60f, 5, new TimeSpan(0, 0, 0, 2), myCar);
 
-                    //Set up shaders
+                                       //Set up shaders
                     basicShaderProgram = loadShaderProgram(shaderDir+"Simple_VS.glsl",shaderDir+"Simple_FS.glsl");
                     GL.BindAttribLocation(basicShaderProgram, 0, "position");
                     GL.BindAttribLocation(basicShaderProgram, 1, "normalIn");
@@ -300,6 +306,11 @@ namespace RallysportGame
                     GL.ActiveTexture(TextureUnit.Texture0);
                     GL.BindTexture(TextureTarget.Texture2D, myCar.getTextureId());
                     myCar.render(basicShaderProgram);
+                    testPartSys.tick();
+                    testPartSys.render();
+
+
+
                     GL.End();
 
                     game.SwapBuffers();

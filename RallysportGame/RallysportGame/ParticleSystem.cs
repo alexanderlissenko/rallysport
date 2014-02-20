@@ -14,7 +14,7 @@ namespace RallysportGame
         private float spawnFrustum; //angle
         private Entity particleObject;
         private int spawnRate;
-        private bool emit;
+        private static bool emit;
         private static Random random;
         private DateTime prevTime;
 
@@ -44,6 +44,7 @@ namespace RallysportGame
         public ParticleSystem(Vector3 pos, float frustum, int rate,
                         TimeSpan liveTime, Entity particle)
         {
+            random = new Random();
             emitterPos = pos;
             spawnFrustum = frustum;
             spawnRate = rate;
@@ -51,42 +52,37 @@ namespace RallysportGame
             particleObject = particle;
             emit = true;
             prevTime = new DateTime(0);
-            frustumDir = new Vector3(0.0f, 0.0f, 1.0f);
+            frustumDir = new Vector3(0.0f, 1.0f, 0.0f);
             
             int capacity = (int)Math.Ceiling(meanLiveTime.Seconds * spawnRate * 1.5); 
             particleList = new ArrayList(capacity); //might be bad, if memory seems suspicious, double check
         }
          
-        void startEmit()
+        public void startEmit()
         {
             emit = true;
         }
 
-        void stopEmit()
+        public void stopEmit()
         {
             emit = false;
         }
-        void render()
+        public void render()
         { 
             foreach(Particle p in particleList){
-
-
-
                 // This method should render a particleObject at eatch particle possition
                 // This is how I whant it to wark, but dosen't as of yet
-               // particleObject.render(p.GetPosition().X, p.GetPosition().Y, p.GetPosition().Z);
+                Console.Out.WriteLine("X: " + p.GetPosition().X + " \t Y: " + p.GetPosition().Y + "\t Z: " + p.GetPosition().Z + "\t Emit: " + emit);
+               particleObject.render(0 ,new Vector3(p.GetPosition().X, p.GetPosition().Y, p.GetPosition().Z));
             }
-            
-        
         }
-        void tick()
+        public void tick()
         {
 
-            if (prevTime.Add(new TimeSpan(0, 0, 1)) <= DateTime.Now && emit)
+            if (emit && (prevTime.Add(new TimeSpan(0, 0, 1)) <= DateTime.Now))
             {
                 prevTime = DateTime.Now;
 
-                Vector4 tmpPos = new Vector4(frustumDir.X, frustumDir.Y, frustumDir.Z, 1.0f);
 
 
                 for (int i = 0; i <= spawnRate; i++)
@@ -136,7 +132,7 @@ namespace RallysportGame
                     tmpAngle = random.NextDouble()*spawnFrustum-spawnFrustum/2;
                     Matrix4 rotMatZ = new Matrix4(new Vector4((float)Math.Cos(tmpAngle), (float)Math.Sin(tmpAngle),0, 0),
                                                 new Vector4(-(float)Math.Sin(tmpAngle), (float)Math.Cos(tmpAngle), 0, 0),
-                                                new Vector4((float)-Math.Sin(tmpAngle),(float)Math.Cos(tmpAngle),0,0),
+                                                new Vector4((float)-Math.Sin(tmpAngle),(float)Math.Cos(tmpAngle),1,0),
                                                 new Vector4(0,0,0,1)
                                                 );
  
@@ -148,15 +144,25 @@ namespace RallysportGame
                     particleList.Add(new Particle(velocity3, emitterPos, meanLiveTime));
                 }
             }
+
+
+            ArrayList tempList = new ArrayList(particleList.Count);
             foreach (Particle p in particleList)
             {
-                if (p.MoveAndDie())
+                bool temp = p.MoveAndDie();
+                
+                if (temp)
                 {
-                    particleList.Remove(p);  
+                    tempList.Add(p);  
                 }
+            }
+            foreach (Particle p in tempList)
+            {
+                particleList.Remove(p);
             }
         
         }
+
     }
 
     class Particle
@@ -175,6 +181,8 @@ namespace RallysportGame
        
         public Particle(Vector3 velocity, Vector3 position, TimeSpan liveTime)
         {
+            random = new Random();
+            pBirthTime = DateTime.Now;
             pVelocity = velocity;
             pPosition = position;
             double value = random.NextDouble() * 1.5 - 0.25;
@@ -189,7 +197,8 @@ namespace RallysportGame
         public bool MoveAndDie()
         {
             pPosition += pVelocity;
-            if (pBirthTime - DateTime.Now >= pLiveTime)
+
+            if (DateTime.Now - pBirthTime >= pLiveTime)
             {
                 return true;
             }
