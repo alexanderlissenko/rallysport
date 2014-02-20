@@ -39,7 +39,7 @@ namespace RallysportGame
         //*****************************************************************************
         static float camera_theta = pi / 6.0f;
         static float camera_phi = pi / 4.0f;
-        static float camera_r = 300.0f;
+        static float camera_r = 30.0f;
         static float camera_target_altitude = 5.2f;
         static float camera_horizontal_delta = 0.1f;
         static float camera_vertical_delta = 1.0f;
@@ -48,7 +48,7 @@ namespace RallysportGame
 
         static float light_theta = pi / 6.0f;
         static float light_phi = pi / 4.0f;
-        static float light_r = 300.0f;
+        static float light_r = 30.0f;
 
         static Entity myCar;
 
@@ -178,8 +178,6 @@ namespace RallysportGame
                     GL.UseProgram(basicShaderProgram);
                     myCar.setUpMtl();
                     myCar.loadTexture();
-                    //GL.ActiveTexture(TextureUnit.Texture0);
-                    //GL.Enable(EnableCap.Texture2D);
                     GL.UseProgram(0);
                     
                     //Set up Uniforms
@@ -254,9 +252,9 @@ namespace RallysportGame
 
 
                     updateCamera();
-
+                    //////////////////////////////////////////////////////ÄNDRA TILLBAKA!!!
                     //Audio management
-                    if (Audio.audioStatus(source) == 0)
+                    if (Audio.audioStatus(source) == 1)
                         Audio.playSound(source);
                     else if (Audio.audioStatus(source) == 3)
                         source = Audio.nextTrack(source);
@@ -287,29 +285,25 @@ namespace RallysportGame
 
 
 
-                    Matrix4 normalMatrix = Matrix4.Invert(Matrix4.Transpose(viewMatrix*modelMatrix));
+                    Matrix4 normalMatrix = Matrix4.Transpose(Matrix4.Invert(viewMatrix*modelMatrix));
                     GL.UniformMatrix4(GL.GetUniformLocation(basicShaderProgram,"normalMatrix"),false,ref normalMatrix );
 
                     Vector4 lightPosition = new Vector4(sphericalToCartesian(light_theta, light_phi, light_r), 1.0f);
                     Vector4 viewSpaceLightPosition = Vector4.Transform(lightPosition, modelViewMatrix);
                     GL.Uniform3(GL.GetUniformLocation(basicShaderProgram, "viewSpaceLightPosition"), viewSpaceLightPosition.Xyz);
 
-                    GL.Uniform1(GL.GetUniformLocation(basicShaderProgram, "diffuse_texture"), myCar.getTextureId());
-
-                    /*
-                    GL.MatrixMode(MatrixMode.Modelview);
-                    GL.LoadMatrix(ref viewMatrix);
-                    GL.MatrixMode(MatrixMode.Projection);
-                    GL.LoadMatrix(ref projectionMatrix);
-                    */
+                    
+                    GL.ActiveTexture(TextureUnit.Texture0);
+                    GL.BindTexture(TextureTarget.Texture2D, myCar.getTextureId());
+                    GL.Uniform1(GL.GetUniformLocation(basicShaderProgram, "diffuse_texture"), 0);
+                    
 
                     GL.Enable(EnableCap.DepthTest);
                     GL.Enable(EnableCap.CullFace);
 
-                    //GL.ActiveTexture(TextureUnit.Texture0);
-                    //GL.BindTexture(TextureTarget.Texture2D, myCar.getTextureId());
+
                     myCar.render(basicShaderProgram);
-                    //GL.End();
+                    GL.End();
 
                     game.SwapBuffers();
                     GL.UseProgram(0);

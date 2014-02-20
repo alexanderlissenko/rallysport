@@ -13,6 +13,8 @@ using System.Globalization;
 using System.Drawing;
 using System.Drawing.Imaging;
 
+
+
 /*
  * Class representing a generic entity, basically anything loaded from
  * an .obj file that should be shaded. The render method should be basically
@@ -61,7 +63,8 @@ namespace RallysportGame
             GL.Uniform1(GL.GetUniformLocation(program, "material_shininess"), shininess);
             
             GL.BindVertexArray(vertexArrayObject);
-            GL.DrawElements(PrimitiveType.Triangles, numOfTri*3, DrawElementsType.UnsignedInt, 0);
+            //GL.DrawElements(PrimitiveType.Triangles, numOfTri*3, DrawElementsType.UnsignedInt, 0);
+            GL.DrawArrays(PrimitiveType.Triangles, 0, numOfTri * 3);
         }
         /// <summary>
         /// sets the mtl to load the uniforms for the shaders
@@ -134,21 +137,23 @@ namespace RallysportGame
             TextureTarget Target = TextureTarget.Texture2D;
             String filename = modelsDir + texturePath;
 
-            int texture;
-            GL.GenTextures(1, out texture);
+            int texture= GL.GenTexture();
             GL.BindTexture(Target, texture);
-
+            GL.PixelStore(PixelStoreParameter.UnpackAlignment, 1);
+            GL.TexEnv(TextureEnvTarget.TextureEnv, TextureEnvParameter.TextureEnvMode, (int)All.Modulate);
+           
             Bitmap bitmap = new Bitmap(filename);
             BitmapData data = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
             GL.TexImage2D(Target, 0, PixelInternalFormat.Rgba, data.Width, data.Height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
             GL.Finish();
             bitmap.UnlockBits(data);
             
-
+            /*
             Version version = new Version(GL.GetString(StringName.Version).Substring(0, 3));
             Version target = new Version(1, 4);
             if (version >= target)
             {
+                
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.GenerateMipmap, (int)All.True);
                 GL.TexParameter(Target, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);
             }
@@ -157,14 +162,19 @@ namespace RallysportGame
                 GL.TexParameter(Target, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
             }
             GL.TexParameter(Target, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-
+            */
+            GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+            GL.TexParameter(Target,TextureParameterName.TextureMagFilter,(int)TextureMagFilter.Linear);
+            GL.TexParameter(Target,TextureParameterName.TextureMinFilter,(int)TextureMinFilter.LinearMipmapLinear);
+           
             GL.TexParameter(Target, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
             GL.TexParameter(Target, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
-
+            
             if (GL.GetError() != ErrorCode.NoError)
                 throw new Exception("Error loading texture " + filename);
 
             textureId= texture;
+            GL.BindTexture(TextureTarget.Texture2D, 0);
         }
 
         public int getTextureId()
@@ -177,11 +187,13 @@ namespace RallysportGame
          */
         unsafe private void makeVAO()
         {
-            float[] vertices = mesh.VertexArray();
-            float[] normals = mesh.NormalArray();
             
+            
+
+
             List<int> vertIndices = new List<int>();
-            List<float> normIndices = new List<float>();
+            List<int> normIndices = new List<int>();
+            List<int> texIndices = new List<int>();
             // TODO tex coords
             Meshomatic.Point[] points;
             for(int i=0; i<mesh.Tris.Length; i++){
@@ -189,15 +201,53 @@ namespace RallysportGame
                 foreach (Meshomatic.Point p in points)
                 {
                     vertIndices.Add(p.Vertex);
+                    normIndices.Add(p.Normal);
+                    texIndices.Add(p.TexCoord);
                 }
             }
             
+            
+            float[] vertices = mesh.VertexArray();
+            float[] normals = mesh.NormalArray();
+            float[] texCoords = mesh.TexcoordArray();
+            
+            //Test thing/////////////////////////////////////////////
+            List<float> finalVertex = new List<float>();
+            for (int i = 0; i < vertIndices.Count; i++)
+            {
+                //index irån normindicies ska indexera listan av normals 
+                //som ska lagras till en ny lista so ska skickas till buffern
+                finalVertex.Add(vertices[vertIndices[i] * 3]);
+                finalVertex.Add(vertices[vertIndices[i] * 3 + 1]);
+                finalVertex.Add(vertices[vertIndices[i] * 3 + 2]);
+            }
+
+            List<float> finalNormal = new List<float>();
+            for(int i = 0; i < normIndices.Count;i++)
+            {
+                //index irån normindicies ska indexera listan av normals 
+                //som ska lagras till en ny lista so ska skickas till buffern
+                finalNormal.Add(normals[normIndices[i]*3]);
+                finalNormal.Add(normals[normIndices[i]*3+1]); 
+                finalNormal.Add(normals[normIndices[i]*3+2]);
+            }
+
+            List<float> finalTexture = new List<float>();
+            for (int i = 0; i < texIndices.Count; i++)
+            {
+                //index irån normindicies ska indexera listan av normals 
+                //som ska lagras till en ny lista so ska skickas till buffern
+                finalTexture.Add(texCoords[texIndices[i]*2]);
+                finalTexture.Add(texCoords[texIndices[i]*2+1]);
+            }
+
+            //////////////////////////////////////////////////////////
 
             //Sizes of the arrays, a bit less clutter here outside the calls
-            IntPtr posSize = (IntPtr) ((sizeof(float))*mesh.VertexArray().Length);
+            IntPtr posSize = (IntPtr)(sizeof(float) * finalVertex.Count);//((sizeof(float))*mesh.VertexArray().Length);
             IntPtr indSize = (IntPtr) (sizeof(int)*vertIndices.Count);
-            IntPtr norSize = (IntPtr) (sizeof(Meshomatic.Vector3)*mesh.Normals.Length);
-            IntPtr texSize = (IntPtr)(sizeof(Meshomatic.Vector2) * mesh.TexCoords.Length);
+            IntPtr norSize = (IntPtr) (sizeof(float)*finalNormal.Count);
+            IntPtr texSize = (IntPtr)(sizeof(float) * finalTexture.Count);
 
             //Workaround, C# seems weird about pointers
             fixed(uint* pbp = &positionBuffer, ibp = &indexBuffer, nbp = &normalBuffer, vaop = &vertexArrayObject,txp = &textureBuffer)
@@ -205,20 +255,20 @@ namespace RallysportGame
                 //Buffer for the vertices
                 GL.GenBuffers(1, pbp);
                 GL.BindBuffer(BufferTarget.ArrayBuffer, *pbp);
-                GL.BufferData(BufferTarget.ArrayBuffer, posSize, mesh.VertexArray(), BufferUsageHint.StaticDraw);
+                GL.BufferData(BufferTarget.ArrayBuffer, posSize, finalVertex.ToArray(), BufferUsageHint.StaticDraw);
                 //Buffer for indices into the vertex buffer. This is how we define the faces of our triangles.
-                GL.GenBuffers(1, ibp);
-                GL.BindBuffer(BufferTarget.ArrayBuffer, *ibp);
-                GL.BufferData(BufferTarget.ArrayBuffer, indSize, vertIndices.ToArray(), BufferUsageHint.StaticDraw );
+                //GL.GenBuffers(1, ibp);
+                //GL.BindBuffer(BufferTarget.ArrayBuffer, *ibp);
+                //GL.BufferData(BufferTarget.ArrayBuffer, indSize, vertIndices.ToArray(), BufferUsageHint.StaticDraw );
                 //Buffer for the normals
                 GL.GenBuffers(1, nbp);
                 GL.BindBuffer(BufferTarget.ArrayBuffer, *nbp);
-                GL.BufferData(BufferTarget.ArrayBuffer, norSize, mesh.NormalArray(), BufferUsageHint.StaticDraw);
+                GL.BufferData(BufferTarget.ArrayBuffer, norSize, finalNormal.ToArray(), BufferUsageHint.StaticDraw);
                 //Texture coords
   
                 GL.GenBuffers(1, txp);
                 GL.BindBuffer(BufferTarget.ArrayBuffer, *txp);
-                GL.BufferData(BufferTarget.ArrayBuffer, texSize, mesh.TexcoordArray(), BufferUsageHint.StaticDraw);
+                GL.BufferData(BufferTarget.ArrayBuffer, texSize, finalTexture.ToArray(), BufferUsageHint.StaticDraw);
                 //Finally, our VertexArrayObject
                 GL.GenVertexArrays(1, vaop);
                 GL.BindVertexArray(*vaop);
@@ -228,7 +278,7 @@ namespace RallysportGame
                 GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 0, 0);
                 GL.BindBuffer(BufferTarget.ArrayBuffer, *txp);
                 GL.VertexAttribPointer(2, 2, VertexAttribPointerType.Float, false, 0, 0);
-                GL.BindBuffer(BufferTarget.ElementArrayBuffer, *ibp);
+                //GL.BindBuffer(BufferTarget.ElementArrayBuffer, *ibp);
                 GL.EnableVertexAttribArray(0);
                 GL.EnableVertexAttribArray(1);
                 GL.EnableVertexAttribArray(2);
