@@ -1,10 +1,10 @@
 # Blender MTL File: 'uggly_test_track.blend'
 # Material Count: 1
 newmtl Material_vegitation_bana_berg.
-Ns 1.078431
+Ns 96.078431
 Ka 0.000000 0.000000 0.000000
-Kd 0.439234 0.433678 0.482692
-Ks 0.438536 0.449396 0.500000
+Kd 0.063844 0.051011 0.050197
+Ks 0.480000 0.460000 0.500000
 Ni 1.000000
 d 1.000000
 illum 2

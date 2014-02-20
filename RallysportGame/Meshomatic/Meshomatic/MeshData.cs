@@ -88,8 +88,8 @@ namespace Meshomatic {
 		public float[] TexcoordArray() {
 			float[] tcs = new float[TexCoords.Length*2];
 			for(int i = 0; i < TexCoords.Length; i++) {
-				tcs[i*3] = TexCoords[i].X;
-				tcs[i*3+1] = TexCoords[i].Y;
+				tcs[i*2] = TexCoords[i].X;
+				tcs[i*2+1] = TexCoords[i].Y;
 			}
 			
 			return tcs;

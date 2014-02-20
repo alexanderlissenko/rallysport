@@ -39,17 +39,17 @@ void main()
 	vec3 normal = normalize(viewSpaceNormal);
 	vec3 directionToLight = normalize(viewSpaceLightPosition-viewSpacePosition);
     vec3 directionFromEye = normalize(viewSpacePosition);
-	float material_shininess = 25.0;
+	float material_shininess = 0.0;
 	vec3 diffuse = vec3(1.0);//material_diffuse_color;//
 	vec3 specular = vec3(0.5);//material_specular_color;//
-	vec3 emissive = material_emissive_color;//vec3(0.0);//
+	vec3 emissive = vec3(0.0);//material_emissive_color;//
 
 	vec3 fresnelSpecular = calculateFresnel(specular,normal, directionFromEye);
 	vec3 texturesampler = texture( diffuse_texture, textCoord ).xyz;
-	vec3 shading = (vec3(1.0,0.0,0.0)*scene_ambient_light)
-					+ calculateDiffuse(scene_light,diffuse,normal,directionToLight)
-					+ calculateSpecular(scene_light, fresnelSpecular,material_shininess,normal,directionToLight,directionFromEye)
-					+ emissive;
+	vec3 shading = (texturesampler*scene_ambient_light)
+					+ calculateDiffuse(scene_light,diffuse,normal,directionToLight);
+					//+ calculateSpecular(scene_light, fresnelSpecular,material_shininess,normal,directionToLight,directionFromEye)
+					//+ emissive;
 
 	fragmentColor = vec4(shading,1.0);
 

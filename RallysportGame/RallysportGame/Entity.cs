@@ -34,6 +34,7 @@ namespace RallysportGame
         private uint positionBuffer;
         public uint indexBuffer;
         public uint normalBuffer;
+        public uint textureBuffer;
         public int numOfTri;
         
         private MeshData mesh;
@@ -137,7 +138,12 @@ namespace RallysportGame
             GL.GenTextures(1, out texture);
             GL.BindTexture(Target, texture);
 
-
+            Bitmap bitmap = new Bitmap(filename);
+            BitmapData data = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            GL.TexImage2D(Target, 0, PixelInternalFormat.Rgba, data.Width, data.Height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
+            GL.Finish();
+            bitmap.UnlockBits(data);
+            
 
             Version version = new Version(GL.GetString(StringName.Version).Substring(0, 3));
             Version target = new Version(1, 4);
@@ -154,14 +160,6 @@ namespace RallysportGame
 
             GL.TexParameter(Target, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
             GL.TexParameter(Target, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
-            
-
-            Bitmap bitmap = new Bitmap(filename);
-            BitmapData data = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-            GL.TexImage2D(Target, 0, PixelInternalFormat.Rgba, data.Width, data.Height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
-            GL.Finish();
-            bitmap.UnlockBits(data);
-            
 
             if (GL.GetError() != ErrorCode.NoError)
                 throw new Exception("Error loading texture " + filename);
@@ -181,6 +179,7 @@ namespace RallysportGame
         {
             float[] vertices = mesh.VertexArray();
             float[] normals = mesh.NormalArray();
+            
             List<int> vertIndices = new List<int>();
             List<float> normIndices = new List<float>();
             // TODO tex coords
@@ -192,36 +191,47 @@ namespace RallysportGame
                     vertIndices.Add(p.Vertex);
                 }
             }
+            
 
             //Sizes of the arrays, a bit less clutter here outside the calls
             IntPtr posSize = (IntPtr) ((sizeof(float))*mesh.VertexArray().Length);
             IntPtr indSize = (IntPtr) (sizeof(int)*vertIndices.Count);
             IntPtr norSize = (IntPtr) (sizeof(Meshomatic.Vector3)*mesh.Normals.Length);
+            IntPtr texSize = (IntPtr)(sizeof(Meshomatic.Vector2) * mesh.TexCoords.Length);
 
             //Workaround, C# seems weird about pointers
-            fixed(uint* pbp = &positionBuffer, ibp = &indexBuffer, nbp = &normalBuffer, vaop = &vertexArrayObject){
-            //Buffer for the vertices
-            GL.GenBuffers(1, pbp);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, *pbp);
-            GL.BufferData(BufferTarget.ArrayBuffer, posSize, mesh.VertexArray(), BufferUsageHint.StaticDraw);
-            //Buffer for indices into the vertex buffer. This is how we define the faces of our triangles.
-            GL.GenBuffers(1, ibp);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, *ibp);
-            GL.BufferData(BufferTarget.ArrayBuffer, indSize, vertIndices.ToArray(), BufferUsageHint.StaticDraw );
-            //Buffer for the normals
-            GL.GenBuffers(1, nbp);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, *nbp);
-            GL.BufferData(BufferTarget.ArrayBuffer, norSize, mesh.NormalArray(), BufferUsageHint.StaticDraw);
-            //Finally, our VertexArrayObject
-            GL.GenVertexArrays(1, vaop);
-            GL.BindVertexArray(*vaop);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, *pbp);
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, *nbp);
-            GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 0, 0);
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, *ibp);
-            GL.EnableVertexAttribArray(0);
-            GL.EnableVertexAttribArray(1);
+            fixed(uint* pbp = &positionBuffer, ibp = &indexBuffer, nbp = &normalBuffer, vaop = &vertexArrayObject,txp = &textureBuffer)
+            {
+                //Buffer for the vertices
+                GL.GenBuffers(1, pbp);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, *pbp);
+                GL.BufferData(BufferTarget.ArrayBuffer, posSize, mesh.VertexArray(), BufferUsageHint.StaticDraw);
+                //Buffer for indices into the vertex buffer. This is how we define the faces of our triangles.
+                GL.GenBuffers(1, ibp);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, *ibp);
+                GL.BufferData(BufferTarget.ArrayBuffer, indSize, vertIndices.ToArray(), BufferUsageHint.StaticDraw );
+                //Buffer for the normals
+                GL.GenBuffers(1, nbp);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, *nbp);
+                GL.BufferData(BufferTarget.ArrayBuffer, norSize, mesh.NormalArray(), BufferUsageHint.StaticDraw);
+                //Texture coords
+  
+                GL.GenBuffers(1, txp);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, *txp);
+                GL.BufferData(BufferTarget.ArrayBuffer, texSize, mesh.TexcoordArray(), BufferUsageHint.StaticDraw);
+                //Finally, our VertexArrayObject
+                GL.GenVertexArrays(1, vaop);
+                GL.BindVertexArray(*vaop);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, *pbp);
+                GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, *nbp);
+                GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 0, 0);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, *txp);
+                GL.VertexAttribPointer(2, 2, VertexAttribPointerType.Float, false, 0, 0);
+                GL.BindBuffer(BufferTarget.ElementArrayBuffer, *ibp);
+                GL.EnableVertexAttribArray(0);
+                GL.EnableVertexAttribArray(1);
+                GL.EnableVertexAttribArray(2);
             }
 
            }
