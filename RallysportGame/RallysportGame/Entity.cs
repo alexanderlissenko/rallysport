@@ -38,6 +38,8 @@ namespace RallysportGame
         public uint normalBuffer;
         public uint textureBuffer;
         public int numOfTri;
+
+        Matrix4 modelMatrix;
         
         private MeshData mesh;
         /// <summary>
@@ -47,6 +49,7 @@ namespace RallysportGame
         /// <param name="name">Name of the file starting from the model path no .obj its added automaticly</param>
         public Entity(String name)
         {
+            modelMatrix = Matrix4.Identity;
             fileName = name;
             this.mesh = new Meshomatic.ObjLoader().LoadFile(modelsDir+name +".obj");
             numOfTri = mesh.Tris.Length;
@@ -65,6 +68,56 @@ namespace RallysportGame
             GL.BindVertexArray(vertexArrayObject);
             //GL.DrawElements(PrimitiveType.Triangles, numOfTri*3, DrawElementsType.UnsignedInt, 0);
             GL.DrawArrays(PrimitiveType.Triangles, 0, numOfTri * 3);
+        }
+
+        public void render(int program, Matrix4 projectionMatrix, Matrix4 viewMatrix,OpenTK.Vector3 lightPosition,Matrix4 lightViewMatrix,Matrix4 lightProjectionMatrix)
+        {
+            Matrix4 modelViewMatrix = modelMatrix*viewMatrix ; //I know this is opposite see down why
+            Matrix4 modelViewProjectionMatrix = modelViewMatrix*projectionMatrix ;
+
+            Matrix4 normalMatrix = Matrix4.Transpose(Matrix4.Invert(viewMatrix * modelMatrix));
+            GL.UniformMatrix4(GL.GetUniformLocation(program, "normalMatrix"), false, ref normalMatrix);
+
+            OpenTK.Vector3 viewSpaceLightPosition = OpenTK.Vector3.Transform(lightPosition, viewMatrix);
+            GL.Uniform3(GL.GetUniformLocation(program, "viewSpaceLightPosition"), viewSpaceLightPosition);
+
+            GL.UniformMatrix4(GL.GetUniformLocation(program, "modelViewMatrix"), false, ref modelViewMatrix);
+            GL.UniformMatrix4(GL.GetUniformLocation(program, "modelViewProjectionMatrix"), false, ref modelViewProjectionMatrix);
+
+            Matrix4 lightMatrix = Matrix4.Invert(viewMatrix) * lightProjectionMatrix * lightViewMatrix;
+            GL.UniformMatrix4(GL.GetUniformLocation(program, "lightMatrix"), false, ref lightMatrix);
+
+            GL.Uniform3(GL.GetUniformLocation(program, "material_diffuse_color"), diffuse);
+            GL.Uniform3(GL.GetUniformLocation(program, "material_specular_color"), specular);
+            GL.Uniform3(GL.GetUniformLocation(program, "material_emissive_color"), emisive);
+            GL.Uniform1(GL.GetUniformLocation(program, "material_shininess"), shininess);
+
+            GL.BindVertexArray(vertexArrayObject);
+            //GL.DrawElements(PrimitiveType.Triangles, numOfTri*3, DrawElementsType.UnsignedInt, 0);
+            GL.DrawArrays(PrimitiveType.Triangles, 0, numOfTri * 3);
+        }
+
+        public void renderShadowMap(int program, Matrix4 lightProjectionMatrix, Matrix4 lightViewMatrix)
+        {
+
+            Matrix4 modelViewMatrix = modelMatrix * lightViewMatrix; //I know this is opposite see down why
+            Matrix4 modelViewProjectionMatrix = modelViewMatrix * lightProjectionMatrix;
+
+            GL.UniformMatrix4(GL.GetUniformLocation(program, "modelViewMatrix"), false, ref modelViewMatrix);
+            GL.UniformMatrix4(GL.GetUniformLocation(program, "modelViewProjectionMatrix"), false, ref modelViewProjectionMatrix);
+            
+            GL.BindVertexArray(vertexArrayObject);
+            GL.DrawArrays(PrimitiveType.Triangles, 0, numOfTri * 3);
+        }
+
+        public void setUp3DSModel()
+        {
+            modelMatrix = modelMatrix + Matrix4.CreateScale(0.1f);
+        }
+
+        public void setUpBlenderModel()
+        {
+            modelMatrix = modelMatrix + Matrix4.CreateScale(10.0f);
         }
         /// <summary>
         /// sets the mtl to load the uniforms for the shaders
@@ -187,9 +240,6 @@ namespace RallysportGame
          */
         unsafe private void makeVAO()
         {
-            
-            
-
 
             List<int> vertIndices = new List<int>();
             List<int> normIndices = new List<int>();
