@@ -55,7 +55,7 @@ namespace RallysportGame
         static float light_phi = pi / 4.0f;
         static float light_r = 600.0f;
 
-        static Entity myCar,myCar2;
+        static Entity myCar,myCar2,skybox;
 
 
 
@@ -169,6 +169,7 @@ namespace RallysportGame
                     game.VSync = VSyncMode.On;
                     myCar = new Entity("map\\uggly_test_track_Triangulate");//"TeapotCar\\Teapot car\\Teapot-no-materials-tri");//"Cube\\3ds-cube");//
                     myCar2 = new Entity("Cube\\testCube");//"Cube\\megu_koob");//"TeapotCar\\Teapot car\\Teapot-no-materials-tri");//
+                    skybox = new Entity("Cube\\inside_koob");//"Cube\\testCube");//
                     //Set up shaders
                     basicShaderProgram = loadShaderProgram(shaderDir+"Simple_VS.glsl",shaderDir+"Simple_FS.glsl");
                     GL.BindAttribLocation(basicShaderProgram, 0, "position");
@@ -185,16 +186,26 @@ namespace RallysportGame
                     myCar.loadTexture();
                     myCar.setUpBlenderModel();
                     myCar2.setUpBlenderModel();
+                    skybox.setUp3DSModel();// setUpBlenderModel();
                     GL.UseProgram(0);
                     
                     //Set up Uniforms
                     
                     
                     //Shadowmaps
+
+
+                    
+                    int mDepth = GL.GenRenderbuffer();
+                    GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer,mDepth);
+
+                    //GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent32, shadowMapRes, shadowMapRes);
+                    //GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, mDepth);
+                    //GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, 0);
+
                     shadowMapRes = 1024;
                     shadowMapTexture = GL.GenTexture();
                     GL.BindTexture(TextureTarget.Texture2D, shadowMapTexture);
-                    GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent32, shadowMapRes, shadowMapRes, 0, PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
@@ -202,17 +213,20 @@ namespace RallysportGame
 
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareFunc, (int)All.Lequal);
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareMode, (int)All.CompareRefToTexture);
+                    GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent32, shadowMapRes, shadowMapRes, 0, PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
 
                     GL.BindTexture(TextureTarget.Texture2D, 0);
 
                     //Generate FBO
 
                     shadowMapFBO = GL.GenFramebuffer();
-                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, shadowMapFBO);
-                    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2D, shadowMapTexture, 0);
                     
+                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, shadowMapFBO);
                     GL.DrawBuffer(DrawBufferMode.None);
                     GL.ReadBuffer(ReadBufferMode.None);
+                    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2D, shadowMapTexture, 0);
+                    //GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, shadowMapFBO);
+                    
 
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
                     
@@ -247,6 +261,7 @@ namespace RallysportGame
                     // add game logic, input handling
                     if (game.Keyboard[Key.Escape])
                     {
+                        GL.DeleteTextures(1, ref shadowMapTexture);
                         Audio.deleteBS(source);
                         game.Exit();
                     }
@@ -321,21 +336,15 @@ namespace RallysportGame
                     
                     //Render Shadowmap
                     Matrix4 lightViewMatrix = Matrix4.LookAt(lightPosition, new Vector3(0.0f, 0.0f, 0.0f), up);
-                    Matrix4 lightProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(pi / 4, 1.0f, 520f, 850f);
+                    Matrix4 lightProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(pi / 4, 1.0f, 300f, 1300f);
 
 
-                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, shadowMapFBO);
-                    GL.Viewport(0, 0, shadowMapRes, shadowMapRes);
-
-                    myCar2.render(basicShaderProgram, lightProjectionMatrix, lightViewMatrix,lightPosition,lightViewMatrix,lightProjectionMatrix);
-                    myCar.render(basicShaderProgram, lightProjectionMatrix, lightViewMatrix,lightPosition,lightViewMatrix,lightProjectionMatrix);
-
-                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+                    
 
                     //
 
 
-                    GL.ClearDepth(1.0f);
+                    //GL.ClearDepth(1.0f);
                     GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
                     
                     int w = game.Width;
@@ -350,7 +359,16 @@ namespace RallysportGame
                     Matrix4 projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(pi/4, (float)w/(float)h, 0.1f, 1000f);
                     // Here we start getting into the lighting model
                     
+                    //SHADOW MAP FBO RENDERING
                     
+                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, shadowMapFBO);
+                    GL.Viewport(0, 0, shadowMapRes, shadowMapRes);
+
+                    myCar2.renderShadowMap(basicShaderProgram, lightProjectionMatrix, lightViewMatrix);
+                    myCar.renderShadowMap(basicShaderProgram, lightProjectionMatrix, lightViewMatrix);
+
+                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+                    //END OF SHADOWMAP FBO RENDERING
                     
                     GL.ActiveTexture(TextureUnit.Texture0);
                     GL.BindTexture(TextureTarget.Texture2D, myCar.getTextureId());
@@ -359,16 +377,20 @@ namespace RallysportGame
                     GL.ActiveTexture(TextureUnit.Texture1);
                     GL.BindTexture(TextureTarget.Texture2D, shadowMapTexture);
                     GL.Uniform1(GL.GetUniformLocation(basicShaderProgram, "shadowMapTex"), 1);
+
+                    myCar.render(basicShaderProgram, projectionMatrix, viewMatrix, lightPosition, lightViewMatrix, lightProjectionMatrix);
+                    
+                    GL.ActiveTexture(TextureUnit.Texture0);
+                    GL.BindTexture(TextureTarget.Texture2D, 0);
+
+
                     
                     myCar2.render(basicShaderProgram, projectionMatrix, viewMatrix, lightPosition, lightViewMatrix, lightProjectionMatrix);
+                    skybox.render(basicShaderProgram, projectionMatrix, viewMatrix, lightPosition, lightViewMatrix, lightProjectionMatrix);
 
                     GL.ActiveTexture(TextureUnit.Texture1);
                     GL.BindTexture(TextureTarget.Texture2D, 0);
-
-                    myCar.render(basicShaderProgram, projectionMatrix, viewMatrix, lightPosition, lightViewMatrix, lightProjectionMatrix);
-
-                    GL.ActiveTexture(TextureUnit.Texture0);
-                    GL.BindTexture(TextureTarget.Texture2D, 0);
+                    
 
                     
                     

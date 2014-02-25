@@ -1,4 +1,4 @@
-#version 420
+#version 130
 /* Copies incoming vertex color without change.
  * Applies the transformation matrix to vertex position.
  */
@@ -26,8 +26,8 @@ void main()
 	viewSpacePosition = (modelViewMatrix *vec4(position,1.0)).xyz;
 
 	shadowMapCoord = lightMatrix * vec4(viewSpacePosition,1.0);
-	shadowMapCoord.xyz *= vec3(0.5,0.5,0.5);
-	shadowMapCoord.xyz += shadowMapCoord.w * vec3(0.5,0.5,0.5);
+	//shadowMapCoord.xyz *= vec3(0.5,0.5,0.5);
+	//shadowMapCoord.xyz += shadowMapCoord.w * vec3(0.5,0.5,0.5);
 
 
     gl_Position = modelViewProjectionMatrix*vec4(position,1); 
