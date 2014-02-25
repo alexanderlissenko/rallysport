@@ -10,7 +10,7 @@ out vec4 fragmentColor;
 
 uniform sampler2D diffuse_texture;
 
-uniform sampler2D shadowMapTex;
+uniform sampler2DShadow shadowMapTex;
 
 uniform vec3 viewSpaceLightPosition;
 
@@ -53,14 +53,14 @@ void main()
 	vec3 emissive = vec3(0.0);//material_emissive_color;//
 
 
-	float depth= texture(shadowMapTex, shadowMapCoord.xy/shadowMapCoord.w).x;
+	float depth= textureProj(shadowMapTex,shadowMapCoord);//texture(shadowMapTex, shadowMapCoord.xy/shadowMapCoord.w).x;
 	float visibility = (depth >= (shadowMapCoord.z/shadowMapCoord.w))? 1.0:0.0;
 
 	vec3 fresnelSpecular = calculateFresnel(specular,normal, directionFromEye);
 	
 	vec3 shading = (ambient*scene_ambient_light)
 					+ (calculateDiffuse(scene_light,diffuse,normal,directionToLight)
-					+ calculateSpecular(scene_light, fresnelSpecular,material_shininess,normal,directionToLight,directionFromEye))*visibility;
+					+ calculateSpecular(scene_light, fresnelSpecular,material_shininess,normal,directionToLight,directionFromEye));//*visibility;
 					//+ emissive;
 
 

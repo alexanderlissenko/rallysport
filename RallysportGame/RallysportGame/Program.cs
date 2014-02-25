@@ -168,7 +168,7 @@ namespace RallysportGame
                     // setup settings, load textures, sounds
                     game.VSync = VSyncMode.On;
                     myCar = new Entity("map\\uggly_test_track_Triangulate");//"TeapotCar\\Teapot car\\Teapot-no-materials-tri");//"Cube\\3ds-cube");//
-                    myCar2 = new Entity("Cube\\megu_koob");//"Cube\\testCube");//"TeapotCar\\Teapot car\\Teapot-no-materials-tri");//
+                    myCar2 = new Entity("Cube\\testCube");//"Cube\\megu_koob");//"TeapotCar\\Teapot car\\Teapot-no-materials-tri");//
                     //Set up shaders
                     basicShaderProgram = loadShaderProgram(shaderDir+"Simple_VS.glsl",shaderDir+"Simple_FS.glsl");
                     GL.BindAttribLocation(basicShaderProgram, 0, "position");
@@ -200,6 +200,9 @@ namespace RallysportGame
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
 
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareFunc, (int)All.Lequal);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareMode, (int)All.CompareRefToTexture);
+
                     GL.BindTexture(TextureTarget.Texture2D, 0);
 
                     //Generate FBO
@@ -207,6 +210,7 @@ namespace RallysportGame
                     shadowMapFBO = GL.GenFramebuffer();
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer, shadowMapFBO);
                     GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2D, shadowMapTexture, 0);
+                    
                     GL.DrawBuffer(DrawBufferMode.None);
                     GL.ReadBuffer(ReadBufferMode.None);
 
@@ -297,6 +301,10 @@ namespace RallysportGame
                         Audio.playSound(source);
                     else if (Audio.audioStatus(source) == 3)
                         source = Audio.nextTrack(source);
+
+                    //move light
+
+                    //light_phi += camera_horizontal_delta*0.1f;
                     
                 };
 
@@ -319,8 +327,8 @@ namespace RallysportGame
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer, shadowMapFBO);
                     GL.Viewport(0, 0, shadowMapRes, shadowMapRes);
 
-                    myCar2.renderShadowMap(basicShaderProgram, lightProjectionMatrix, lightViewMatrix);
-                    myCar.renderShadowMap(basicShaderProgram, lightProjectionMatrix, lightViewMatrix);
+                    myCar2.render(basicShaderProgram, lightProjectionMatrix, lightViewMatrix,lightPosition,lightViewMatrix,lightProjectionMatrix);
+                    myCar.render(basicShaderProgram, lightProjectionMatrix, lightViewMatrix,lightPosition,lightViewMatrix,lightProjectionMatrix);
 
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
 
@@ -351,7 +359,7 @@ namespace RallysportGame
                     GL.ActiveTexture(TextureUnit.Texture1);
                     GL.BindTexture(TextureTarget.Texture2D, shadowMapTexture);
                     GL.Uniform1(GL.GetUniformLocation(basicShaderProgram, "shadowMapTex"), 1);
-
+                    
                     myCar2.render(basicShaderProgram, projectionMatrix, viewMatrix, lightPosition, lightViewMatrix, lightProjectionMatrix);
 
                     GL.ActiveTexture(TextureUnit.Texture1);
@@ -362,7 +370,7 @@ namespace RallysportGame
                     GL.ActiveTexture(TextureUnit.Texture0);
                     GL.BindTexture(TextureTarget.Texture2D, 0);
 
-
+                    
                     
                     
                     GL.End();

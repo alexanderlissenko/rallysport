@@ -72,29 +72,11 @@ namespace RallysportGame
 
         public void render(int program, Matrix4 projectionMatrix, Matrix4 viewMatrix,OpenTK.Vector3 lightPosition,Matrix4 lightViewMatrix,Matrix4 lightProjectionMatrix)
         {
-            Matrix4 modelViewMatrix;// = modelMatrix*viewMatrix ; //I know this is opposite see down why
-            Matrix4.Mult(ref modelMatrix, ref viewMatrix, out modelViewMatrix);
 
-            Matrix4 modelViewProjectionMatrix;// = modelViewMatrix*projectionMatrix ;
-            Matrix4.Mult(ref modelViewMatrix, ref projectionMatrix, out modelViewProjectionMatrix);
-
-
-            Matrix4 normalMatrix;// = Matrix4.Transpose(Matrix4.Invert(viewMatrix * modelMatrix));
-            Matrix4.Mult(ref modelMatrix, ref viewMatrix, out normalMatrix);
-            normalMatrix.Invert();
-            normalMatrix.Transpose();
-
-
-            GL.UniformMatrix4(GL.GetUniformLocation(program, "normalMatrix"), false, ref normalMatrix);
+            setMatrices(program, projectionMatrix, viewMatrix);
 
             OpenTK.Vector3 viewSpaceLightPosition = OpenTK.Vector3.Transform(lightPosition, viewMatrix);
             GL.Uniform3(GL.GetUniformLocation(program, "viewSpaceLightPosition"), viewSpaceLightPosition);
-
-
-            GL.UniformMatrix4(GL.GetUniformLocation(program, "modelViewMatrix"), false, ref modelViewMatrix);
-            GL.UniformMatrix4(GL.GetUniformLocation(program, "modelViewProjectionMatrix"), false, ref modelViewProjectionMatrix);
-
-            
 
             Matrix4 lightMatrix = (Matrix4.Invert(viewMatrix) * lightViewMatrix) * lightProjectionMatrix;//modelMatrix*lightViewMatrix*lightProjectionMatrix;//
             
@@ -123,17 +105,31 @@ namespace RallysportGame
         public void renderShadowMap(int program, Matrix4 lightProjectionMatrix, Matrix4 lightViewMatrix)
         {
 
-            Matrix4 modelViewMatrix;// = lightViewMatrix * modelMatrix; //I know this is opposite see down why
-            Matrix4.Mult(ref modelMatrix, ref lightViewMatrix, out modelViewMatrix);
+            setMatrices(program, lightProjectionMatrix, lightViewMatrix);
 
-            Matrix4 modelViewProjectionMatrix;// = lightProjectionMatrix * modelViewMatrix;
-            Matrix4.Mult(ref modelViewMatrix, ref lightProjectionMatrix, out modelViewProjectionMatrix);
-
-            GL.UniformMatrix4(GL.GetUniformLocation(program, "modelViewMatrix"), false, ref modelViewMatrix);
-            GL.UniformMatrix4(GL.GetUniformLocation(program, "modelViewProjectionMatrix"), false, ref modelViewProjectionMatrix);
-            
             GL.BindVertexArray(vertexArrayObject);
             GL.DrawArrays(PrimitiveType.Triangles, 0, numOfTri * 3);
+        }
+
+        private void setMatrices(int program, Matrix4 projectionMatrix, Matrix4 viewMatrix)
+        {
+            Matrix4 modelViewMatrix;// =Matrix4.Transpose(viewMatrix)* Matrix4.Transpose(modelMatrix);// = modelMatrix*viewMatrix ; //I know this is opposite see down why
+            Matrix4.Mult(ref modelMatrix, ref viewMatrix, out modelViewMatrix);
+
+            Matrix4 modelViewProjectionMatrix;// = Matrix4.Transpose(projectionMatrix)*modelViewMatrix ;// = modelViewMatrix*projectionMatrix ;
+            Matrix4.Mult(ref modelViewMatrix, ref projectionMatrix, out modelViewProjectionMatrix);
+
+            Matrix4 normalMatrix;// = Matrix4.Transpose(Matrix4.Invert(viewMatrix * modelMatrix));
+            Matrix4.Mult(ref modelMatrix, ref viewMatrix, out normalMatrix);
+            normalMatrix.Transpose();
+            normalMatrix.Invert();
+
+
+            GL.UniformMatrix4(GL.GetUniformLocation(program, "normalMatrix"), false, ref normalMatrix);
+            GL.UniformMatrix4(GL.GetUniformLocation(program, "modelViewMatrix"), false, ref modelViewMatrix);
+            GL.UniformMatrix4(GL.GetUniformLocation(program, "modelViewProjectionMatrix"), false, ref modelViewProjectionMatrix);
+
+            
         }
 
         public void setUp3DSModel()
