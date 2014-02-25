@@ -63,6 +63,8 @@ void main()
 					+ calculateSpecular(scene_light, fresnelSpecular,material_shininess,normal,directionToLight,directionFromEye))*visibility;
 					//+ emissive;
 
-	fragmentColor = vec4(shading,1.0);//vec4(gl_FragCoord.z);//
+
+
+	fragmentColor =  vec4(shading,1.0);//vec4(gl_FragCoord.z);//
 
 }

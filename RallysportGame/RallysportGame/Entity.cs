@@ -72,19 +72,42 @@ namespace RallysportGame
 
         public void render(int program, Matrix4 projectionMatrix, Matrix4 viewMatrix,OpenTK.Vector3 lightPosition,Matrix4 lightViewMatrix,Matrix4 lightProjectionMatrix)
         {
-            Matrix4 modelViewMatrix = modelMatrix*viewMatrix ; //I know this is opposite see down why
-            Matrix4 modelViewProjectionMatrix = modelViewMatrix*projectionMatrix ;
+            Matrix4 modelViewMatrix;// = modelMatrix*viewMatrix ; //I know this is opposite see down why
+            Matrix4.Mult(ref modelMatrix, ref viewMatrix, out modelViewMatrix);
 
-            Matrix4 normalMatrix = Matrix4.Transpose(Matrix4.Invert(viewMatrix * modelMatrix));
+            Matrix4 modelViewProjectionMatrix;// = modelViewMatrix*projectionMatrix ;
+            Matrix4.Mult(ref modelViewMatrix, ref projectionMatrix, out modelViewProjectionMatrix);
+
+
+            Matrix4 normalMatrix;// = Matrix4.Transpose(Matrix4.Invert(viewMatrix * modelMatrix));
+            Matrix4.Mult(ref modelMatrix, ref viewMatrix, out normalMatrix);
+            normalMatrix.Invert();
+            normalMatrix.Transpose();
+
+
             GL.UniformMatrix4(GL.GetUniformLocation(program, "normalMatrix"), false, ref normalMatrix);
 
             OpenTK.Vector3 viewSpaceLightPosition = OpenTK.Vector3.Transform(lightPosition, viewMatrix);
             GL.Uniform3(GL.GetUniformLocation(program, "viewSpaceLightPosition"), viewSpaceLightPosition);
 
+
             GL.UniformMatrix4(GL.GetUniformLocation(program, "modelViewMatrix"), false, ref modelViewMatrix);
             GL.UniformMatrix4(GL.GetUniformLocation(program, "modelViewProjectionMatrix"), false, ref modelViewProjectionMatrix);
 
-            Matrix4 lightMatrix = Matrix4.Invert(viewMatrix) * lightProjectionMatrix * lightViewMatrix;
+            
+
+            Matrix4 lightMatrix = (Matrix4.Invert(viewMatrix) * lightViewMatrix) * lightProjectionMatrix;//modelMatrix*lightViewMatrix*lightProjectionMatrix;//
+            
+            
+
+            Matrix4 invView = Matrix4.Invert(viewMatrix);
+            Matrix4 lightModelView;
+            //lightViewMatrix.Transpose();
+            //lightProjectionMatrix.Transpose();
+            Matrix4.Mult(ref invView, ref lightViewMatrix, out lightModelView);
+            Matrix4.Mult(ref lightModelView, ref  lightProjectionMatrix, out lightMatrix);
+            
+            //lightMatrix.Transpose();
             GL.UniformMatrix4(GL.GetUniformLocation(program, "lightMatrix"), false, ref lightMatrix);
 
             GL.Uniform3(GL.GetUniformLocation(program, "material_diffuse_color"), diffuse);
@@ -100,8 +123,11 @@ namespace RallysportGame
         public void renderShadowMap(int program, Matrix4 lightProjectionMatrix, Matrix4 lightViewMatrix)
         {
 
-            Matrix4 modelViewMatrix = modelMatrix * lightViewMatrix; //I know this is opposite see down why
-            Matrix4 modelViewProjectionMatrix = modelViewMatrix * lightProjectionMatrix;
+            Matrix4 modelViewMatrix;// = lightViewMatrix * modelMatrix; //I know this is opposite see down why
+            Matrix4.Mult(ref modelMatrix, ref lightViewMatrix, out modelViewMatrix);
+
+            Matrix4 modelViewProjectionMatrix;// = lightProjectionMatrix * modelViewMatrix;
+            Matrix4.Mult(ref modelViewMatrix, ref lightProjectionMatrix, out modelViewProjectionMatrix);
 
             GL.UniformMatrix4(GL.GetUniformLocation(program, "modelViewMatrix"), false, ref modelViewMatrix);
             GL.UniformMatrix4(GL.GetUniformLocation(program, "modelViewProjectionMatrix"), false, ref modelViewProjectionMatrix);
