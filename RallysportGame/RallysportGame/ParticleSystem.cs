@@ -5,10 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using OpenTK;
 
+
 namespace RallysportGame
 {
     class ParticleSystem : Entity
     {
+        static int ID=0; // debugg
         private Vector3 emitterPos;
         private Vector3 frustumDir;
         private float spawnFrustum; //angle
@@ -17,6 +19,7 @@ namespace RallysportGame
         private static bool emit;
         private static Random random;
         private DateTime prevTime;
+
 
 
         //maybe better with Dictionary (~ HashMap)? we might want to know which particle to remove?
@@ -72,7 +75,7 @@ namespace RallysportGame
             foreach(Particle p in particleList){
                 // This method should render a particleObject at eatch particle possition
                 // This is how I whant it to wark, but dosen't as of yet
-                Console.Out.WriteLine("X: " + p.GetPosition().X + " \t Y: " + p.GetPosition().Y + "\t Z: " + p.GetPosition().Z + "\t Emit: " + emit);
+                Console.Out.WriteLine("X: " + p.GetPosition().X + " \t Y: " + p.GetPosition().Y + "\t Z: " + p.GetPosition().Z + "\t Emit: " + emit + "\t" + "ID: " + p.ID_part);
                particleObject.render(0 ,new Vector3(p.GetPosition().X, p.GetPosition().Y, p.GetPosition().Z));
             }
         }
@@ -139,18 +142,25 @@ namespace RallysportGame
                     // rotate the vector
                     Vector4 velocity4 = Vector4.Transform((new Vector4(frustumDir.X, frustumDir.Y, frustumDir.Z, 1.0f)), transMatToOrigin * rotMatX * rotMatY * rotMatZ);
                     //make it a 3 vec for the patricle constructor
-                    Vector3 velocity3 = new Vector3(velocity4.X, velocity4.Y, velocity4.Z);
+                    Vector3 velocity3 = Vector3(velocity4.X, velocity4.Y, velocity4.Z);
                     // Spawn the particle
-                    particleList.Add(new Particle(velocity3, emitterPos, meanLiveTime));
+                    ID++;
+                    particleList.Add(new Particle(velocity3, emitterPos, meanLiveTime, ID));
                 }
             }
-
+            
+            // if the particles are systems themselvs increment them.
+            if (particleObject is ParticleSystem)
+            {
+                ((ParticleSystem)particleObject).tick();
+            }
 
             ArrayList tempList = new ArrayList(particleList.Count);
             foreach (Particle p in particleList)
             {
                 bool temp = p.MoveAndDie();
-                
+
+
                 if (temp)
                 {
                     tempList.Add(p);  
@@ -167,6 +177,8 @@ namespace RallysportGame
 
     class Particle
     {
+        public int ID_part;
+        public Vector3 gravity;
         private Vector3 pVelocity;
         private Vector3 pPosition;
         private TimeSpan pLiveTime;
@@ -179,8 +191,10 @@ namespace RallysportGame
 
         }
        
-        public Particle(Vector3 velocity, Vector3 position, TimeSpan liveTime)
+        public Particle(Vector3 velocity, Vector3 position, TimeSpan liveTime, int ID)
         {
+            ID_part = ID;
+            gravity =  new Vector3(0, -0.1f, 0);
             random = new Random();
             pBirthTime = DateTime.Now;
             pVelocity = velocity;
@@ -196,7 +210,8 @@ namespace RallysportGame
         /// <returns>true if it has lived long enugh</returns>
         public bool MoveAndDie()
         {
-            pPosition += pVelocity;
+            pVelocity += gravity;
+            pPosition += pVelocity ;
 
             if (DateTime.Now - pBirthTime >= pLiveTime)
             {
