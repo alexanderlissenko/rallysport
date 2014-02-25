@@ -321,8 +321,8 @@ namespace RallysportGame
                     
                     //Render Shadowmap
                     Matrix4 lightViewMatrix = Matrix4.LookAt(lightPosition, new Vector3(0.0f, 0.0f, 0.0f), up);
-                    Matrix4 lightProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(pi / 4, 1.0f, 520f, 850f);
-
+                    //Matrix4 lightProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(pi / 4, 1.0f, 520f, 850f);
+                    Matrix4 lightProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(pi / 4, 1.0f, 0.1f, 1000f);
 
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer, shadowMapFBO);
                     GL.Viewport(0, 0, shadowMapRes, shadowMapRes);
@@ -331,7 +331,7 @@ namespace RallysportGame
                     myCar.render(basicShaderProgram, lightProjectionMatrix, lightViewMatrix,lightPosition,lightViewMatrix,lightProjectionMatrix);
 
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-
+                    
                     //
 
 
@@ -341,6 +341,7 @@ namespace RallysportGame
                     int w = game.Width;
                     int h = game.Height;
 
+                    GL.Viewport(0, 0, w, h);
                     //GL.UseProgram(basicShaderProgram);
 
                     Vector3 camera_position = sphericalToCartesian(camera_theta, camera_phi, camera_r);
@@ -360,15 +361,17 @@ namespace RallysportGame
                     GL.BindTexture(TextureTarget.Texture2D, shadowMapTexture);
                     GL.Uniform1(GL.GetUniformLocation(basicShaderProgram, "shadowMapTex"), 1);
                     
+                    myCar.render(basicShaderProgram, projectionMatrix, viewMatrix, lightPosition, lightViewMatrix, lightProjectionMatrix);
+
+                    GL.ActiveTexture(TextureUnit.Texture0);
+                    GL.BindTexture(TextureTarget.Texture2D, 0);
+                    
                     myCar2.render(basicShaderProgram, projectionMatrix, viewMatrix, lightPosition, lightViewMatrix, lightProjectionMatrix);
 
                     GL.ActiveTexture(TextureUnit.Texture1);
                     GL.BindTexture(TextureTarget.Texture2D, 0);
 
-                    myCar.render(basicShaderProgram, projectionMatrix, viewMatrix, lightPosition, lightViewMatrix, lightProjectionMatrix);
-
-                    GL.ActiveTexture(TextureUnit.Texture0);
-                    GL.BindTexture(TextureTarget.Texture2D, 0);
+                   
 
                     
                     
