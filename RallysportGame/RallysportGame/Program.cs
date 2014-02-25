@@ -369,7 +369,8 @@ namespace RallysportGame
 
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
                     //END OF SHADOWMAP FBO RENDERING
-                    
+
+                    GL.Viewport(0, 0, w, h);
                     GL.ActiveTexture(TextureUnit.Texture0);
                     GL.BindTexture(TextureTarget.Texture2D, myCar.getTextureId());
                     GL.Uniform1(GL.GetUniformLocation(basicShaderProgram, "diffuse_texture"), 0);
