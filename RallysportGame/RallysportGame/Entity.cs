@@ -78,20 +78,15 @@ namespace RallysportGame
             OpenTK.Vector3 viewSpaceLightPosition = OpenTK.Vector3.Transform(lightPosition, viewMatrix);
             GL.Uniform3(GL.GetUniformLocation(program, "viewSpaceLightPosition"), viewSpaceLightPosition);
 
-            Matrix4 lightMatrix;// = (Matrix4.Invert(viewMatrix) * lightViewMatrix) * lightProjectionMatrix;//modelMatrix*lightViewMatrix*lightProjectionMatrix;//
-            
-            
-
+            Matrix4 lightMatrix;// = Matrix4.Transpose(lightProjectionMatrix)*Matrix4.Transpose(lightViewMatrix)*Matrix4.Invert(Matrix4.Transpose(viewMatrix));// = (Matrix4.Invert(viewMatrix) * lightViewMatrix) * lightProjectionMatrix;//modelMatrix*lightViewMatrix*lightProjectionMatrix;//
             Matrix4 invView = Matrix4.Invert(viewMatrix);
             Matrix4 lightModelView;
             //lightViewMatrix.Transpose();
             //lightProjectionMatrix.Inverted();
             Matrix4.Mult(ref invView, ref lightViewMatrix, out lightModelView);
-            //lightModelView.Transpose();
             Matrix4.Mult(ref lightModelView, ref  lightProjectionMatrix, out lightMatrix);
 
             lightMatrix = lightMatrix * Matrix4.CreateScale(0.5f) * Matrix4.CreateTranslation(new OpenTK.Vector3(0.5f, 0.5f, 0.5f));
-            //lightMatrix.Transpose();
             GL.UniformMatrix4(GL.GetUniformLocation(program, "lightMatrix"), false, ref lightMatrix);
 
             GL.Uniform3(GL.GetUniformLocation(program, "material_diffuse_color"), diffuse);
@@ -225,21 +220,6 @@ namespace RallysportGame
             GL.Finish();
             bitmap.UnlockBits(data);
             
-            /*
-            Version version = new Version(GL.GetString(StringName.Version).Substring(0, 3));
-            Version target = new Version(1, 4);
-            if (version >= target)
-            {
-                
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.GenerateMipmap, (int)All.True);
-                GL.TexParameter(Target, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);
-            }
-            else
-            {
-                GL.TexParameter(Target, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            }
-            GL.TexParameter(Target, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-            */
             GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
             GL.TexParameter(Target,TextureParameterName.TextureMagFilter,(int)TextureMagFilter.Linear);
             GL.TexParameter(Target,TextureParameterName.TextureMinFilter,(int)TextureMinFilter.LinearMipmapLinear);

@@ -47,7 +47,7 @@ void main()
 	vec3 texturesampler = texture( diffuse_texture, textCoord.xy ).xyz;
 	
 	
-	vec3 ambient = vec3(1,0,0)*vec3(0.5);//texturesampler *vec3(0.5);
+	vec3 ambient = texturesampler *vec3(0.5);//vec3(1,0,0)*vec3(0.5);//
 	vec3 diffuse = vec3(0.5)*texturesampler;//material_diffuse_color;//
 	vec3 specular = vec3(0.5);//material_specular_color;//
 	vec3 emissive = vec3(0.0);//material_emissive_color;//
@@ -60,11 +60,11 @@ void main()
 	
 	vec3 shading = (ambient*scene_ambient_light)
 					+ (calculateDiffuse(scene_light,diffuse,normal,directionToLight)
-					+ calculateSpecular(scene_light, fresnelSpecular,material_shininess,normal,directionToLight,directionFromEye))*visibility;
+					+ calculateSpecular(scene_light, fresnelSpecular,material_shininess,normal,directionToLight,directionFromEye));//*visibility;
 					//+ emissive;
 
 
 
-	fragmentColor =  vec4(shading,1.0);//vec4(shadowMapCoord.z/shadowMapCoord.w,shadowMapCoord.z/shadowMapCoord.w,shadowMapCoord.z/shadowMapCoord.w,1);//vec4(gl_FragCoord.z);//
+	fragmentColor =  vec4(shading,1.0);//vec4(gl_FragCoord.z);//
 
 }
