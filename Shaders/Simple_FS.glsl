@@ -65,6 +65,6 @@ void main()
 
 
 
-	fragmentColor =  vec4(shading,1.0);//vec4(gl_FragCoord.z);//
+	fragmentColor =  vec4(shadowMap//vec4(shading,1.0);//vec4(gl_FragCoord.z);//
 
 }

@@ -366,7 +366,7 @@ namespace RallysportGame
                     
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer, shadowMapFBO);
                     GL.Viewport(0, 0, shadowMapRes, shadowMapRes);
-                    
+
                     GL.BindTexture(TextureTarget.Texture2D, shadowMapTexture);
                     
                     myCar2.renderShadowMap(shadowShaderProgram, lightProjectionMatrix, lightViewMatrix);
@@ -377,7 +377,8 @@ namespace RallysportGame
                     ///END OF SHADOWMAP FBO RENDERING
 
                     GL.UseProgram(basicShaderProgram);
-
+                    
+                    GL.Viewport(0, 0, w, h);
                     //Model Texture is on Unit 0
                     GL.ActiveTexture(TextureUnit.Texture0);
                     GL.BindTexture(TextureTarget.Texture2D, myCar.getTextureId());
@@ -389,13 +390,13 @@ namespace RallysportGame
                     GL.Uniform1(GL.GetUniformLocation(basicShaderProgram, "shadowMapTex"), 1);
 
                     myCar.render(basicShaderProgram, projectionMatrix, viewMatrix, lightPosition, lightViewMatrix, lightProjectionMatrix);
-                   
+                    
                     skybox.render(basicShaderProgram, projectionMatrix, viewMatrix, lightPosition, lightViewMatrix, lightProjectionMatrix);
                     
 
                     GL.ActiveTexture(TextureUnit.Texture0);
                     GL.BindTexture(TextureTarget.Texture2D, shadowMapTexture);
-                    
+
                     
                     myCar2.render(basicShaderProgram, projectionMatrix, viewMatrix, lightPosition, lightViewMatrix, lightProjectionMatrix);
 
@@ -403,8 +404,8 @@ namespace RallysportGame
 
                     GL.ActiveTexture(TextureUnit.Texture1);
                     GL.BindTexture(TextureTarget.Texture2D, 0);
-
                     
+
                     
                     
                     
