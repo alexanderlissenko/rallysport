@@ -60,11 +60,11 @@ void main()
 	
 	vec3 shading = (ambient*scene_ambient_light)
 					+ (calculateDiffuse(scene_light,diffuse,normal,directionToLight)
-					+ calculateSpecular(scene_light, fresnelSpecular,material_shininess,normal,directionToLight,directionFromEye));//*visibility;
+					+ calculateSpecular(scene_light, fresnelSpecular,material_shininess,normal,directionToLight,directionFromEye))*visibility;
 					//+ emissive;
 
 
 
-	fragmentColor =  vec4(shadowMap//vec4(shading,1.0);//vec4(gl_FragCoord.z);//
+	fragmentColor =  vec4(shading,1.0);//vec4(gl_FragCoord.z);//
 
 }

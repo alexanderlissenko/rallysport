@@ -79,7 +79,7 @@ namespace RallysportGame
             GL.Uniform3(GL.GetUniformLocation(program, "viewSpaceLightPosition"), viewSpaceLightPosition);
 
             Matrix4 lightMatrix;// = Matrix4.Transpose(lightProjectionMatrix)*Matrix4.Transpose(lightViewMatrix)*Matrix4.Invert(Matrix4.Transpose(viewMatrix));// = (Matrix4.Invert(viewMatrix) * lightViewMatrix) * lightProjectionMatrix;//modelMatrix*lightViewMatrix*lightProjectionMatrix;//
-            Matrix4 invView = Matrix4.Invert(viewMatrix);
+            Matrix4 invView = Matrix4.Transpose(Matrix4.Invert(Matrix4.Transpose(viewMatrix)));
             Matrix4 lightModelView;
             //lightViewMatrix.Transpose();
             //lightProjectionMatrix.Inverted();
