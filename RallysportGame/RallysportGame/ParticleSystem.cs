@@ -142,7 +142,7 @@ namespace RallysportGame
                     // rotate the vector
                     Vector4 velocity4 = Vector4.Transform((new Vector4(frustumDir.X, frustumDir.Y, frustumDir.Z, 1.0f)), transMatToOrigin * rotMatX * rotMatY * rotMatZ);
                     //make it a 3 vec for the patricle constructor
-                    Vector3 velocity3 = Vector3(velocity4.X, velocity4.Y, velocity4.Z);
+                    Vector3 velocity3 = new Vector3(velocity4.X, velocity4.Y, velocity4.Z);
                     // Spawn the particle
                     ID++;
                     particleList.Add(new Particle(velocity3, emitterPos, meanLiveTime, ID));
