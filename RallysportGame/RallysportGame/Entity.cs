@@ -78,16 +78,7 @@ namespace RallysportGame
             OpenTK.Vector3 viewSpaceLightPosition = OpenTK.Vector3.Transform(lightPosition, viewMatrix);
             GL.Uniform3(GL.GetUniformLocation(program, "viewSpaceLightPosition"), viewSpaceLightPosition);
 
-            Matrix4 lightMatrix;// = Matrix4.Transpose(lightProjectionMatrix)*Matrix4.Transpose(lightViewMatrix)*Matrix4.Invert(Matrix4.Transpose(viewMatrix));// = (Matrix4.Invert(viewMatrix) * lightViewMatrix) * lightProjectionMatrix;//modelMatrix*lightViewMatrix*lightProjectionMatrix;//
-            Matrix4 invView = Matrix4.Transpose(Matrix4.Invert(Matrix4.Transpose(viewMatrix)));
-            Matrix4 lightModelView;
-            //lightViewMatrix.Transpose();
-            //lightProjectionMatrix.Inverted();
-            Matrix4.Mult(ref invView, ref lightViewMatrix, out lightModelView);
-            Matrix4.Mult(ref lightModelView, ref  lightProjectionMatrix, out lightMatrix);
-
-            lightMatrix = lightMatrix * Matrix4.CreateScale(0.5f) * Matrix4.CreateTranslation(new OpenTK.Vector3(0.5f, 0.5f, 0.5f));
-            GL.UniformMatrix4(GL.GetUniformLocation(program, "lightMatrix"), false, ref lightMatrix);
+            
 
             GL.Uniform3(GL.GetUniformLocation(program, "material_diffuse_color"), diffuse);
             GL.Uniform3(GL.GetUniformLocation(program, "material_specular_color"), specular);
