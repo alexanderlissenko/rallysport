@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using BEPUphysics;
 using BEPUphysics.Entities.Prefabs;
 using OpenTK;
+using BEPUphysics.BroadPhaseEntries;
 
 namespace RallysportGame
 {
@@ -19,7 +20,7 @@ namespace RallysportGame
         {
             cars = new List<Car>();
             space = new Space();
-            Box ground = new Box(Vector3.Zero, 30, 1, 30);
+            Box ground = new Box(Vector3.Zero, 30, 1, 30); //temporary invisible floor
             space.Add(ground);
             //car = new Box(new Vector3(0, 4, 0), 1, 1, 1, 1);
             //space.Add(car);
@@ -29,7 +30,8 @@ namespace RallysportGame
         {
             foreach(Car car in cars)
             {
-                System.Console.WriteLine(car.position); //TODO this is a temporary physics tester
+                System.Console.WriteLine(car.position); //TODO temove this line: this is a temporary physics tester
+
                 car.update();
             }
             space.Update();
@@ -38,6 +40,10 @@ namespace RallysportGame
         {
             cars.Add(car);
             space.Add(car.boundingBox);
+        }
+        public void setupEnvironment(Vector3[] vertices, int[] indices, Vector3 position) {
+            //var mesh = new StaticMesh(vertices, indices, new AffineTransform(new Vector3(0, -40, 0)));
+
         }
     }
 
