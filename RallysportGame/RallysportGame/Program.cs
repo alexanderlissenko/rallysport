@@ -206,12 +206,12 @@ namespace RallysportGame
 
 
                     
-                    int mDepth = GL.GenRenderbuffer();
-                    GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer,mDepth);
+                    //int mDepth = GL.GenRenderbuffer();
+                    //GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer,mDepth);
 
                     //GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent32, shadowMapRes, shadowMapRes);
                     //GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, mDepth);
-                    //GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, 0);
+                    
 
                     shadowMapRes = 1024;
                     shadowMapTexture = GL.GenTexture();
@@ -236,11 +236,10 @@ namespace RallysportGame
                     GL.DrawBuffer(DrawBufferMode.None);
                     GL.ReadBuffer(ReadBufferMode.None);
                     GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2D, shadowMapTexture, 0);
-                    //GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, shadowMapFBO);
-                    
+                    //GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, mDepth);
 
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-                    
+                    //GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, 0);
                     
 
                     //lightPosition = new Vector3(up);
@@ -330,9 +329,6 @@ namespace RallysportGame
                 {   
                     GL.ClearColor(0.2f, 0.2f, 0.8f, 1.0f);
                     GL.ClearDepth(1.0f);
-                    GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-                    
-                    
                     //GL.UseProgram(basicShaderProgram);
                     Vector3 lightPosition = new Vector3(sphericalToCartesian(light_theta, light_phi, light_r));
 
@@ -341,13 +337,28 @@ namespace RallysportGame
                     Matrix4 lightViewMatrix = Matrix4.LookAt(lightPosition, new Vector3(0.0f, 0.0f, 0.0f), up);
                     Matrix4 lightProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(pi / 4, 1.0f, 400f, 1300f);
                     //ändra till 300f
+                    GL.UseProgram(shadowShaderProgram);
+                    //SHADOW MAP FBO RENDERING
+                    GL.PushAttrib(AttribMask.EnableBit);
+                    {
+                        GL.Enable(EnableCap.Texture2D);
+                        GL.BindFramebuffer(FramebufferTarget.Framebuffer, shadowMapFBO);
+                        
+                        GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
+                        GL.Viewport(0, 0, shadowMapRes, shadowMapRes);
+
+                        GL.BindTexture(TextureTarget.Texture2D, shadowMapTexture);
                     
+                        myCar2.renderShadowMap(shadowShaderProgram, lightProjectionMatrix, lightViewMatrix);
+                        myCar.renderShadowMap(shadowShaderProgram, lightProjectionMatrix, lightViewMatrix);
+                    }
+                    GL.PopAttrib();
+                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+                    //GL.BindTexture(TextureTarget.Texture2D, shadowMapTexture);
+                    ///END OF SHADOWMAP FBO RENDERING
 
-                    //
 
-
-                    //GL.ClearDepth(1.0f);
                     GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
                     
                     int w = game.Width;
@@ -361,20 +372,7 @@ namespace RallysportGame
                     Matrix4 viewMatrix = Matrix4.LookAt(camera_position, camera_lookAt,up);
                     Matrix4 projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(pi/4, (float)w/(float)h, 0.1f, 1000f);
                     // Here we start getting into the lighting model
-                    GL.UseProgram(shadowShaderProgram);
-                    //SHADOW MAP FBO RENDERING
                     
-                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, shadowMapFBO);
-                    GL.Viewport(0, 0, shadowMapRes, shadowMapRes);
-
-                    GL.BindTexture(TextureTarget.Texture2D, shadowMapTexture);
-                    
-                    myCar2.renderShadowMap(shadowShaderProgram, lightProjectionMatrix, lightViewMatrix);
-                    myCar.renderShadowMap(shadowShaderProgram, lightProjectionMatrix, lightViewMatrix);
-
-                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-                    //GL.BindTexture(TextureTarget.Texture2D, shadowMapTexture);
-                    ///END OF SHADOWMAP FBO RENDERING
 
                     GL.UseProgram(basicShaderProgram);
                     

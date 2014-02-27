@@ -1,5 +1,6 @@
 #version 130
 /* Copies incoming fragment color without change. */
+precision highp float;
 
 out vec4 fragmentColor;
 
