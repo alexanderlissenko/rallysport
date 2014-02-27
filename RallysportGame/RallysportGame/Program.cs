@@ -21,6 +21,7 @@ namespace RallysportGame
 
     class Program
     {
+
         //*****************************************************************************
         //	Useful constants
         //*****************************************************************************
@@ -55,8 +56,8 @@ namespace RallysportGame
         static float light_phi = pi / 4.0f;
         static float light_r = 600.0f;
 
-        static Entity myCar,myCar2;
-
+        static Entity myCar;
+        static Car myCar2;
 
 
         static ArrayList keyList = new ArrayList();
@@ -64,6 +65,7 @@ namespace RallysportGame
         static int source = 0;
         static bool musicPaused;
         static bool keyHandled = false;
+        private static CollisionHandler collisionHandler;
 
         // Helper function to turn spherical coordinates into cartesian (x,y,z)
         static Vector3 sphericalToCartesian(float theta, float phi, float r)
@@ -168,7 +170,9 @@ namespace RallysportGame
                     // setup settings, load textures, sounds
                     game.VSync = VSyncMode.On;
                     myCar = new Entity("map\\uggly_test_track_Triangulate");//"TeapotCar\\Teapot car\\Teapot-no-materials-tri");//"Cube\\3ds-cube");//
-                    myCar2 = new Entity("Cube\\testCube");//"Cube\\megu_koob");//"TeapotCar\\Teapot car\\Teapot-no-materials-tri");//
+
+                    myCar2 = new Car(new Vector3(0,4,0));
+                    // myCar2 = new Entity("Cube\\testCube");//"Cube\\megu_koob");//"TeapotCar\\Teapot car\\Teapot-no-materials-tri");//
                     //Set up shaders
                     basicShaderProgram = loadShaderProgram(shaderDir+"Simple_VS.glsl",shaderDir+"Simple_FS.glsl");
                     GL.BindAttribLocation(basicShaderProgram, 0, "position");
@@ -234,6 +238,8 @@ namespace RallysportGame
                     //GL.DepthMask(true);
                     //GL.DepthFunc(DepthFunction.Lequal);
                     //GL.DepthRange(0.0f, 5.0f);
+                    collisionHandler = new CollisionHandler();
+                    collisionHandler.addCar(myCar2);
                 };
 
                 game.Resize += (sender, e) =>
@@ -292,7 +298,7 @@ namespace RallysportGame
                             keyHandled = !keyHandled;
                         }
                     }
-
+                    collisionHandler.update();
 
                     updateCamera();
                     //////////////////////////////////////////////////////ÄNDRA TILLBAKA!!!
