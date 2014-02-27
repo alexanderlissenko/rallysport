@@ -57,6 +57,8 @@ namespace RallysportGame
 
         static Entity myCar,myCar2;
 
+        static Car playerCar;
+
 
 
         static ArrayList keyList = new ArrayList();
@@ -64,6 +66,8 @@ namespace RallysportGame
         static int source = 0;
         static bool musicPaused;
         static bool keyHandled = false;
+        static MouseState current;
+        static MouseState previous;
 
         // Helper function to turn spherical coordinates into cartesian (x,y,z)
         static Vector3 sphericalToCartesian(float theta, float phi, float r)
@@ -133,16 +137,16 @@ namespace RallysportGame
                 switch(key)
                 {
                     case Key.A:
-                        camera_theta -= camera_horizontal_delta;
+                        playerCar.Turn(pi / 32);
                         break;
                     case Key.D:
-                        camera_theta += camera_horizontal_delta;
+                        playerCar.Turn(-pi / 32);
                         break;
                     case Key.W:
-                        camera_r -= camera_vertical_delta;
+                        playerCar.accelerate(0.1f);
                         break;
                     case Key.S:
-                        camera_r += camera_vertical_delta;
+                        playerCar.accelerate(-0.1f);
                         break;
                     case Key.Z:
                         camera_phi -= camera_horizontal_delta*0.5f;
@@ -154,6 +158,25 @@ namespace RallysportGame
                         break;
                 }
             }
+        }
+
+        // Move camera with mouse
+        static void UpdateMouse()
+        {
+            current = Mouse.GetState();
+            if (current != previous)
+            {
+                // Mouse state has changed
+                int xdelta = current.X - previous.X;
+                int ydelta = current.Y - previous.Y;
+                int zdelta = current.Wheel - previous.Wheel;
+
+                camera_theta += xdelta > 0 ? 0.01f : -0.01f;
+                camera_phi += ydelta > 0 ? 0.01f : -0.01f;
+                //camera_r += zdelta > 0 ? 1 : -1;
+
+            }
+            previous = current;
         }
 
 
@@ -169,6 +192,9 @@ namespace RallysportGame
                     game.VSync = VSyncMode.On;
                     myCar = new Entity("map\\uggly_test_track_Triangulate");//"TeapotCar\\Teapot car\\Teapot-no-materials-tri");//"Cube\\3ds-cube");//
                     myCar2 = new Entity("Cube\\testCube");//"Cube\\megu_koob");//"TeapotCar\\Teapot car\\Teapot-no-materials-tri");//
+                    playerCar = new Car("TeapotCar\\Teapot car\\Teapot-no-materials-tri");
+                    playerCar.setUp3DSModel();
+                    myCar.setUpBlenderModel();
                     //Set up shaders
                     basicShaderProgram = loadShaderProgram(shaderDir+"Simple_VS.glsl",shaderDir+"Simple_FS.glsl");
                     GL.BindAttribLocation(basicShaderProgram, 0, "position");
@@ -295,6 +321,8 @@ namespace RallysportGame
 
 
                     updateCamera();
+                    UpdateMouse();
+                    playerCar.Update();
                     //////////////////////////////////////////////////////ÄNDRA TILLBAKA!!!
                     //Audio management
                     if (Audio.audioStatus(source) == 1)
@@ -370,9 +398,16 @@ namespace RallysportGame
                     GL.ActiveTexture(TextureUnit.Texture0);
                     GL.BindTexture(TextureTarget.Texture2D, 0);
 
-                    
-                    
-                    
+
+
+                    GL.ActiveTexture(TextureUnit.Texture0);
+                    GL.BindTexture(TextureTarget.Texture2D, playerCar.getTextureId());
+                    GL.Uniform1(GL.GetUniformLocation(basicShaderProgram, "diffuse_texture"), 0);
+
+                    playerCar.render(basicShaderProgram, projectionMatrix, viewMatrix, lightPosition, lightViewMatrix, lightProjectionMatrix);
+
+
+
                     GL.End();
 
 

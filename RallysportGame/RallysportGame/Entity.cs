@@ -39,7 +39,8 @@ namespace RallysportGame
         public uint textureBuffer;
         public int numOfTri;
 
-        Matrix4 modelMatrix;
+        protected Matrix4 modelMatrix;
+        protected Matrix4 worldMatrix;
         
         private MeshData mesh;
         /// <summary>
@@ -49,7 +50,7 @@ namespace RallysportGame
         /// <param name="name">Name of the file starting from the model path no .obj its added automaticly</param>
         public Entity(String name)
         {
-            modelMatrix = Matrix4.Identity;
+            modelMatrix = worldMatrix = Matrix4.Identity;
             fileName = name;
             this.mesh = new Meshomatic.ObjLoader().LoadFile(modelsDir+name +".obj");
             numOfTri = mesh.Tris.Length;
@@ -113,8 +114,12 @@ namespace RallysportGame
 
         private void setMatrices(int program, Matrix4 projectionMatrix, Matrix4 viewMatrix)
         {
-            Matrix4 modelViewMatrix;// =Matrix4.Transpose(viewMatrix)* Matrix4.Transpose(modelMatrix);// = modelMatrix*viewMatrix ; //I know this is opposite see down why
-            Matrix4.Mult(ref modelMatrix, ref viewMatrix, out modelViewMatrix);
+            Matrix4 modelWorldMatrix;
+            // Transform from model to world
+            Matrix4.Mult(ref modelMatrix, ref worldMatrix, out modelWorldMatrix);
+            Matrix4 modelViewMatrix;
+            // =Matrix4.Transpose(viewMatrix)* Matrix4.Transpose(modelMatrix);// = modelMatrix*viewMatrix ; //I know this is opposite see down why
+            Matrix4.Mult(ref modelWorldMatrix, ref viewMatrix, out modelViewMatrix);
 
             Matrix4 modelViewProjectionMatrix;// = Matrix4.Transpose(projectionMatrix)*modelViewMatrix ;// = modelViewMatrix*projectionMatrix ;
             Matrix4.Mult(ref modelViewMatrix, ref projectionMatrix, out modelViewProjectionMatrix);
