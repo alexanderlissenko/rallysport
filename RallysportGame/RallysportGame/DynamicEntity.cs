@@ -69,6 +69,7 @@ namespace RallysportGame
             //Matrix4.Mult(ref worldMatrix, ref directionRotation, out worldMatrix);
             Matrix4.Mult(ref worldMatrix, ref translation, out worldMatrix);
             acceleration = Vector3.Zero;
+            body.Position = Convert(position);
         }
 
         public void rotate(float angle_x, float angle_y, float angle_z)
