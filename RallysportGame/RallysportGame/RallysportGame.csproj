@@ -48,9 +48,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BEPUphysics, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31f6a8732a21de19, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bepu\BEPUphysics.dll</HintPath>
+    </Reference>
     <Reference Include="BEPUutilities, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31f6a8732a21de19, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>F:\bepuphysics_825d960137f1\BEPUutilities\bin\Debug\BEPUutilities.dll</HintPath>
+      <HintPath>bepu\BEPUutilities.dll</HintPath>
     </Reference>
     <Reference Include="OpenTK, Version=1.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL" />
     <Reference Include="System" />
@@ -96,10 +100,6 @@
     <ProjectReference Include="..\Meshomatic\Meshomatic\Meshomatic.csproj">
       <Project>{d52f55a8-08e5-488e-ad0f-bf49b1f29a5f}</Project>
       <Name>Meshomatic</Name>
-    </ProjectReference>
-    <ProjectReference Include="F:\bepuphysics_825d960137f1\BEPUphysics\BEPUphysics.csproj">
-      <Project>{c0d52c9f-14b8-4008-8ddc-109c27561a5c}</Project>
-      <Name>BEPUphysics</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
