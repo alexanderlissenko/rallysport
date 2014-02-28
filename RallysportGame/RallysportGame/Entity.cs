@@ -39,15 +39,10 @@ namespace RallysportGame
         public uint textureBuffer;
         public int numOfTri;
 
-<<<<<<< HEAD
         protected Matrix4 modelMatrix;
         protected Matrix4 worldMatrix;
-=======
         public OpenTK.Vector3 position;
         //TODO rotation variable and stoff
-
-        Matrix4 modelMatrix;
->>>>>>> origin/collision
         
         private MeshData mesh;
         /// <summary>

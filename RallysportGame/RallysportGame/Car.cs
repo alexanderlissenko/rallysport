@@ -110,12 +110,12 @@ namespace RallysportGame
         //default constructor for car
         public Car(OpenTK.Vector3 position):base("Cube\\testCube", position)
         {
-            boundingBox = new Box(position,1,1,1,1);
+            //boundingBox = new Box(position,1,1,1,1);
         }
 
         public void update()
         {
-            position = boundingBox.Position;
+            //position = boundingBox.Position;
         }
     }
 }

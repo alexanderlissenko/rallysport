@@ -20,11 +20,11 @@ namespace RallysportGame
         {
             cars = new List<Car>();
             space = new Space();
-            Box ground = new Box(Vector3.Zero, 30, 1, 30); //temporary invisible floor
-            space.Add(ground);
+           // Box ground = new Box(Vector3.Zero, 30, 1, 30); //temporary invisible floor
+            //space.Add(ground);
             //car = new Box(new Vector3(0, 4, 0), 1, 1, 1, 1);
             //space.Add(car);
-            space.ForceUpdater.Gravity = new Vector3(0, -9.81f, 0);
+            space.ForceUpdater.Gravity = new BEPUutilities.Vector3(0, -9.81f, 0);
         }
         public void update()
         {

@@ -56,15 +56,10 @@ namespace RallysportGame
         static float light_phi = pi / 4.0f;
         static float light_r = 600.0f;
 
-<<<<<<< HEAD
         static Entity myCar,myCar2;
 
         static Car playerCar;
 
-=======
-        static Entity myCar;
-        static Car myCar2;
->>>>>>> origin/collision
 
 
         static ArrayList keyList = new ArrayList();
@@ -72,12 +67,9 @@ namespace RallysportGame
         static int source = 0;
         static bool musicPaused;
         static bool keyHandled = false;
-<<<<<<< HEAD
         static MouseState current;
         static MouseState previous;
-=======
         private static CollisionHandler collisionHandler;
->>>>>>> origin/collision
 
         // Helper function to turn spherical coordinates into cartesian (x,y,z)
         static Vector3 sphericalToCartesian(float theta, float phi, float r)
@@ -201,16 +193,11 @@ namespace RallysportGame
                     // setup settings, load textures, sounds
                     game.VSync = VSyncMode.On;
                     myCar = new Entity("map\\uggly_test_track_Triangulate");//"TeapotCar\\Teapot car\\Teapot-no-materials-tri");//"Cube\\3ds-cube");//
-<<<<<<< HEAD
                     myCar2 = new Entity("Cube\\testCube");//"Cube\\megu_koob");//"TeapotCar\\Teapot car\\Teapot-no-materials-tri");//
                     playerCar = new Car("TeapotCar\\Teapot car\\Teapot-no-materials-tri");
                     playerCar.setUp3DSModel();
                     myCar.setUpBlenderModel();
-=======
 
-                    myCar2 = new Car(new Vector3(0,4,0));
-                    // myCar2 = new Entity("Cube\\testCube");//"Cube\\megu_koob");//"TeapotCar\\Teapot car\\Teapot-no-materials-tri");//
->>>>>>> origin/collision
                     //Set up shaders
                     basicShaderProgram = loadShaderProgram(shaderDir+"Simple_VS.glsl",shaderDir+"Simple_FS.glsl");
                     GL.BindAttribLocation(basicShaderProgram, 0, "position");
@@ -277,7 +264,6 @@ namespace RallysportGame
                     //GL.DepthFunc(DepthFunction.Lequal);
                     //GL.DepthRange(0.0f, 5.0f);
                     collisionHandler = new CollisionHandler();
-                    collisionHandler.addCar(myCar2);
                 };
 
                 game.Resize += (sender, e) =>
