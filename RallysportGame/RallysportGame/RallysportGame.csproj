@@ -72,6 +72,7 @@
     <Compile Include="CollisionHandler.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="DynamicEntity.cs" />
+    <Compile Include="GenericVector3.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

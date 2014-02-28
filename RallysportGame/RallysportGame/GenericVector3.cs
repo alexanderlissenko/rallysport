@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using OpenTK;
 using BEPUutilities;
 
+namespace RallysportGame
+{
     class GenericVector3
     {
         private BEPUutilities.Vector3 bepuVector;
@@ -27,3 +29,4 @@ using BEPUutilities;
             return tkVector;
         }
     }
+}
