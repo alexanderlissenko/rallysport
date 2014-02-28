@@ -14,32 +14,35 @@ namespace RallysportGame
     {
         private Box car;
         private Space space;
-        private List<Car> cars;
+        private List<DynamicEntity> objects;
 
         public CollisionHandler()
         {
-            cars = new List<Car>();
+            objects = new List<DynamicEntity>();
             space = new Space();
            // Box ground = new Box(Vector3.Zero, 30, 1, 30); //temporary invisible floor
             //space.Add(ground);
             //car = new Box(new Vector3(0, 4, 0), 1, 1, 1, 1);
-            //space.Add(car);
+            foreach(DynamicEntity e in objects){
+                space.Add(e.GetBody());
+            }
+            
             space.ForceUpdater.Gravity = new BEPUutilities.Vector3(0, -9.81f, 0);
         }
-        public void update()
+        public void Update()
         {
-            foreach(Car car in cars)
-            {
-                System.Console.WriteLine(car.position); //TODO temove this line: this is a temporary physics tester
-
-                car.update();
-            }
             space.Update();
+            foreach(DynamicEntity e in objects)
+            {
+                System.Console.WriteLine(e.position); //TODO temove this line: this is a temporary physics tester
+
+                e.Update();
+            }
+            
         }
-        public void addCar(Car car)
+        public void addObject(DynamicEntity e)
         {
-            cars.Add(car);
-            space.Add(car.boundingBox);
+            objects.Add(e);
         }
         public void setupEnvironment(Vector3[] vertices, int[] indices, Vector3 position) {
             //var mesh = new StaticMesh(vertices, indices, new AffineTransform(new Vector3(0, -40, 0)));

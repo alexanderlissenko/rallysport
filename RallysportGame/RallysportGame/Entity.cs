@@ -41,6 +41,7 @@ namespace RallysportGame
 
         protected Matrix4 modelMatrix;
         protected Matrix4 worldMatrix;
+        // 3D position in world space
         public OpenTK.Vector3 position;
         //TODO rotation variable and stoff
         

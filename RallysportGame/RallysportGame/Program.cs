@@ -187,6 +187,7 @@ namespace RallysportGame
           
             using (var game = new GameWindow())
             {
+                #region Load
                 game.Load += (sender, e) =>
                 {
                     Console.WriteLine(GL.GetString(StringName.ShadingLanguageVersion));
@@ -264,13 +265,16 @@ namespace RallysportGame
                     //GL.DepthFunc(DepthFunction.Lequal);
                     //GL.DepthRange(0.0f, 5.0f);
                     collisionHandler = new CollisionHandler();
+                    collisionHandler.addObject(playerCar);
                 };
+                #endregion
 
                 game.Resize += (sender, e) =>
                 {
                     GL.Viewport(0, 0, game.Width, game.Height);
                 };
 
+                #region Update
                 game.UpdateFrame += (sender, e) =>
                 {
                     camera_rotation_matrix = Matrix4.Identity;
@@ -322,7 +326,7 @@ namespace RallysportGame
                             keyHandled = !keyHandled;
                         }
                     }
-                    collisionHandler.update();
+                    collisionHandler.Update();
 
                     updateCamera();
                     UpdateMouse();
@@ -339,7 +343,7 @@ namespace RallysportGame
                     //light_phi += camera_horizontal_delta*0.1f;
                     
                 };
-
+                #endregion
                 game.RenderFrame += (sender, e) =>
                 {   
                     GL.ClearColor(0.2f, 0.2f, 0.8f, 1.0f);
