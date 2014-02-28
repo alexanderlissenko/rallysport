@@ -39,8 +39,15 @@ namespace RallysportGame
         public uint textureBuffer;
         public int numOfTri;
 
+<<<<<<< HEAD
         protected Matrix4 modelMatrix;
         protected Matrix4 worldMatrix;
+=======
+        public OpenTK.Vector3 position;
+        //TODO rotation variable and stoff
+
+        Matrix4 modelMatrix;
+>>>>>>> origin/collision
         
         private MeshData mesh;
         /// <summary>
@@ -55,6 +62,11 @@ namespace RallysportGame
             this.mesh = new Meshomatic.ObjLoader().LoadFile(modelsDir+name +".obj");
             numOfTri = mesh.Tris.Length;
             makeVAO();
+        }
+
+        public Entity(String name, OpenTK.Vector3 position): this(name)
+        {
+            this.position = position;
         }
 
         /*
@@ -92,7 +104,6 @@ namespace RallysportGame
             
             //lightMatrix.Transpose();
             GL.UniformMatrix4(GL.GetUniformLocation(program, "lightMatrix"), false, ref lightMatrix);
-
             GL.Uniform3(GL.GetUniformLocation(program, "material_diffuse_color"), diffuse);
             GL.Uniform3(GL.GetUniformLocation(program, "material_specular_color"), specular);
             GL.Uniform3(GL.GetUniformLocation(program, "material_emissive_color"), emisive);
@@ -128,7 +139,6 @@ namespace RallysportGame
             Matrix4.Mult(ref modelMatrix, ref viewMatrix, out normalMatrix);
             normalMatrix.Transpose();
             normalMatrix.Invert();
-
 
             GL.UniformMatrix4(GL.GetUniformLocation(program, "normalMatrix"), false, ref normalMatrix);
             GL.UniformMatrix4(GL.GetUniformLocation(program, "modelViewMatrix"), false, ref modelViewMatrix);

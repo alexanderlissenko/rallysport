@@ -1,4 +1,8 @@
-﻿using System;
+
+
+﻿using BEPUphysics;
+using BEPUphysics.Entities.Prefabs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,6 +22,7 @@ namespace RallysportGame
         #endregion
 
         #region Instance Variables
+        public Box boundingBox;
         // 3D position in world space
         private Vector3 position;
         // Direction in world space (orientation of the model, NOT velocity)
@@ -100,6 +105,17 @@ namespace RallysportGame
         }
         #endregion
 
+        
 
+        //default constructor for car
+        public Car(OpenTK.Vector3 position):base("Cube\\testCube", position)
+        {
+            boundingBox = new Box(position,1,1,1,1);
+        }
+
+        public void update()
+        {
+            position = boundingBox.Position;
+        }
     }
 }
