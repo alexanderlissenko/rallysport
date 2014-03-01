@@ -7,6 +7,7 @@ using BEPUphysics;
 using BEPUphysics.Entities.Prefabs;
 using OpenTK;
 using BEPUphysics.BroadPhaseEntries;
+using BEPUutilities;
 
 namespace RallysportGame
 {
@@ -15,7 +16,6 @@ namespace RallysportGame
         private Box car;
         private Space space;
         private List<DynamicEntity> objects;
-
         public CollisionHandler()
         {
             objects = new List<DynamicEntity>();
@@ -37,14 +37,33 @@ namespace RallysportGame
             }
             
         }
+
         public void addObject(DynamicEntity e)
         {
             objects.Add(e);
             space.Add(e.GetBody());
         }
-        public void setupEnvironment(Vector3[] vertices, int[] indices, Vector3 position) {
-            //var mesh = new StaticMesh(vertices, indices, new AffineTransform(new Vector3(0, -40, 0)));
 
+        //help method for convering a meshomatic meshData object to a Bepu vector array
+        private BEPUutilities.Vector3[] meshToVectorArray(Meshomatic.MeshData mesh)
+        {
+            BEPUutilities.Vector3[] vectorArray = new BEPUutilities.Vector3[mesh.Vertices.Length];
+
+            for (int i = 0; i < mesh.Vertices.Length; i++)
+            {
+                vectorArray[i] = Utilities.ConvertToBepu(mesh.Vertices[i]);
+            }
+            return vectorArray;
+        }
+
+        public void setupEnvironment(Entity environment, OpenTK.Vector3 position) {
+            int[] indices = environment.vertIndices.ToArray();
+            Meshomatic.MeshData mesh = environment.mesh;
+
+            BEPUutilities.Vector3[] vertices = meshToVectorArray(mesh);
+
+            var environmentMesh = new StaticMesh(vertices, indices, new AffineTransform(Utilities.ConvertToBepu(position)));
+            space.Add(environmentMesh);
         }
     }
 

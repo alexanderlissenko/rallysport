@@ -43,9 +43,10 @@ namespace RallysportGame
         protected Matrix4 worldMatrix;
         // 3D position in world space
         public OpenTK.Vector3 position;
+        public List<int> vertIndices;
         //TODO rotation variable and stoff
         
-        private MeshData mesh;
+        public MeshData mesh;
         /// <summary>
         /// Constructor for Entity
         /// Make sure that the .obj file and .mtl is named the same
@@ -145,7 +146,7 @@ namespace RallysportGame
 
         public void setUp3DSModel()
         {
-            modelMatrix = modelMatrix + Matrix4.CreateScale(0.1f);
+            modelMatrix = modelMatrix + Matrix4.CreateScale(0.001f); //TODO magic numbers go away!
         }
 
         public void setUpBlenderModel()
@@ -274,7 +275,7 @@ namespace RallysportGame
         unsafe private void makeVAO()
         {
 
-            List<int> vertIndices = new List<int>();
+            vertIndices = new List<int>();
             List<int> normIndices = new List<int>();
             List<int> texIndices = new List<int>();
             // TODO tex coords

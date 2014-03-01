@@ -56,7 +56,7 @@ namespace RallysportGame
         static float light_phi = pi / 4.0f;
         static float light_r = 600.0f;
 
-        static Entity myCar,myCar2;
+        static Entity environment,myCar2;
 
         static Car playerCar;
 
@@ -193,11 +193,11 @@ namespace RallysportGame
                     Console.WriteLine(GL.GetString(StringName.ShadingLanguageVersion));
                     // setup settings, load textures, sounds
                     game.VSync = VSyncMode.On;
-                    myCar = new Entity("map\\uggly_test_track_Triangulate");//"TeapotCar\\Teapot car\\Teapot-no-materials-tri");//"Cube\\3ds-cube");//
+                    environment = new Entity("map\\uggly_test_track_Triangulate");//"TeapotCar\\Teapot car\\Teapot-no-materials-tri");//"Cube\\3ds-cube");//
                     myCar2 = new Entity("Cube\\testCube");//"Cube\\megu_koob");//"TeapotCar\\Teapot car\\Teapot-no-materials-tri");//
                     playerCar = new Car("TeapotCar\\Teapot car\\Teapot-no-materials-tri");
                     playerCar.setUp3DSModel();
-                    myCar.setUpBlenderModel();
+                    environment.setUpBlenderModel();
 
                     //Set up shaders
                     basicShaderProgram = loadShaderProgram(shaderDir+"Simple_VS.glsl",shaderDir+"Simple_FS.glsl");
@@ -211,9 +211,9 @@ namespace RallysportGame
 
                     //Load uniforms and texture
                     GL.UseProgram(basicShaderProgram);
-                    myCar.setUpMtl();
-                    myCar.loadTexture();
-                    myCar.setUpBlenderModel();
+                    environment.setUpMtl();
+                    environment.loadTexture();
+                    environment.setUpBlenderModel();
                     myCar2.setUpBlenderModel();
                     GL.UseProgram(0);
                     
@@ -266,6 +266,8 @@ namespace RallysportGame
                     //GL.DepthRange(0.0f, 5.0f);
                     collisionHandler = new CollisionHandler();
                     collisionHandler.addObject(playerCar);
+                    Vector3 environmentLocation = new Vector3(0, 0, 0);
+                    collisionHandler.setupEnvironment(environment, environmentLocation);
                 };
                 #endregion
 
@@ -364,7 +366,7 @@ namespace RallysportGame
                     GL.Viewport(0, 0, shadowMapRes, shadowMapRes);
 
                     myCar2.render(basicShaderProgram, lightProjectionMatrix, lightViewMatrix,lightPosition,lightViewMatrix,lightProjectionMatrix);
-                    myCar.render(basicShaderProgram, lightProjectionMatrix, lightViewMatrix,lightPosition,lightViewMatrix,lightProjectionMatrix);
+                    environment.render(basicShaderProgram, lightProjectionMatrix, lightViewMatrix,lightPosition,lightViewMatrix,lightProjectionMatrix);
 
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
                     
@@ -390,14 +392,14 @@ namespace RallysportGame
                     
                     
                     GL.ActiveTexture(TextureUnit.Texture0);
-                    GL.BindTexture(TextureTarget.Texture2D, myCar.getTextureId());
+                    GL.BindTexture(TextureTarget.Texture2D, environment.getTextureId());
                     GL.Uniform1(GL.GetUniformLocation(basicShaderProgram, "diffuse_texture"), 0);
 
                     GL.ActiveTexture(TextureUnit.Texture1);
                     GL.BindTexture(TextureTarget.Texture2D, shadowMapTexture);
                     GL.Uniform1(GL.GetUniformLocation(basicShaderProgram, "shadowMapTex"), 1);
                     
-                    myCar.render(basicShaderProgram, projectionMatrix, viewMatrix, lightPosition, lightViewMatrix, lightProjectionMatrix);
+                    environment.render(basicShaderProgram, projectionMatrix, viewMatrix, lightPosition, lightViewMatrix, lightProjectionMatrix);
 
                     GL.ActiveTexture(TextureUnit.Texture0);
                     GL.BindTexture(TextureTarget.Texture2D, 0);

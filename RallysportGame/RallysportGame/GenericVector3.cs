@@ -28,5 +28,11 @@ namespace RallysportGame
         {
             return tkVector;
         }
+        public void setVector(float posX, float posY, float posZ)
+        {
+            bepuVector = new BEPUutilities.Vector3(posX, posY, posZ);
+            tkVector = new OpenTK.Vector3(posX, posY, posZ);
+
+        }
     }
 }
