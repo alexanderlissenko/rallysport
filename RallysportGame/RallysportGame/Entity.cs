@@ -146,12 +146,12 @@ namespace RallysportGame
 
         public void setUp3DSModel()
         {
-            modelMatrix = modelMatrix + Matrix4.CreateScale(0.001f); //TODO magic numbers go away!
+            modelMatrix = modelMatrix + Matrix4.CreateScale(1f); //TODO magic numbers go away!
         }
 
         public void setUpBlenderModel()
         {
-            modelMatrix = modelMatrix + Matrix4.CreateScale(10.0f);
+            modelMatrix = modelMatrix + Matrix4.CreateScale(1f);
         }
         /// <summary>
         /// sets the mtl to load the uniforms for the shaders
