@@ -47,7 +47,7 @@ namespace RallysportGame
         static Matrix4 camera_rotation_matrix = Matrix4.Identity;
         
         //ShadowMap constants
-        static int shadowMapRes = 1024;
+        static int shadowMapRes = 2048;
         static int shadowMapTexture, shadowMapFBO;
         //
 
@@ -222,8 +222,8 @@ namespace RallysportGame
                     //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureBorderColor, 0.0f);
 
 
-                    //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareFunc, (int)All.Lequal);
-                    //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareMode, (int)All.CompareRefToTexture);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareFunc, (int)All.Lequal);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareMode, (int)All.CompareRefToTexture);
 
                     GL.BindTexture(TextureTarget.Texture2D, 0);
 
@@ -317,7 +317,7 @@ namespace RallysportGame
 
                     //move light
 
-                    //light_phi += camera_horizontal_delta*0.1f;
+                    light_theta += camera_horizontal_delta*0.1f;
                     
                 };
 
@@ -340,11 +340,11 @@ namespace RallysportGame
                         GL.BindFramebuffer(FramebufferTarget.Framebuffer, shadowMapFBO);
                         
                         GL.Viewport(0, 0, shadowMapRes, shadowMapRes);
-                        GL.CullFace(CullFaceMode.Front);
+                        //GL.CullFace(CullFaceMode.Front);
                         GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-                        //GL.Enable(EnableCap.PolygonOffsetFill);
-                        //GL.PolygonOffset(2.5f, 10f);
+                        GL.Enable(EnableCap.PolygonOffsetFill);
+                        GL.PolygonOffset(2.5f, 10f);
 
                         //GL.BindTexture(TextureTarget.Texture2D, shadowMapTexture);
                     
@@ -355,7 +355,7 @@ namespace RallysportGame
                     }
                     GL.PopAttrib(); 
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-                    GL.CullFace(CullFaceMode.Back);
+                    //GL.CullFace(CullFaceMode.Back);
                     GL.Disable(EnableCap.PolygonOffsetFill);
                     ///END OF SHADOWMAP FBO RENDERING
 
@@ -383,6 +383,8 @@ namespace RallysportGame
                     GL.UseProgram(basicShaderProgram);
 
 
+                    //Matrix4 bias = new Matrix4(0.9f, 0.0f, 0.0f, 0.0f, 0.0f, 0.9f, 0.0f, 0.0f, 0.0f, 0.0f, 0.9f, 0.0f, 0.9f, 0.9f, 0.9f, 1.0f);
+
                     Matrix4 lightMatrix;// = Matrix4.Transpose(lightProjectionMatrix)*Matrix4.Transpose(lightViewMatrix)*Matrix4.Invert(Matrix4.Transpose(viewMatrix))*Matrix4.Invert(Matrix4.Transpose(projectionMatrix));// = (Matrix4.Invert(viewMatrix) * lightViewMatrix) * lightProjectionMatrix;//modelMatrix*lightViewMatrix*lightProjectionMatrix;//
                     Matrix4 invView = Matrix4.Invert(viewMatrix);
 
@@ -399,6 +401,8 @@ namespace RallysportGame
 
                     lightMatrix = lightMatrix * Matrix4.CreateScale(0.5f) * Matrix4.CreateTranslation(new OpenTK.Vector3(0.5f, 0.5f, 0.5f));
                     GL.UniformMatrix4(GL.GetUniformLocation(basicShaderProgram, "lightMatrix"), false, ref lightMatrix);
+                    //GL.UniformMatrix4(GL.GetUniformLocation(basicShaderProgram, "lightMatrix"), false, ref bias);
+                    
 
                     GL.Viewport(0, 0, w, h);
                     
@@ -418,15 +422,17 @@ namespace RallysportGame
 
                     
                     myCar.render(basicShaderProgram, projectionMatrix, viewMatrix, lightPosition, lightViewMatrix, lightProjectionMatrix);
-                    skybox.render(basicShaderProgram, projectionMatrix, viewMatrix, lightPosition, lightViewMatrix, lightProjectionMatrix);
                     
-
-                    GL.BindTexture(TextureTarget.Texture2D, 0);
                    
                     GL.ActiveTexture(TextureUnit.Texture1);
                     GL.BindTexture(TextureTarget.Texture2D, 0);
-                   
+
+                    skybox.render(basicShaderProgram, projectionMatrix, viewMatrix, lightPosition, lightViewMatrix, lightProjectionMatrix);
+
+                    GL.ActiveTexture(TextureUnit.Texture0);
+                    GL.BindTexture(TextureTarget.Texture2D, 0);
                     
+
                     GL.End();
 
                     game.SwapBuffers();

@@ -18,6 +18,8 @@
  uniform mat4 normalMatrix;
  uniform mat4 lightMatrix;
 
+ uniform mat4 lightproj;
+ uniform mat4 viewMatrix;
 
 
 void main()
@@ -25,7 +27,9 @@ void main()
 	viewSpaceNormal = (normalMatrix*vec4(normalIn,0.0)).xyz;
 	viewSpacePosition = (modelViewMatrix *vec4(position,1.0)).xyz;
 
-	shadowMapCoord = lightMatrix * vec4(viewSpacePosition,1.0);
+	//mat4 temp = lightproj * lightMatrix * inverse(viewMatrix);
+
+	shadowMapCoord = lightMatrix *modelViewMatrix * vec4(position,1.0);//vec4(viewSpacePosition,1.0);
 	//shadowMapCoord.xyz *= vec3(0.5,0.5,0.5);
 	//shadowMapCoord.xyz += shadowMapCoord.w * vec3(0.5,0.5,0.5);
 
