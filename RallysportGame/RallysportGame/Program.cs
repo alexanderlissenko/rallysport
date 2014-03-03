@@ -45,7 +45,7 @@ namespace RallysportGame
         static float camera_vertical_delta = 1.0f;
         //static Vector4 camera_lookAt = new Vector4(0.0f, camera_target_altitude, 0.0f, 1.0f);
         static Matrix4 camera_rotation_matrix = Matrix4.Identity;
-        
+
         //ShadowMap constants
         static int shadowMapRes = 2048;
         static int shadowMapTexture, shadowMapFBO;
@@ -56,6 +56,9 @@ namespace RallysportGame
         static float light_r = 600.0f;
 
         static Entity myCar,myCar2,skybox;
+        //test particles
+        static ParticleSystem testPartSys;// = new ParticleSystem(new OpenTK.Vector3(0, 0, 0), 60f, 5, new TimeSpan(0, 0, 0, 4), new Entity());
+
 
 
 
@@ -133,9 +136,11 @@ namespace RallysportGame
                 switch(key)
                 {
                     case Key.A:
+                        testPartSys.stopEmit();
                         camera_theta -= camera_horizontal_delta;
                         break;
                     case Key.D:
+                        testPartSys.startEmit();
                         camera_theta += camera_horizontal_delta;
                         break;
                     case Key.W:
@@ -172,6 +177,9 @@ namespace RallysportGame
                     Console.WriteLine(GL.GetString(StringName.ShadingLanguageVersion));
                     // setup settings, load textures, sounds
                     game.VSync = VSyncMode.On;
+                    myCar = new Entity("Cube\\koobe");//"Cube\\koobe");//"TeapotCar\\Teapot car\\Teapot-no-materials-tri");//"map\\uggly_test_track_Triangulate");//
+                    testPartSys = new ParticleSystem(new OpenTK.Vector3(0, 0, 0), 60f, 1, new TimeSpan(0, 0, 0, 2), myCar);
+
                     myCar = new Entity("map\\uggly_test_track_Triangulate");//"TeapotCar\\Teapot car\\Teapot-no-materials-tri");//"Cube\\3ds-cube");//
                     myCar2 = new Entity("Cube\\testCube");//"Cube\\megu_koob");//"TeapotCar\\Teapot car\\Teapot-no-materials-tri");//
                     skybox = new Entity("Cube\\inside_koob");//"Cube\\testCube");//
@@ -314,7 +322,7 @@ namespace RallysportGame
                         Audio.playSound(source);
                     else if (Audio.audioStatus(source) == 3)
                         source = Audio.nextTrack(source);
-
+                    
                     //move light
 
                     light_theta += camera_horizontal_delta*0.1f;
@@ -322,7 +330,7 @@ namespace RallysportGame
                 };
 
                 game.RenderFrame += (sender, e) =>
-                {   
+                {
                     GL.ClearColor(0.2f, 0.2f, 0.8f, 1.0f);
                     GL.ClearDepth(1.0f);
                     //GL.UseProgram(basicShaderProgram);
@@ -341,7 +349,7 @@ namespace RallysportGame
                         
                         GL.Viewport(0, 0, shadowMapRes, shadowMapRes);
                         //GL.CullFace(CullFaceMode.Front);
-                        GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+                    GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
                         GL.Enable(EnableCap.PolygonOffsetFill);
                         GL.PolygonOffset(2.5f, 10f);
@@ -404,15 +412,15 @@ namespace RallysportGame
                     GL.UniformMatrix4(GL.GetUniformLocation(basicShaderProgram, "lightMatrix"), false, ref lightMatrix);
                     //GL.UniformMatrix4(GL.GetUniformLocation(basicShaderProgram, "lightMatrix"), false, ref bias);
                     
-
+                    
                     GL.Viewport(0, 0, w, h);
-                    
-                    
+
+
                     //ShadowMap texture is on unit 1
                     GL.ActiveTexture(TextureUnit.Texture1);
                     GL.BindTexture(TextureTarget.Texture2D, shadowMapTexture);
                     GL.Uniform1(GL.GetUniformLocation(basicShaderProgram, "shadowMapTex"), 1);
-                    
+
                     myCar.render(basicShaderProgram, projectionMatrix, viewMatrix, lightPosition, lightViewMatrix, lightProjectionMatrix);
 
                     GL.ActiveTexture(TextureUnit.Texture0);
@@ -436,7 +444,11 @@ namespace RallysportGame
                     skybox.render(basicShaderProgram, projectionMatrix, viewMatrix, lightPosition, lightViewMatrix, lightProjectionMatrix);
 
 
-                    
+                    testPartSys.tick();
+                    testPartSys.render();
+
+
+
                     GL.End();
 
                     game.SwapBuffers();

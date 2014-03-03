@@ -56,6 +56,11 @@ namespace RallysportGame
             makeVAO();
         }
 
+        public Entity()
+        {
+
+        }
+
         /*
          *  Duh, renders the object using whatever shaders you've set up. 
          */
@@ -129,6 +134,13 @@ namespace RallysportGame
         {
             modelMatrix = modelMatrix + Matrix4.CreateScale(10.0f);
         }
+        public void render(int program, OpenTK.Vector3 position)
+        {
+
+
+
+        }
+
         /// <summary>
         /// sets the mtl to load the uniforms for the shaders
         /// </summary>
