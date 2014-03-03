@@ -39,26 +39,36 @@ namespace RallysportGame
         public uint textureBuffer;
         public int numOfTri;
 
-        Matrix4 modelMatrix;
+        protected Matrix4 modelMatrix;
+        protected Matrix4 worldMatrix;
+        // 3D position in world space
+        public OpenTK.Vector3 position;
+        public List<int> vertIndices;
+        //TODO rotation variable and stoff
         
-        private MeshData mesh;
+        public MeshData mesh;
         /// <summary>
         /// Constructor for Entity
         /// Make sure that the .obj file and .mtl is named the same
         /// </summary>
         /// <param name="name">Name of the file starting from the model path no .obj its added automaticly</param>
+        public Entity()
+        {
+
+        }
+        
         public Entity(String name)
         {
-            modelMatrix = Matrix4.Identity;
+            modelMatrix = worldMatrix = Matrix4.Identity;
             fileName = name;
             this.mesh = new Meshomatic.ObjLoader().LoadFile(modelsDir+name +".obj");
             numOfTri = mesh.Tris.Length;
             makeVAO();
         }
 
-        public Entity()
+        public Entity(String name, OpenTK.Vector3 position): this(name)
         {
-
+            this.position = position;
         }
 
         /*
@@ -83,7 +93,6 @@ namespace RallysportGame
             OpenTK.Vector3 viewSpaceLightPosition = OpenTK.Vector3.Transform(lightPosition, viewMatrix);
             GL.Uniform3(GL.GetUniformLocation(program, "viewSpaceLightPosition"), viewSpaceLightPosition);
 
-            
 
             GL.Uniform3(GL.GetUniformLocation(program, "material_diffuse_color"), diffuse);
             GL.Uniform3(GL.GetUniformLocation(program, "material_specular_color"), specular);
@@ -106,8 +115,12 @@ namespace RallysportGame
 
         private void setMatrices(int program, Matrix4 projectionMatrix, Matrix4 viewMatrix)
         {
-            Matrix4 modelViewMatrix;// =Matrix4.Transpose(viewMatrix)* Matrix4.Transpose(modelMatrix);// = modelMatrix*viewMatrix ; //I know this is opposite see down why
-            Matrix4.Mult(ref modelMatrix, ref viewMatrix, out modelViewMatrix);
+            Matrix4 modelWorldMatrix;
+            // Transform from model to world
+            Matrix4.Mult(ref modelMatrix, ref worldMatrix, out modelWorldMatrix);
+            Matrix4 modelViewMatrix;
+            // =Matrix4.Transpose(viewMatrix)* Matrix4.Transpose(modelMatrix);// = modelMatrix*viewMatrix ; //I know this is opposite see down why
+            Matrix4.Mult(ref modelWorldMatrix, ref viewMatrix, out modelViewMatrix);
 
             Matrix4 modelViewProjectionMatrix;// = Matrix4.Transpose(projectionMatrix)*modelViewMatrix ;// = modelViewMatrix*projectionMatrix ;
             Matrix4.Mult(ref modelViewMatrix, ref projectionMatrix, out modelViewProjectionMatrix);
@@ -116,7 +129,6 @@ namespace RallysportGame
             Matrix4.Mult(ref modelMatrix, ref viewMatrix, out normalMatrix);
             normalMatrix.Transpose();
             normalMatrix.Invert();
-
 
             GL.UniformMatrix4(GL.GetUniformLocation(program, "normalMatrix"), false, ref normalMatrix);
             GL.UniformMatrix4(GL.GetUniformLocation(program, "modelViewMatrix"), false, ref modelViewMatrix);
@@ -127,12 +139,12 @@ namespace RallysportGame
 
         public void setUp3DSModel()
         {
-            modelMatrix = modelMatrix + Matrix4.CreateScale(0.1f);
+            modelMatrix = modelMatrix + Matrix4.CreateScale(0.1f); //TODO magic numbers go away!
         }
 
         public void setUpBlenderModel()
         {
-            modelMatrix = modelMatrix + Matrix4.CreateScale(10.0f);
+            modelMatrix = modelMatrix + Matrix4.CreateScale(10f);
         }
         public void render(int program, OpenTK.Vector3 position)
         {
@@ -248,7 +260,7 @@ namespace RallysportGame
         unsafe private void makeVAO()
         {
 
-            List<int> vertIndices = new List<int>();
+            vertIndices = new List<int>();
             List<int> normIndices = new List<int>();
             List<int> texIndices = new List<int>();
             // TODO tex coords
