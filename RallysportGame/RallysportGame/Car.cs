@@ -60,6 +60,8 @@ namespace RallysportGame
             velocity = Vector3.Transform(velocity, Matrix4.CreateRotationY(angle));
             turning_angle += angle;
         }
+
+        
         
         #endregion
 

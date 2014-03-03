@@ -30,6 +30,8 @@ namespace RallysportGame
         protected float speed = 0f;
         // Acceleration in world space
         protected Vector3 acceleration;
+        //All particle emitters attached to this entity
+        protected List<ParticleSystem> emitters = new List<ParticleSystem>();
         #endregion
 
         #region Constructors
@@ -48,6 +50,7 @@ namespace RallysportGame
         }
         #endregion
 
+        #region Public Methods
         /// <summary>
         /// Updates the world matrix with the new translations and rotations of the car model
         /// </summary>
@@ -70,6 +73,8 @@ namespace RallysportGame
             Matrix4.Mult(ref worldMatrix, ref translation, out worldMatrix);
             acceleration = Vector3.Zero;
             body.Position = Convert(position);
+
+            //for all emitters do emitters.tick() 
         }
 
         public void rotate(float angle_x, float angle_y, float angle_z)
@@ -77,6 +82,19 @@ namespace RallysportGame
 
         }
 
+        //Adds a particle emitter to the entity
+        public void AddEmitter(ParticleSystem pSys)
+        {
+            emitters.Add(pSys);
+        }
+
+        public ISpaceObject GetBody()
+        {
+            return body;
+        }
+        #endregion
+
+        #region Protected Methods
         protected BEPUutilities.Vector3 Convert(OpenTK.Vector3 v)
         {
             return new BEPUutilities.Vector3(v.X, v.Y, v.Z);
@@ -85,9 +103,6 @@ namespace RallysportGame
         {
             return new Vector3(v.X, v.Y, v.Z);
         }
-        public ISpaceObject GetBody()
-        {
-            return body;
-        }
+        #endregion
     }
 }
