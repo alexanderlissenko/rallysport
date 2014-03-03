@@ -52,6 +52,9 @@ namespace RallysportGame
                 acceleration += direction * rate;
                 acceleration *= friction_coefficient;
             }
+            
+            // Trying stuff out
+            body.LinearVelocity = body.LinearVelocity + Utilities.ConvertToBepu(up) * rate;
         }
         // Angle in radians
         public void Turn(float angle)

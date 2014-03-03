@@ -211,10 +211,8 @@ namespace RallysportGame
                     
                     environment = new Entity("map\\uggly_test_track_Triangulate");//"TeapotCar\\Teapot car\\Teapot-no-materials-tri");//"Cube\\3ds-cube");//
                     myCar2 = new Entity("Cube\\testCube");//"Cube\\megu_koob");//"TeapotCar\\Teapot car\\Teapot-no-materials-tri");//
-                    playerCar = new Car("TeapotCar\\Teapot car\\Teapot-no-materials-tri");
+                    playerCar = new Car("TeapotCar\\Teapot car\\Teapot-no-materials-tri", new Vector3(0,20f,0));
                     skybox = new Entity("Cube\\inside_koob");
-                    
-                    
                     
                     //Particle System
                     testPartSys = new ParticleSystem(new OpenTK.Vector3(0, 0, 0), 60f, 1, new TimeSpan(0, 0, 0, 2), playerCar);
@@ -250,10 +248,6 @@ namespace RallysportGame
                     
                     
                     //Shadowmaps
-
-
-                    
-                    
                     shadowMapRes = 1024;
                     shadowMapTexture = GL.GenTexture();
                     GL.BindTexture(TextureTarget.Texture2D, shadowMapTexture);
@@ -370,7 +364,7 @@ namespace RallysportGame
 
                     updateCamera();
                     UpdateMouse();
-                    playerCar.Update();
+                    //playerCar.Update();
                     //////////////////////////////////////////////////////ÄNDRA TILLBAKA!!!
                     //Audio management
                     if (Audio.audioStatus(source) == 1)
@@ -384,6 +378,7 @@ namespace RallysportGame
                     
                 };
                 #endregion
+                #region Render
                 game.RenderFrame += (sender, e) =>
                 {   
                     GL.ClearColor(0.2f, 0.2f, 0.8f, 1.0f);
@@ -508,7 +503,7 @@ namespace RallysportGame
                     GL.UseProgram(0);
 
                 };
-
+                #endregion
                 // Run the game at 60 updates per second
                 game.Run(60.0);
             }

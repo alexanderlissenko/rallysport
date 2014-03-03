@@ -15,8 +15,8 @@ namespace RallysportGame
     {
         #region Constants
         // The direction the whole car is facing in model space
-        private readonly Vector3 forward = new Vector3(0f, 0f, -1f);
-        private readonly Vector3 up = new Vector3(0f, 1f, 0f);
+        protected Vector3 forward = new Vector3(0f, 0f, -1f);
+        protected readonly Vector3 up = new Vector3(0f, 1f, 0f);
         #endregion
 
         #region Instance Variables
@@ -46,7 +46,7 @@ namespace RallysportGame
         {
             direction = forward;
             velocity = acceleration = Vector3.Zero;
-            body = new Box(Convert(pos), 1f, 1f, 1f, 1f);
+            body = new Box(Utilities.ConvertToBepu(pos), 10f, 10f, 10f, 1f);
         }
         #endregion
 
@@ -58,13 +58,13 @@ namespace RallysportGame
         {
 
             
-            position = Convert(body.Position);
+            position = Utilities.ConvertToTK(body.Position);
         
-
+            
             worldMatrix = Matrix4.Identity;
             velocity += acceleration;
             //  - /*CalculateDrag() * */ (velocity.Normalized() * -1f); 
-            position += velocity;
+            position += Utilities.ConvertToTK(body.LinearVelocity);
             Matrix4 modelRotation = Matrix4.CreateRotationY(MathHelper.Pi / 2);
             //Matrix4 directionRotation = Matrix4.CreateRotationY(turning_angle);
             Matrix4 translation = Matrix4.CreateTranslation(position);
@@ -72,7 +72,7 @@ namespace RallysportGame
             //Matrix4.Mult(ref worldMatrix, ref directionRotation, out worldMatrix);
             Matrix4.Mult(ref worldMatrix, ref translation, out worldMatrix);
             acceleration = Vector3.Zero;
-            body.Position = Convert(position);
+            body.Position = Utilities.ConvertToBepu(position);
 
             //for all emitters do emitters.tick() 
         }
@@ -95,14 +95,6 @@ namespace RallysportGame
         #endregion
 
         #region Protected Methods
-        protected BEPUutilities.Vector3 Convert(OpenTK.Vector3 v)
-        {
-            return new BEPUutilities.Vector3(v.X, v.Y, v.Z);
-        }
-        protected Vector3 Convert(BEPUutilities.Vector3 v)
-        {
-            return new Vector3(v.X, v.Y, v.Z);
-        }
         #endregion
     }
 }

@@ -75,7 +75,7 @@ namespace RallysportGame
             foreach(Particle p in particleList){
                 // This method should render a particleObject at eatch particle possition
                 // This is how I whant it to wark, but dosen't as of yet
-                Console.Out.WriteLine("X: " + p.GetPosition().X + " \t Y: " + p.GetPosition().Y + "\t Z: " + p.GetPosition().Z + "\t Emit: " + emit + "\t" + "ID: " + p.ID_part);
+                //Console.Out.WriteLine("X: " + p.GetPosition().X + " \t Y: " + p.GetPosition().Y + "\t Z: " + p.GetPosition().Z + "\t Emit: " + emit + "\t" + "ID: " + p.ID_part);
                particleObject.render(0 ,new Vector3(p.GetPosition().X, p.GetPosition().Y, p.GetPosition().Z));
             }
         }
