@@ -19,7 +19,7 @@ namespace RallysportGame
         {
             objects = new List<DynamicEntity>();
             space = new Space(); 
-            space.ForceUpdater.Gravity = new BEPUutilities.Vector3(0, -9.81f, 0);
+            space.ForceUpdater.Gravity = new BEPUutilities.Vector3(0, SettingsParser.GetFloat(Settings.GRAVITY), 0);
         }
         public void Update()
         {

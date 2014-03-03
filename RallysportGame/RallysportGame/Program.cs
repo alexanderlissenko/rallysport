@@ -28,6 +28,7 @@ namespace RallysportGame
         const float pi = MathHelper.Pi;
         static Vector3 up = new Vector3(0.0f, 1.0f, 0.0f);
         static String shaderDir = @"..\..\..\..\Shaders\";
+        static String iniDir = @"..\..\ini\";
 
         //*****************************************************************************
         //	Global variables
@@ -199,7 +200,7 @@ namespace RallysportGame
                 #region Load
                 game.Load += (sender, e) =>
                 {
-
+                    SettingsParser.Init(iniDir + "default.ini");
                     //enable depthtest and face culling
                     GL.Enable(EnableCap.DepthTest);
                     GL.Enable(EnableCap.CullFace);
@@ -380,7 +381,8 @@ namespace RallysportGame
                 #endregion
                 #region Render
                 game.RenderFrame += (sender, e) =>
-                {   
+                {
+                    
                     GL.ClearColor(0.2f, 0.2f, 0.8f, 1.0f);
                     GL.ClearDepth(1.0f);
                     //GL.UseProgram(basicShaderProgram);
