@@ -1,0 +1,15 @@
+#version 420
+/*
+Implemented whith http://www.codinglabs.net/tutorial_simple_def_rendering.aspx 
+Marco Alamia as reference.
+*/
+out vec4 position;
+out vec3 normals;
+out mat4 TBN;
+uniform sampler2D textureDiffuse;
+
+void main(){
+	gl_FragData[0] = vec4(texture2D(textureDiffuse,gl_TexCoord[0].st).rgb, 0);
+	gl_FragData[1] = vec4(position.xyz,0);
+	gl_FragData[2] = vec4(normals.xyz,0);
+}

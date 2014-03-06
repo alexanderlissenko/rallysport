@@ -1,0 +1,32 @@
+/*
+Implemented whith http://www.codinglabs.net/tutorial_simple_def_rendering.aspx 
+Marco Alamia as reference.
+*/
+uniform sampler2D textureDiffuse; 
+uniform sampler2D texturePosition;
+uniform sampler2D textureNormals;
+uniform vec3 cameraPosition;
+
+
+void main(){
+    
+    vec4 colorImage = texture2D(textureDiffuse, gl_TexCoord[0].xy);
+    vec4 position   = texture2D(texturePosition, gl_TexCoord[0].xy);
+    vec4 normal   = texture2D(textureNormals, gl_TexCoord[0].xy);
+    
+    vec3 light = vec3(212,424,367)
+    vec3 lightDir = light-position.xyz;
+    
+    normal = normalize(normal);
+    lightDir = normalize(lightDir);
+    
+    vec3 eyeDirection = normalize(camraPosition-position.xyz);
+    
+    
+    gl_FragColor = vec4(1.0,1.0,1.0,1.0);// change
+    
+}
+
+
+
+

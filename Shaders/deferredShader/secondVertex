@@ -1,0 +1,17 @@
+#version 420
+/*
+Implemented whith http://www.codinglabs.net/tutorial_simple_def_rendering.aspx 
+Marco Alamia as reference.
+*/
+in vec3 positionIn;
+in mat4 ModelViewProjectionMatrix;
+
+
+
+
+void main()
+{
+    gl_Position = ModelViewProjectionMatrix * positionIn;
+    gl_TexCoord[0] = gl_MultiTexCoord0;
+    gl_FrontColor = vec4(1.0, 1.0, 1.0, 1.0);
+}
