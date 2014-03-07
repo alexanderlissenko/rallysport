@@ -408,6 +408,7 @@ namespace RallysportGame
 
                     //GL.BindTexture(TextureTarget.Texture2D, shadowMapTexture);
 
+                    playerCar.renderShadowMap(shadowShaderProgram, lightProjectionMatrix, lightViewMatrix);
                     myCar2.renderShadowMap(shadowShaderProgram, lightProjectionMatrix, lightViewMatrix);
                     environment.renderShadowMap(shadowShaderProgram, lightProjectionMatrix, lightViewMatrix);
 
@@ -472,7 +473,7 @@ namespace RallysportGame
                     GL.BindTexture(TextureTarget.Texture2D, shadowMapTexture);
                     GL.Uniform1(GL.GetUniformLocation(basicShaderProgram, "shadowMapTex"), 1);
                     
-                    //myCar2.render(basicShaderProgram, projectionMatrix, viewMatrix, lightPosition, lightViewMatrix, lightProjectionMatrix);
+                    myCar2.render(basicShaderProgram, projectionMatrix, viewMatrix, lightPosition, lightViewMatrix, lightProjectionMatrix);
                     playerCar.render(basicShaderProgram, projectionMatrix, viewMatrix, lightPosition, lightViewMatrix, lightProjectionMatrix);
                     
 

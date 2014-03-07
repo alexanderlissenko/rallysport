@@ -46,7 +46,7 @@ namespace RallysportGame
         {
             direction = forward;
             velocity = acceleration = Vector3.Zero;
-            body = new Box(Utilities.ConvertToBepu(pos), 10f, 10f, 10f, 1f);
+            body = new Box(Utilities.ConvertToBepu(pos), 5f, 5f, 5f, 5f);
         }
         #endregion
 
