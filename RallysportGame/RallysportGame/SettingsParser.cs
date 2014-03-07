@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-//using IniParser;
-//using IniParser.Model;
+using IniParser;
+using IniParser.Model;
 
 namespace RallysportGame
 {
@@ -32,8 +32,8 @@ namespace RallysportGame
             intSettings = new Dictionary<Settings, Int32>();
             floatSettings = new Dictionary<Settings, float>();
             boolSettings = new Dictionary<Settings, bool>();
-            //IniData data = new FileIniDataParser().ReadFile(path);
-/*
+            IniData data = new FileIniDataParser().ReadFile(path);
+
             foreach (SectionData sd in data.Sections)
             {
                 foreach (KeyData k in sd.Keys)
@@ -54,7 +54,6 @@ namespace RallysportGame
                     }
                 }
             } 
-*/
         }
         
         /*
