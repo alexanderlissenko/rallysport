@@ -53,6 +53,10 @@ namespace RallysportGame
         static int shadowMapTexture, shadowMapFBO;
         //
 
+        //Deferred Rendering
+        static int deferredTex, deferredNorm, deferredDepth,deferredFBO,deferredRBO;
+        //
+
         static float light_theta = pi / 6.0f;
         static float light_phi = pi / 4.0f;
         static float light_r = 600.0f;
@@ -218,6 +222,7 @@ namespace RallysportGame
                     //Particle System
                     testPartSys = new ParticleSystem(new OpenTK.Vector3(0, 0, 0), 60f, 1, new TimeSpan(0, 0, 0, 2), playerCar);
 
+
                     //Set up shaders
                     basicShaderProgram = loadShaderProgram(shaderDir+"Simple_VS.glsl",shaderDir+"Simple_FS.glsl");
                     GL.BindAttribLocation(basicShaderProgram, 0, "position");
@@ -230,6 +235,20 @@ namespace RallysportGame
                     GL.BindAttribLocation(shadowShaderProgram, 0, "position");
                     GL.BindFragDataLocation(shadowShaderProgram, 0, "fragmentColor");
                     GL.LinkProgram(shadowShaderProgram);
+
+                    basicShaderProgram = loadShaderProgram(shaderDir + "deferredShader\\firstVertex", shaderDir + "deferredShader\\firstpass");
+                    GL.BindAttribLocation(basicShaderProgram, 0, "position");
+                    GL.BindAttribLocation(basicShaderProgram, 1, "normalIn");
+                    GL.BindAttribLocation(basicShaderProgram, 2, "textCoordIn");
+                    GL.BindFragDataLocation(basicShaderProgram, 0, "fragmentColor");
+                    GL.LinkProgram(basicShaderProgram);
+
+                    basicShaderProgram = loadShaderProgram(shaderDir + "deferredShader\\secondVertex", shaderDir + "deferredShader\\secondPass");
+                    GL.BindAttribLocation(basicShaderProgram, 0, "position");
+                    GL.BindAttribLocation(basicShaderProgram, 1, "normalIn");
+                    GL.BindAttribLocation(basicShaderProgram, 2, "textCoordIn");
+                    GL.BindFragDataLocation(basicShaderProgram, 0, "fragmentColor");
+                    GL.LinkProgram(basicShaderProgram);
 
                     Console.WriteLine(GL.GetProgramInfoLog(basicShaderProgram));
                     Console.WriteLine(GL.GetProgramInfoLog(shadowShaderProgram));
@@ -246,9 +265,10 @@ namespace RallysportGame
                     GL.UseProgram(0);
                     
                     //Set up Uniforms
-                    
-                    
+
+
                     //Shadowmaps
+                    #region ShadowMap
                     shadowMapRes = 1024;
                     shadowMapTexture = GL.GenTexture();
                     GL.BindTexture(TextureTarget.Texture2D, shadowMapTexture);
@@ -280,6 +300,45 @@ namespace RallysportGame
 
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
                     
+#endregion
+
+                    //Deferred Rendering 
+                    #region Deferred Rendering
+
+                    deferredFBO = GL.GenFramebuffer();
+                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, deferredFBO);
+
+                    deferredTex = GL.GenTexture();
+                    GL.BindTexture(TextureTarget.Texture2D, deferredTex);
+                    GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb16f, game.Width, game.Height, 0, PixelFormat.Rgb, PixelType.UnsignedByte, (IntPtr)0);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
+
+                    deferredNorm = GL.GenTexture();
+                    GL.BindTexture(TextureTarget.Texture2D, deferredNorm);
+                    GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb16f, game.Width, game.Height, 0, PixelFormat.Rgb, PixelType.UnsignedByte, (IntPtr)0);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
+
+                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, deferredFBO);
+                    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, deferredTex, 0);
+                    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment1, TextureTarget.Texture2D, deferredNorm, 0);
+
+                    deferredRBO = GL.GenRenderbuffer();
+                    GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, deferredRBO);
+                    GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent32, game.Width, game.Height);
+                    GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, deferredRBO);
+
+
+                    DrawBuffersEnum[] draw_buffs = {DrawBuffersEnum.ColorAttachment0,DrawBuffersEnum.ColorAttachment1};
+                    GL.DrawBuffers(2, draw_buffs);
+
+                    #endregion
+
                     //lightPosition = new Vector3(up);
            
                     game.KeyDown += handleKeyDown;
