@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using System.Net.Sockets;
 using System.Net;
 
+using OpenTK;
+
 namespace RallysportGame
 {
     class Network
@@ -14,7 +16,6 @@ namespace RallysportGame
 
         private Socket socket,socket2;
         private EndPoint ep;
-
         public Network()
         {
             socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
@@ -38,11 +39,17 @@ namespace RallysportGame
 
         public void sendData()
         {
-            byte[] msg = Encoding.UTF8.GetBytes("BROADCAST");
-            Console.WriteLine("network data sending");
+            byte[] msg = Encoding.UTF8.GetBytes("BROADCAST " + DateTime.Now.ToString());
+            Console.WriteLine("network data sending " + DateTime.Now.ToString());
             socket.Send(msg, msg.Length, SocketFlags.None);
         }
+        public void sendData(Vector3 vector)
+        {
 
+            byte[] msg = Encoding.UTF8.GetBytes(vector.ToString()+ DateTime.Now.ToString());
+            Console.WriteLine("network data sending" + DateTime.Now.ToString());
+            socket.Send(msg, msg.Length, SocketFlags.None);
+        }
         public void recieveData()
         {
 
@@ -59,6 +66,7 @@ namespace RallysportGame
         public void closeSocket()
         {
             socket.Close();
+            socket2.Close();
         }
 
     }
