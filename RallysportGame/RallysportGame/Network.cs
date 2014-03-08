@@ -46,7 +46,7 @@ namespace RallysportGame
         public void recieveData()
         {
 
-            byte[] b = new byte[44];
+            byte[] b = new byte[1024];
             if(socket2.Available != 0)
             {
                 int recv = socket2.ReceiveFrom(b, ref ep);
