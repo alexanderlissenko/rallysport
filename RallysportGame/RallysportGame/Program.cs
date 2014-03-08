@@ -74,6 +74,13 @@ namespace RallysportGame
         static MouseState previous;
         private static CollisionHandler collisionHandler;
 
+
+        //NETWORK
+        static Network networkhandler;
+        static int testtimer = 0; 
+        //
+
+
         // Helper function to turn spherical coordinates into cartesian (x,y,z)
         static Vector3 sphericalToCartesian(float theta, float phi, float r)
         {
@@ -300,6 +307,9 @@ namespace RallysportGame
                     collisionHandler.addObject(playerCar);
                     Vector3 environmentLocation = new Vector3(0, 0, 0);
                     collisionHandler.setupEnvironment(environment, environmentLocation);
+
+                    networkhandler = new Network();
+                    
                 };
                 #endregion
 
@@ -311,10 +321,17 @@ namespace RallysportGame
                 #region Update
                 game.UpdateFrame += (sender, e) =>
                 {
+                    if (testtimer == 180)
+                    {
+                        networkhandler.sendData();
+                        testtimer = 0;
+                    }
+                    testtimer++;
                     camera_rotation_matrix = Matrix4.Identity;
                     // add game logic, input handling
                     if (game.Keyboard[Key.Escape])
                     {
+                        networkhandler.closeSocket();
                         GL.DeleteTextures(1, ref shadowMapTexture);
                         Audio.deleteBS(source);
                         game.Exit();
