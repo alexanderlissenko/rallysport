@@ -12,7 +12,8 @@ namespace RallysportGame
     class Network
     {
 
-        private Socket socket;
+        private Socket socket,socket2;
+        private EndPoint ep;
 
         public Network()
         {
@@ -24,6 +25,15 @@ namespace RallysportGame
 
             IPEndPoint ipep = new IPEndPoint(ip, 11245);
             socket.Connect(ipep);
+
+
+            //Reciever
+
+            socket2 = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            IPEndPoint ipep2 = new IPEndPoint(IPAddress.Any, 11245);
+            socket2.Bind(ipep2);
+
+            ep = (EndPoint)ipep2;
         }
 
         public void sendData()
@@ -35,10 +45,15 @@ namespace RallysportGame
 
         public void recieveData()
         {
-            byte[] b = new byte[1024];
-            socket.Receive(b);
-            string str = System.Text.Encoding.ASCII.GetString(b, 0, b.Length);
-            Console.WriteLine(str.Trim());
+
+            byte[] b = new byte[44];
+            if(socket2.Available != 0)
+            {
+                int recv = socket2.ReceiveFrom(b, ref ep);
+                string str = System.Text.Encoding.ASCII.GetString(b, 0, recv);
+                Console.WriteLine(str.Trim());
+            }
+            
         }
 
         public void closeSocket()

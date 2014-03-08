@@ -321,9 +321,9 @@ namespace RallysportGame
                 #region Update
                 game.UpdateFrame += (sender, e) =>
                 {
-                    if (testtimer == 180)
+                    if (testtimer == 60)
                     {
-                        networkhandler.sendData();
+                        networkhandler.recieveData();
                         testtimer = 0;
                     }
                     testtimer++;
