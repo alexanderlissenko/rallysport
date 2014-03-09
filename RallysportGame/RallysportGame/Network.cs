@@ -29,7 +29,9 @@ namespace RallysportGame
             socket.Bind(localEP);
             
             socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, new MulticastOption(multicastAddr,localIp));
-            socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.MulticastTimeToLive, 0);
+            socket.SetSocketOption(SocketOptionLevel.Udp, SocketOptionName.NoDelay, 1);
+            socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
+            socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.MulticastTimeToLive, 1);
 
             ep = (EndPoint)localEP;
         }
