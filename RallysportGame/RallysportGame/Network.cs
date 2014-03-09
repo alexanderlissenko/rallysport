@@ -118,12 +118,18 @@ namespace RallysportGame
                 switch (str.Substring(0, 1))
                 {
                     case "0":
-                        sendData("1" + ids);
-                        ids++;
+                        if (isLeader)
+                        {
+                            sendData("1" + ids);
+                            //ids++;
+                        }
                         break;
                     case "1":
+                        ids = int.Parse(str.Substring(1))+1;
                         break;
                     case "2":
+                        if (int.Parse(str.Substring(1)) == userId)
+                            isLeader = true;
                         break;
                     case "3":
                         break;
@@ -135,6 +141,7 @@ namespace RallysportGame
 
         public void closeSocket()
         {
+            sendData("2" + (ids - 1));
             try
             {
                 socket.Shutdown(SocketShutdown.Both);
