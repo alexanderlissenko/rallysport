@@ -61,18 +61,25 @@ namespace RallysportGame
         {
 
             byte[] b = new byte[1024];
-            if(socket.Available != 0)
+            try
             {
-                int recv = socket.ReceiveFrom(b, ref ep);
-                string str = System.Text.Encoding.ASCII.GetString(b, 0, recv);
-                Console.WriteLine(str.Trim());
+                if (socket.Available != 0)
+                {
+                    int recv = socket.ReceiveFrom(b, ref ep);
+                    string str = System.Text.Encoding.ASCII.GetString(b, 0, recv);
+                    Console.WriteLine(str.Trim());
+                }
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.ToString());
             }
             
         }
 
         public void closeSocket()
         {
-            while (socket.Available != 0) { }
+            
             socket.Close();
         }
 
