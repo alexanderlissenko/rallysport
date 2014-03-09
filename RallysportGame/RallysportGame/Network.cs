@@ -75,8 +75,8 @@ namespace RallysportGame
         public void sendData()
         {
             IPEndPoint endpoint = new IPEndPoint(multicastAddr, 11245);
-            byte[] msg = Encoding.UTF8.GetBytes("BROADCAST " + DateTime.Now.ToString());
-            Console.WriteLine("network data sending " + DateTime.Now.ToString());
+            byte[] msg = Encoding.UTF8.GetBytes("BROADCAST");
+            Console.WriteLine("network data sending");
             socket.SendTo(msg,endpoint);
         }
 
@@ -90,8 +90,8 @@ namespace RallysportGame
         public void sendData(Vector3 vector)
         {
             IPEndPoint endpoint = new IPEndPoint(multicastAddr, 11245);
-            byte[] msg = Encoding.UTF8.GetBytes("3"+userId+vector.ToString()+ DateTime.Now.ToString());
-            Console.WriteLine("network data sending" + DateTime.Now.ToString());
+            byte[] msg = Encoding.UTF8.GetBytes("3"+userId+vector.ToString());
+            Console.WriteLine("network data sending isleader: "+ isLeader.ToString());
             socket.SendTo(msg, endpoint);
         }
 
@@ -122,7 +122,6 @@ namespace RallysportGame
                         if (isLeader)
                         {
                             sendData("1" + ids);
-                            //ids++;
                         }
                         break;
                     case "1":
