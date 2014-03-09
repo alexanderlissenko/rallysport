@@ -321,13 +321,17 @@ namespace RallysportGame
                 #region Update
                 game.UpdateFrame += (sender, e) =>
                 {
+                    //Network
                     if (testtimer == 180)
                     {
                         networkhandler.sendData(new Vector3(0.5f));
-                        networkhandler.recieveData();
                         testtimer = 0;
                     }
                     testtimer++;
+                    networkhandler.recieveData();
+
+                    //Network
+
                     camera_rotation_matrix = Matrix4.Identity;
                     // add game logic, input handling
                     if (game.Keyboard[Key.Escape])
