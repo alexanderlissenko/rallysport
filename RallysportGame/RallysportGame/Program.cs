@@ -336,10 +336,13 @@ namespace RallysportGame
                     // add game logic, input handling
                     if (game.Keyboard[Key.Escape])
                     {
-                        networkhandler.closeSocket();
-                        GL.DeleteTextures(1, ref shadowMapTexture);
-                        Audio.deleteBS(source);
-                        game.Exit();
+                        if (!keyHandled)
+                        {
+                            networkhandler.closeSocket();
+                            GL.DeleteTextures(1, ref shadowMapTexture);
+                            Audio.deleteBS(source);
+                            game.Exit();
+                        }
                     }
                     else if (game.Keyboard[Key.Number9])
                     {
