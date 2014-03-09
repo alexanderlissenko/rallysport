@@ -79,11 +79,15 @@ namespace RallysportGame
 
         public void closeSocket()
         {
-            if (socket == null)
+            try
             {
                 socket.Shutdown(SocketShutdown.Both);
-                socket.Close();
             }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+            socket.Close();
         }
 
         private IPAddress getLocalIp()
