@@ -207,6 +207,7 @@ namespace RallysportGame
                 #region Load
                 game.Load += (sender, e) =>
                 {
+                    networkhandler = new Network();
                     SettingsParser.Init(iniDir + "default.ini");
                     //enable depthtest and face culling
                     GL.Enable(EnableCap.DepthTest);
@@ -308,8 +309,8 @@ namespace RallysportGame
                     Vector3 environmentLocation = new Vector3(0, 0, 0);
                     collisionHandler.setupEnvironment(environment, environmentLocation);
 
-                    networkhandler = new Network();
-                    
+
+                    networkhandler.startSending();
                 };
                 #endregion
 
