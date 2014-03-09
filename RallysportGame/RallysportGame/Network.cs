@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
 using System.Net.NetworkInformation;
+using System.Threading;
 
 using OpenTK;
 
@@ -41,6 +42,7 @@ namespace RallysportGame
 
         public void startSending()
         {
+            Thread.Sleep(2000);
             if(socket.Available==0)
             {
                 Console.WriteLine("Starting Network");
@@ -86,7 +88,7 @@ namespace RallysportGame
         public void sendData(Vector3 vector)
         {
             IPEndPoint endpoint = new IPEndPoint(multicastAddr, 11245);
-            byte[] msg = Encoding.UTF8.GetBytes(vector.ToString()+ DateTime.Now.ToString());
+            byte[] msg = Encoding.UTF8.GetBytes("3"+userId+vector.ToString()+ DateTime.Now.ToString());
             Console.WriteLine("network data sending" + DateTime.Now.ToString());
             socket.SendTo(msg, endpoint);
         }
@@ -103,6 +105,7 @@ namespace RallysportGame
                     int recv = socket.ReceiveFrom(b, ref ep);
                     str = System.Text.Encoding.ASCII.GetString(b, 0, recv);
                     str = str.Trim();
+                    Console.WriteLine(str);
                 }
             }
             catch(Exception e)
