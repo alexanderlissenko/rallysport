@@ -56,12 +56,13 @@ namespace RallysportGame
                     byte[] b = new byte[1024];
                     int recv = socket.ReceiveFrom(b, ref ep);
                     string str = System.Text.Encoding.ASCII.GetString(b, 0, recv);
-
+                    Console.WriteLine(str);
                     if (str.Length > 1)
                     {
                         if (str.Substring(0, 1).Equals("1"))
                         {
                             userId = int.Parse(str.Substring(1));
+                            break;
                         }
                     }
                 }
