@@ -64,6 +64,7 @@ namespace RallysportGame
                         if (str.Substring(0, 1).Equals("1"))
                         {
                             userId = int.Parse(str.Substring(1));
+                            ids = userId + 1;
                             break;
                         }
                     }
