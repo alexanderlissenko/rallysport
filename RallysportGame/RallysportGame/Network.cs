@@ -20,6 +20,8 @@ namespace RallysportGame
 
 
         private int userId;
+        private bool isLeader = false;
+        private int ids=1;
 
         public Network()
         {
@@ -43,13 +45,12 @@ namespace RallysportGame
             {
                 Console.WriteLine("Starting Network");
                 userId = 0;
+                isLeader = true;
             }
             else
             {
-                IPEndPoint endpoint = new IPEndPoint(multicastAddr, 11245);
-                byte[] msg = Encoding.UTF8.GetBytes("0");
+                sendData("0");
                 Console.WriteLine("Conecting to network");
-                socket.SendTo(msg, endpoint);
                 for (int i = 0; i < 10; i++ )
                 {
                     byte[] b = new byte[1024];
@@ -58,7 +59,7 @@ namespace RallysportGame
 
                     if (str.Length > 1)
                     {
-                        if (str.Substring(0, 1).Equals("0"))
+                        if (str.Substring(0, 1).Equals("1"))
                         {
                             userId = int.Parse(str.Substring(1));
                         }
@@ -75,6 +76,13 @@ namespace RallysportGame
             socket.SendTo(msg,endpoint);
         }
 
+        public void sendData(string str)
+        {
+            IPEndPoint endpoint = new IPEndPoint(multicastAddr, 11245);
+            byte[] msg = Encoding.UTF8.GetBytes(str);
+            socket.SendTo(msg, endpoint);
+        }
+
         public void sendData(Vector3 vector)
         {
             IPEndPoint endpoint = new IPEndPoint(multicastAddr, 11245);
@@ -87,20 +95,38 @@ namespace RallysportGame
         {
 
             byte[] b = new byte[1024];
+            string str ="";
             try
             {
                 if (socket.Available != 0)
                 {
                     int recv = socket.ReceiveFrom(b, ref ep);
-                    string str = System.Text.Encoding.ASCII.GetString(b, 0, recv);
-                    Console.WriteLine(str.Trim());
+                    str = System.Text.Encoding.ASCII.GetString(b, 0, recv);
+                    str = str.Trim();
                 }
             }
             catch(Exception e)
             {
                 Console.WriteLine(e.ToString());
             }
-            
+            if (!str.Equals(""))
+            {
+                switch (str.Substring(0, 1))
+                {
+                    case "0":
+                        sendData("1" + ids);
+                        ids++;
+                        break;
+                    case "1":
+                        break;
+                    case "2":
+                        break;
+                    case "3":
+                        break;
+                    default:
+                        break;
+                }
+            }
         }
 
         public void closeSocket()
