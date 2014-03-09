@@ -79,7 +79,7 @@ namespace RallysportGame
 
         public void closeSocket()
         {
-            
+            socket.Shutdown(SocketShutdown.Both);
             socket.Close();
         }
 
