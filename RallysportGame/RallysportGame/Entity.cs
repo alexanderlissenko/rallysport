@@ -71,6 +71,39 @@ namespace RallysportGame
             this.position = position;
         }
 
+
+        public void firstPass(int program, Matrix4 projectionMatrix, Matrix4 viewMatrix)
+        {
+
+            setMatrices(program, projectionMatrix, viewMatrix);
+
+            GL.Uniform3(GL.GetUniformLocation(program, "material_diffuse_color"), diffuse);
+            GL.Uniform3(GL.GetUniformLocation(program, "material_specular_color"), specular);
+            GL.Uniform3(GL.GetUniformLocation(program, "material_emissive_color"), emisive);
+            GL.Uniform1(GL.GetUniformLocation(program, "material_shininess"), shininess);
+
+
+            GL.BindVertexArray(vertexArrayObject);
+            GL.DrawArrays(PrimitiveType.Triangles, 0, numOfTri * 3);
+
+        }
+        public void secondPass(int program, Matrix4 projectionMatrix, Matrix4 viewMatrix)
+        {
+            Matrix4 modelWorldMatrix;
+            // Transform from model to world
+            Matrix4.Mult(ref modelMatrix, ref worldMatrix, out modelWorldMatrix);
+            Matrix4 modelViewMatrix;
+            Matrix4.Mult(ref modelWorldMatrix, ref viewMatrix, out modelViewMatrix);
+
+            Matrix4 modelViewProjectionMatrix;
+            Matrix4.Mult(ref modelViewMatrix, ref projectionMatrix, out modelViewProjectionMatrix);
+            GL.UniformMatrix4(GL.GetUniformLocation(program,"modelViewProjectionMatrix"), false, ref modelViewProjectionMatrix);
+
+            GL.BindVertexArray(vertexArrayObject);
+            GL.DrawArrays(PrimitiveType.Triangles, 0, numOfTri * 3);
+        
+        }
+
         /*
          *  Duh, renders the object using whatever shaders you've set up. 
          */
@@ -119,22 +152,20 @@ namespace RallysportGame
             // Transform from model to world
             Matrix4.Mult(ref modelMatrix, ref worldMatrix, out modelWorldMatrix);
             Matrix4 modelViewMatrix;
-            // =Matrix4.Transpose(viewMatrix)* Matrix4.Transpose(modelMatrix);// = modelMatrix*viewMatrix ; //I know this is opposite see down why
             Matrix4.Mult(ref modelWorldMatrix, ref viewMatrix, out modelViewMatrix);
 
-            Matrix4 modelViewProjectionMatrix;// = Matrix4.Transpose(projectionMatrix)*modelViewMatrix ;// = modelViewMatrix*projectionMatrix ;
+            Matrix4 modelViewProjectionMatrix;
             Matrix4.Mult(ref modelViewMatrix, ref projectionMatrix, out modelViewProjectionMatrix);
 
-            Matrix4 normalMatrix;// = Matrix4.Transpose(Matrix4.Invert(viewMatrix * modelMatrix));
+            Matrix4 normalMatrix;
             Matrix4.Mult(ref modelMatrix, ref viewMatrix, out normalMatrix);
             normalMatrix.Transpose();
             normalMatrix.Invert();
 
+            GL.UniformMatrix4(GL.GetUniformLocation(program, "worldMatrix"), false, ref modelWorldMatrix);
             GL.UniformMatrix4(GL.GetUniformLocation(program, "normalMatrix"), false, ref normalMatrix);
             GL.UniformMatrix4(GL.GetUniformLocation(program, "modelViewMatrix"), false, ref modelViewMatrix);
-            GL.UniformMatrix4(GL.GetUniformLocation(program, "modelViewProjectionMatrix"), false, ref modelViewProjectionMatrix);
-
-            
+            GL.UniformMatrix4(GL.GetUniformLocation(program, "modelViewProjectionMatrix"), false, ref modelViewProjectionMatrix);  
         }
 
         public void setUp3DSModel()

@@ -1,3 +1,4 @@
+#version 420
 /*
 Implemented whith http://www.codinglabs.net/tutorial_simple_def_rendering.aspx 
 Marco Alamia as reference.
@@ -14,7 +15,7 @@ void main(){
     vec4 position   = texture2D(texturePosition, gl_TexCoord[0].xy);
     vec4 normal   = texture2D(textureNormals, gl_TexCoord[0].xy);
     
-    vec3 light = vec3(212,424,367)
+    vec3 light = vec3(212,424,367);
     vec3 lightDir = light-position.xyz;
     
     normal = normalize(normal);
@@ -23,7 +24,7 @@ void main(){
     vec3 eyeDirection = normalize(camraPosition-position.xyz);
     
     
-    gl_FragColor = vec4(1.0,1.0,1.0,1.0);// change
+    fragColor = vec4(1.0,1.0,1.0,1.0);
     
 }
 

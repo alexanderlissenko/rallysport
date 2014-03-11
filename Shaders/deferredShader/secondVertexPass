@@ -4,7 +4,7 @@ Implemented whith http://www.codinglabs.net/tutorial_simple_def_rendering.aspx
 Marco Alamia as reference.
 */
 in vec3 positionIn;
-in mat4 ModelViewProjectionMatrix;
+uniform mat4 ModelViewProjectionMatrix;
 
 
 
