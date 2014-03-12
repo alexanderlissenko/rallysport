@@ -1,0 +1,63 @@
+#version 420
+
+uniform mat4 V;
+uniform sampler2D p_tex;
+uniform sampler2D n_tex;
+
+uniform vec3 ls;
+uniform vec3 ld;
+uniform vec3 lp;
+
+out vec4 frag_colour;
+
+in int windowSize_x; // remember to include in the input variables
+in int windowSize_y;
+
+const vec3 kd = vec3(1.0,1.0,1.0);  // duffuse reflection make dynamic later
+const vec3 ks = vec3(1.0,1.0,1.0);  // specular reflection make dynamic later
+const float specular_exponent = 50; 
+
+void main(){
+    vec2 st;
+    st.s=gl_fragCoord.x/windowSize_x;
+    st.t=gl_fragCoord.y/windowSize_y;
+    vec3 p_texel = texture(p_tex, st).xyz; // .xyz is added after an error of implicit cast vec3-4
+    
+    // unessesary to render things that arn't infront of the view port
+    if(p_texel.z > -0.0001){
+        discard;
+    }
+    vec3 n_texel = texture(n_tex,st).xyz;
+    
+    frag_colour.rgb = phong(p_texel.rgb, normalize(n_texel).rbg); // ultimate phong usage
+    frag_colour.a   = 1.0;
+}
+
+
+vec3 phong(in vec3 p_eye, in vec3 n_eye){
+    vec3 light_position_eye = vec3 (Vvec4(lp,1.0));
+    vec3 dist_to_light_eye = light_position_eye - p_eye;
+    vec3 direction_to_light_eye = normalize(dist_to_light_eye);
+    
+    
+    // diffuse light
+    float dot_prod = max(dot(direction_to_light_eye, n_eye), 0.0); // negative values are bad dog
+    vec3 Id = Id* kd * dot_prod; // final diff intens
+    
+    // specular light
+    vec3 reflection_eye = reflect(-direction_to_light_eye, n_eye);
+    vec3 surface_to_viewer_eye = normalize(-p_eye);
+    float dot_prod_specular = dot(reflection_eye, surface_to_viewer_eye);
+    dot_prod_specular = max(dot_prod_specular,0.0); // negative values are still bad man
+    
+    flaot specular_factor = pow(dot_prod_specular,specular_exponent); //OoOoO shiny
+    
+    // "atteniuation" aka eges of the "light mesh" should be faded
+    flaot dist_2d = distance(light_position_eye, p_eye);
+    float atten_factor = -log(min(1.0, dist_2d/5.0));// ones again negativity is bad
+    
+    return(Id+ Is) * atten_factor;
+}
+
+
+
