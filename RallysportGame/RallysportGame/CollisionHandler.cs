@@ -8,6 +8,7 @@ using BEPUphysics.Entities.Prefabs;
 using OpenTK;
 using BEPUphysics.BroadPhaseEntries;
 using BEPUutilities;
+using BEPUphysics.Threading;
 
 namespace RallysportGame
 {
@@ -18,7 +19,7 @@ namespace RallysportGame
         public CollisionHandler()
         {
             objects = new List<DynamicEntity>();
-            space = new Space(); 
+            space = new Space(new ParallelLooper()); 
             space.ForceUpdater.Gravity = new BEPUutilities.Vector3(0, SettingsParser.GetFloat(Settings.GRAVITY), 0);
         }
         public void Update()
@@ -26,9 +27,11 @@ namespace RallysportGame
             space.Update();
             foreach(DynamicEntity e in objects)
             {
-                //System.Console.WriteLine(e.position); //TODO temove this line: this is a temporary physics tester
+                
 
                 e.Update();
+
+                
             }
             
         }

@@ -10,6 +10,9 @@ using BEPUphysics.Entities.Prefabs;
 using BEPUphysics.BroadPhaseEntries;
 using BEPUphysics.NarrowPhaseSystems.Pairs;
 using BEPUphysics.BroadPhaseEntries.MobileCollidables;
+using BEPUphysics.CollisionShapes.ConvexShapes;
+using BEPUphysics.CollisionTests;
+using BEPUphysics.BroadPhaseEntries.Events;
 
 
 namespace RallysportGame
@@ -39,7 +42,7 @@ namespace RallysportGame
 
         #region Constructors
         public DynamicEntity(String name)
-            : base(name)
+            : base(name)   
         {
             direction = forward;
             position = velocity = acceleration = Vector3.Zero;
@@ -49,8 +52,11 @@ namespace RallysportGame
         {
             direction = forward;
             velocity = acceleration = Vector3.Zero;
+
+
             body = new Box(Utilities.ConvertToBepu(pos), 5f, 5f, 5f, 5f);
-            body.CollisionInformation.Events.PairCreated += new BEPUphysics.BroadPhaseEntries.Events.PairCreatedEventHandler<EntityCollidable>(eventTest);
+            
+            body.CollisionInformation.Events.ContactCreated += new ContactCreatedEventHandler<EntityCollidable>(eventTest);
         }
         #endregion
 
@@ -79,9 +85,13 @@ namespace RallysportGame
             //for all emitters do emitters.tick() 
         }
 
-        public void eventTest(EntityCollidable sender, BroadPhaseEntry other, NarrowPhasePair pair){
-            Console.WriteLine("Pair detected");
+        public void eventTest(EntityCollidable sender, Collidable other, CollidablePairHandler pair, ContactData contact)
+        {
+            Console.WriteLine("Contact detected");
+            Console.WriteLine(contact.ToString());
+            Console.WriteLine(sender.ToString());
             sender.Entity.LinearVelocity = Vector3.Zero;
+            
         }
 
         public void rotate(float angle_x, float angle_y, float angle_z)

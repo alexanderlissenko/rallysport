@@ -426,7 +426,6 @@ namespace RallysportGame
                     //GL.DepthRange(0.3f, 1.0f);
                     //////////////////////////////////////////////////////////////////
 
-                    
                     int w = game.Width;
                     int h = game.Height;
 
