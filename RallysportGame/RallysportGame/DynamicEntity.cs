@@ -7,6 +7,9 @@ using OpenTK;
 using BEPUphysics;
 using BEPUphysics.Entities;
 using BEPUphysics.Entities.Prefabs;
+using BEPUphysics.BroadPhaseEntries;
+using BEPUphysics.NarrowPhaseSystems.Pairs;
+using BEPUphysics.BroadPhaseEntries.MobileCollidables;
 
 
 namespace RallysportGame
@@ -47,6 +50,7 @@ namespace RallysportGame
             direction = forward;
             velocity = acceleration = Vector3.Zero;
             body = new Box(Utilities.ConvertToBepu(pos), 5f, 5f, 5f, 5f);
+            body.CollisionInformation.Events.PairCreated += new BEPUphysics.BroadPhaseEntries.Events.PairCreatedEventHandler<EntityCollidable>(eventTest);
         }
         #endregion
 
@@ -56,8 +60,6 @@ namespace RallysportGame
         /// </summary>
         public void Update()
         {
-
-            
             position = Utilities.ConvertToTK(body.Position);
         
             
@@ -75,6 +77,11 @@ namespace RallysportGame
             body.Position = Utilities.ConvertToBepu(position);
 
             //for all emitters do emitters.tick() 
+        }
+
+        public void eventTest(EntityCollidable sender, BroadPhaseEntry other, NarrowPhasePair pair){
+            Console.WriteLine("Pair detected");
+            sender.Entity.LinearVelocity = Vector3.Zero;
         }
 
         public void rotate(float angle_x, float angle_y, float angle_z)
