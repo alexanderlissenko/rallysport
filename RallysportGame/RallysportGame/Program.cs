@@ -211,8 +211,8 @@ namespace RallysportGame
                     //myCar = new Entity("Cube\\koobe");//"Cube\\koobe");//"TeapotCar\\Teapot car\\Teapot-no-materials-tri");//"map\\uggly_test_track_Triangulate");//
                     
                     environment = new Entity("map\\uggly_test_track_Triangulate");//"TeapotCar\\Teapot car\\Teapot-no-materials-tri");//"Cube\\3ds-cube");//
-                    myCar2 = new Entity("Cube\\testCube");//"Cube\\megu_koob");//"TeapotCar\\Teapot car\\Teapot-no-materials-tri");//
-                    playerCar = new Car("TeapotCar\\Teapot car\\Teapot-no-materials-tri", new Vector3(0,20f,0));
+                    //myCar2 = new Entity("Cube\\testCube");//"Cube\\megu_koob");//"TeapotCar\\Teapot car\\Teapot-no-materials-tri");//
+                    playerCar = new Car(@"Mustang\mustang-with-wheels", new Vector3(0,20f,0));
                     skybox = new Entity("Cube\\inside_koob");
                     
                     //Particle System
@@ -239,7 +239,7 @@ namespace RallysportGame
                     environment.setUpMtl();
                     environment.loadTexture();
                     environment.setUpBlenderModel();
-                    myCar2.setUpBlenderModel();
+                    //myCar2.setUpBlenderModel();
                     playerCar.setUp3DSModel();
 
                     skybox.setUp3DSModel();// setUpBlenderModel();
@@ -365,7 +365,7 @@ namespace RallysportGame
 
                     updateCamera();
                     UpdateMouse();
-                    //playerCar.Update();
+                    playerCar.Update();
                     //////////////////////////////////////////////////////ÄNDRA TILLBAKA!!!
                     //Audio management
                     if (Audio.audioStatus(source) == 1)
@@ -409,7 +409,7 @@ namespace RallysportGame
                     //GL.BindTexture(TextureTarget.Texture2D, shadowMapTexture);
 
                     playerCar.renderShadowMap(shadowShaderProgram, lightProjectionMatrix, lightViewMatrix);
-                    myCar2.renderShadowMap(shadowShaderProgram, lightProjectionMatrix, lightViewMatrix);
+                    //myCar2.renderShadowMap(shadowShaderProgram, lightProjectionMatrix, lightViewMatrix);
                     environment.renderShadowMap(shadowShaderProgram, lightProjectionMatrix, lightViewMatrix);
 
                     }
@@ -472,7 +472,7 @@ namespace RallysportGame
                     GL.BindTexture(TextureTarget.Texture2D, shadowMapTexture);
                     GL.Uniform1(GL.GetUniformLocation(basicShaderProgram, "shadowMapTex"), 1);
                     
-                    myCar2.render(basicShaderProgram, projectionMatrix, viewMatrix, lightPosition, lightViewMatrix, lightProjectionMatrix);
+                    //myCar2.render(basicShaderProgram, projectionMatrix, viewMatrix, lightPosition, lightViewMatrix, lightProjectionMatrix);
                     playerCar.render(basicShaderProgram, projectionMatrix, viewMatrix, lightPosition, lightViewMatrix, lightProjectionMatrix);
                     
 

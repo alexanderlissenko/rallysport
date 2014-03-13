@@ -64,11 +64,11 @@ namespace RallysportGame
         /// <summary>
         /// Updates the world matrix with the new translations and rotations of the car model
         /// </summary>
-        public void Update()
+        public virtual void Update()
         {
+            
             position = Utilities.ConvertToTK(body.Position);
         
-            
             worldMatrix = Matrix4.Identity;
             velocity += acceleration;
             //  - /*CalculateDrag() * */ (velocity.Normalized() * -1f); 
@@ -89,7 +89,7 @@ namespace RallysportGame
         {
             Console.WriteLine("Contact detected");
             Console.WriteLine(contact.ToString());
-            Console.WriteLine(sender.ToString());
+            //Console.WriteLine(sender.BoundingBox.ToString());
             sender.Entity.LinearVelocity = Vector3.Zero;
             
         }
@@ -105,7 +105,7 @@ namespace RallysportGame
             emitters.Add(pSys);
         }
 
-        public ISpaceObject GetBody()
+        public virtual ISpaceObject GetBody()
         {
             return body;
         }

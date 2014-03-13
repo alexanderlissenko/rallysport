@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using OpenTK;
+using BEPUphysics.Vehicle;
 
 namespace RallysportGame
 {
@@ -21,7 +22,7 @@ namespace RallysportGame
 
         #region Instance Variables
         public Box boundingBox;
-        
+        public Vehicle vehicle;
         // The angle between the direction and forward vectors
         private float turning_angle;
         // Friction coefficient, material-dependent
@@ -40,10 +41,16 @@ namespace RallysportGame
         public Car(String name, Vector3 pos)
             : base(name, pos)
         {
-
+            //Replace generic body with specific car body
+            ConvexHull ch = new ConvexHull(new List<BEPUutilities.Vector3>(Utilities.meshToVectorArray(mesh)));
+            vehicle = new Vehicle(ch);
+            foreach(BEPUutilities.Vector3 v in ch.Vertices){
+                Console.WriteLine(v.ToString());
+            }
+            
+            
         }
         #endregion
-
         #region Public Methods
         public void accelerate(float rate)
         {
@@ -64,7 +71,9 @@ namespace RallysportGame
             turning_angle += angle;
         }
 
-        
+        public override ISpaceObject GetBody(){
+            return vehicle;
+        }
         
         #endregion
 
