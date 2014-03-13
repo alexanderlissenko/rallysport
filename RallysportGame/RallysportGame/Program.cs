@@ -62,7 +62,7 @@ namespace RallysportGame
         static Entity environment,myCar2,skybox;
 
         static Car playerCar;
-
+        static ArrayList otherCars = new ArrayList();
 
 
         static ArrayList keyList = new ArrayList();
@@ -325,11 +325,11 @@ namespace RallysportGame
                     //Network
                     if (testtimer == 180)
                     {
-                        networkhandler.sendData(new Vector3(0.5f));
+                        networkhandler.sendData(new Vector3(0.0f));
                         testtimer = 0;
                     }
                     testtimer++;
-                    networkhandler.recieveData();
+                    networkhandler.recieveData(ref otherCars);
 
                     //Network
 
@@ -500,7 +500,10 @@ namespace RallysportGame
                     
                     //myCar2.render(basicShaderProgram, projectionMatrix, viewMatrix, lightPosition, lightViewMatrix, lightProjectionMatrix);
                     playerCar.render(basicShaderProgram, projectionMatrix, viewMatrix, lightPosition, lightViewMatrix, lightProjectionMatrix);
-                    
+                    foreach(Car c in otherCars)
+                    {
+                        c.render(basicShaderProgram, projectionMatrix, viewMatrix, lightPosition, lightViewMatrix, lightProjectionMatrix);
+                    }
 
                     //Model Texture is on Unit 0
                     GL.ActiveTexture(TextureUnit.Texture0);

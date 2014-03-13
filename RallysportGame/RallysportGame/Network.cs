@@ -94,16 +94,17 @@ namespace RallysportGame
         public void sendData(Vector3 vector)
         {
             IPEndPoint endpoint = new IPEndPoint(multicastAddr, 11245);
-            byte[] msg = Encoding.UTF8.GetBytes("3"+userId+vector.ToString());
-            Console.WriteLine("network data sending isleader: "+ isLeader.ToString());
+            byte[] msg = Encoding.UTF8.GetBytes("3;"+userId+";"+vector.ToString());
+            Console.WriteLine("network data sending userlist: " + userList.Count);
             socket.SendTo(msg, endpoint);
         }
 
-        public void recieveData()
+        public void recieveData(ref ArrayList carList)
         {
 
             byte[] b = new byte[1024];
             string str ="";
+            string[] unParsedData = null;
             try
             {
                 if (socket.Available != 0)
@@ -111,17 +112,18 @@ namespace RallysportGame
                     int recv = socket.ReceiveFrom(b, ref ep);
                     str = System.Text.Encoding.ASCII.GetString(b, 0, recv);
                     str = str.Trim();
-                    Console.WriteLine(str);
+                    unParsedData = str.Split(';');
+                    Console.WriteLine(unParsedData.Length);
                 }
             }
             catch(Exception e)
             {
                 Console.WriteLine(e.ToString());
             }
-            if (!str.Equals(""))
+            if (unParsedData != null)
             {
                 int id;
-                switch (str.Substring(0, 1))
+                switch (unParsedData[0])
                 {
                     case "0":
                         if (isLeader)
@@ -131,16 +133,30 @@ namespace RallysportGame
                         break;
                     case "1":
                         ids++;
-                        id = int.Parse(str.Substring(1));
+                        id = int.Parse(unParsedData[1]);
                         userList.Add(id);
                         break;
                     case "2":
-                        id =int.Parse(str.Substring(1));
+                        id = int.Parse(unParsedData[1]);
                         userList.Remove(id);
                         if (id == userId)
                             isLeader = true;
                         break;
                     case "3":
+                        id =int.Parse(unParsedData[1]);
+                        int index = userList.BinarySearch(id);
+                        if (id != userId)
+                        {
+                            if (index == null)
+                            {
+                                carList.Add(new Car(new Vector3(float.Parse(unParsedData[2].Substring(1)),float.Parse(unParsedData[3]),float.Parse(unParsedData[4].Remove(unParsedData[4].Length)))));
+                                Console.WriteLine(carList.Count);
+                            }
+                            else
+                            {
+                                
+                            }
+                        }
                         break;
                     default:
                         break;
