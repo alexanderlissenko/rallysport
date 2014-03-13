@@ -138,15 +138,15 @@ namespace RallysportGame
                         break;
                     case "2":
                         id = int.Parse(unParsedData[1]);
-                        index = userList.BinarySearch(id);
-                        userList.Remove(id);
+                        index = userList.IndexOf(id);
                         carList.RemoveAt(index);
+                        userList.Remove(id);
                         if (id == userId)
                             isLeader = true;
                         break;
                     case "3":
                         id =int.Parse(unParsedData[1]);
-                        index = userList.BinarySearch(id);
+                        index = userList.IndexOf(id);
                         if (id != userId)
                         {
                             if (index == -1)
