@@ -88,11 +88,11 @@ namespace RallysportGame
         }
         public void secondPass(int program, Matrix4 projectionMatrix, Matrix4 viewMatrix)
         {
-            GL.UseProgram(program);
+            GL.BindVertexArray(vertexArrayObject);
             GL.UniformMatrix4(GL.GetUniformLocation(program, "P"), false, ref projectionMatrix);
             GL.UniformMatrix4(GL.GetUniformLocation(program, "V"), false, ref viewMatrix);
             GL.UniformMatrix4(GL.GetUniformLocation(program, "M"), false, ref modelMatrix);
-            GL.BindVertexArray(vertexArrayObject);
+
 
             GL.DrawArrays(PrimitiveType.Triangles, 0, numOfTri * 3);
 

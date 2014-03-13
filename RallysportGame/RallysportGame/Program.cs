@@ -432,7 +432,7 @@ namespace RallysportGame
                     collisionHandler.Update();
 
                     updateCamera();
-                    UpdateMouse();
+                    //UpdateMouse();
                     //playerCar.Update();
                     //////////////////////////////////////////////////////ÄNDRA TILLBAKA!!!
                     //Audio management
@@ -526,7 +526,7 @@ namespace RallysportGame
                     GL.Viewport(0, 0, w, h);
                     //GL.UseProgram(basicShaderProgram);
 
-                    Vector3 camera_position = sphericalToCartesian(camera_theta, camera_phi, 15);
+                    Vector3 camera_position = sphericalToCartesian(camera_theta, camera_phi, 100);
                     //camera_lookAt = new Vector3(0.0f, camera_target_altitude, 0.0f);
                     Vector3 camera_lookAt = new Vector3(0.0f, 0.0f, 0.0f);//Vector4.Transform(camera_lookAt, camera_rotation_matrix);
                     Matrix4 viewMatrix = Matrix4.LookAt(camera_position, camera_lookAt,up);
@@ -557,17 +557,18 @@ namespace RallysportGame
                     
                     
                     GL.Viewport(0, 0, w, h);
-                    /*
                     #region firstPass
                     GL.UseProgram(firstPassShader);
-                    GL.BindFramebuffer(FramebufferTarget.Framebuffer ,deferredFBO);
-                    
-                    
+                   //GL.BindFramebuffer(FramebufferTarget.Framebuffer ,deferredFBO);
+                    GL.ClearColor(0.2f, 0.2f, 0.2f, 0f);
+                    GL.ClearDepth(1.0f);
+                    GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+                    /*
                     //ShadowMap texture is on unit 1
                     GL.ActiveTexture(TextureUnit.Texture1);
                     GL.BindTexture(TextureTarget.Texture2D, shadowMapTexture);
                     GL.Uniform1(GL.GetUniformLocation(basicShaderProgram, "shadowMapTex"), 1);
-                 
+                    */
                     //Model Texture is on Unit 0
                     GL.ActiveTexture(TextureUnit.Texture0);
                     GL.BindTexture(TextureTarget.Texture2D, environment.getTextureId());
@@ -578,11 +579,11 @@ namespace RallysportGame
                     
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
                     #endregion
-                    */
 
-                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+                    /*
                     #region secondPass
 
+                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
                     GL.ClearColor(0.2f, 0.2f, 0.2f, 0.0f); //ambient light
                     GL.Clear(ClearBufferMask.ColorBufferBit);
 
@@ -599,11 +600,11 @@ namespace RallysportGame
                     GL.ActiveTexture(TextureUnit.Texture1);
                     GL.BindTexture(TextureTarget.Texture2D, deferredNorm);
                     GL.UseProgram(secondPassShader);
-
-                    GL.Uniform1(GL.GetUniformLocation(secondPassShader, "p_tex"), deferredTex);
-                    GL.Uniform1(GL.GetUniformLocation(secondPassShader, "np_tex"), deferredNorm);
-
                     
+                    GL.Uniform1(GL.GetUniformLocation(secondPassShader, "p_tex"), 0);
+                    GL.Uniform1(GL.GetUniformLocation(secondPassShader, "np_tex"), 1);
+
+    
                     GL.Uniform1(GL.GetUniformLocation(secondPassShader,"windowSize_x"), game.Width);
                     GL.Uniform1(GL.GetUniformLocation(secondPassShader, "windowSize_y"), game.Height);
                     GL.UniformMatrix4(GL.GetUniformLocation(secondPassShader, "lightV"),false,ref lightViewMatrix);
@@ -611,19 +612,13 @@ namespace RallysportGame
                     GL.Uniform3(GL.GetUniformLocation(secondPassShader, "ld"), ref environment.diffuse); // make separate diffuse 
                     GL.Uniform3(GL.GetUniformLocation(secondPassShader, "ls"), ref environment.specular); // make separate specular
                     unitSphere.secondPass(secondPassShader, projectionMatrix, viewMatrix);
-
                    
-
-
-                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
                     GL.Enable(EnableCap.DepthTest);
                     GL.DepthMask(true);
                     GL.Disable(EnableCap.Blend);
                     
-
-                    
                     #endregion
-                    
+                    */
                     //testPartSys.tick();
                     //testPartSys.render();
                     
