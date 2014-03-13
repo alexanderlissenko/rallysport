@@ -113,7 +113,7 @@ namespace RallysportGame
                     str = System.Text.Encoding.ASCII.GetString(b, 0, recv);
                     str = str.Trim();
                     unParsedData = str.Split(';');
-                    Console.WriteLine(unParsedData.Length);
+                    Console.WriteLine(unParsedData[0]);
                 }
             }
             catch(Exception e)
@@ -122,7 +122,7 @@ namespace RallysportGame
             }
             if (unParsedData != null)
             {
-                int id;
+                int id,index;
                 switch (unParsedData[0])
                 {
                     case "0":
@@ -134,22 +134,24 @@ namespace RallysportGame
                     case "1":
                         ids++;
                         id = int.Parse(unParsedData[1]);
-                        userList.Add(id);
                         break;
                     case "2":
                         id = int.Parse(unParsedData[1]);
+                        index = userList.BinarySearch(id);
                         userList.Remove(id);
+                        carList.RemoveAt(index);
                         if (id == userId)
                             isLeader = true;
                         break;
                     case "3":
                         id =int.Parse(unParsedData[1]);
-                        int index = userList.BinarySearch(id);
+                        index = userList.BinarySearch(id);
                         if (id != userId)
                         {
-                            if (index == null)
+                            if (index == -1)
                             {
-                                carList.Add(new Car(new Vector3(float.Parse(unParsedData[2].Substring(1)),float.Parse(unParsedData[3]),float.Parse(unParsedData[4].Remove(unParsedData[4].Length)))));
+                                userList.Add(id);
+                                carList.Add(new Car(new Vector3(float.Parse(unParsedData[2].Substring(1)),float.Parse(unParsedData[3]),float.Parse(unParsedData[4].Remove(unParsedData[4].Length-1)))));
                                 Console.WriteLine(carList.Count);
                             }
                             else
