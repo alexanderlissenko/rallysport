@@ -130,6 +130,7 @@ namespace RallysportGame
                         }
                         break;
                     case "1":
+                        ids++;
                         id = int.Parse(str.Substring(1));
                         userList.Add(id);
                         break;
@@ -150,7 +151,8 @@ namespace RallysportGame
         public void closeSocket()
         {
             userList.Reverse();
-            sendData("2" + userList[0]);
+            if(userList.Count != 0)
+                sendData("2" + userList[0]);
             try
             {
                 socket.Shutdown(SocketShutdown.Both);
