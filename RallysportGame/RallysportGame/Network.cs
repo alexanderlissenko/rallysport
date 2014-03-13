@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Net.NetworkInformation;
 using System.Threading;
+using System.Collections;
 
 using OpenTK;
 
@@ -14,6 +15,7 @@ namespace RallysportGame
 {
     class Network
     {
+        //Multicast IP is 234.123.123.123 port is 11245
 
         private Socket socket;
         private EndPoint ep;
@@ -24,10 +26,12 @@ namespace RallysportGame
         private bool isLeader = false;
         private int ids=1;
 
+        private ArrayList userList;
+
         public Network()
         {
+            userList = new ArrayList();
             IPAddress localIp = getLocalIp();
-
             socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             
             IPEndPoint localEP = new IPEndPoint(localIp, 11245);
@@ -116,6 +120,7 @@ namespace RallysportGame
             }
             if (!str.Equals(""))
             {
+                int id;
                 switch (str.Substring(0, 1))
                 {
                     case "0":
@@ -125,10 +130,13 @@ namespace RallysportGame
                         }
                         break;
                     case "1":
-                        ids = int.Parse(str.Substring(1))+1;
+                        id = int.Parse(str.Substring(1));
+                        userList.Add(id);
                         break;
                     case "2":
-                        if (int.Parse(str.Substring(1)) == userId)
+                        id =int.Parse(str.Substring(1));
+                        userList.Remove(id);
+                        if (id == userId)
                             isLeader = true;
                         break;
                     case "3":
@@ -141,7 +149,8 @@ namespace RallysportGame
 
         public void closeSocket()
         {
-            sendData("2" + (ids - 1));
+            userList.Reverse();
+            sendData("2" + userList[0]);
             try
             {
                 socket.Shutdown(SocketShutdown.Both);

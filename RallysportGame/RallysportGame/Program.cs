@@ -517,9 +517,6 @@ namespace RallysportGame
                     skybox.render(basicShaderProgram, projectionMatrix, viewMatrix, lightPosition, lightViewMatrix, lightProjectionMatrix);
                    
 
-
-
-
                     testPartSys.tick();
                     testPartSys.render();
                     
