@@ -128,7 +128,7 @@ namespace RallysportGame
                     case "0":
                         if (isLeader)
                         {
-                            sendData("1" + ids);
+                            sendData("1;" + ids);
                         }
                         break;
                     case "1":
@@ -170,7 +170,7 @@ namespace RallysportGame
         {
             userList.Reverse();
             if(userList.Count != 0)
-                sendData("2" + userList[0]);
+                sendData("2;" + userList[0]);
             try
             {
                 socket.Shutdown(SocketShutdown.Both);
