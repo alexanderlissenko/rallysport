@@ -8,7 +8,7 @@ uniform vec3 ls;
 uniform vec3 ld;
 uniform vec3 lp;
 
-layout (location = 0) out vec4 frag_colour;
+out vec4 frag_colour;
 
 uniform int windowSize_x; // remember to include in the input variables
 uniform int windowSize_y;
@@ -18,8 +18,9 @@ const vec3 ks = vec3(1.0,1.0,1.0);  // specular reflection make dynamic later
 const float specular_exponent = 100; 
 
 
-
+ /*
 vec3 phong(in vec3 p_eye, in vec3 n_eye){
+
     vec3 light_position_eye = vec3 (vec4(lp,1.0));
     vec3 dist_to_light_eye = light_position_eye - p_eye;
     vec3 direction_to_light_eye = normalize(dist_to_light_eye);
@@ -42,12 +43,14 @@ vec3 phong(in vec3 p_eye, in vec3 n_eye){
     float atten_factor = -log(min(1.0, dist_2d/5.0));// ones again negativity is bad
     
     return(ld+ ls) * atten_factor;
-}
 
+}
+*/
 
 
 
 void main(){
+    /*
     vec2 st;
     st.s=gl_FragCoord.x/windowSize_x;
     st.t=gl_FragCoord.y/windowSize_y;
@@ -58,7 +61,7 @@ void main(){
         discard;
     }
     vec3 n_texel = texture(n_tex,st).xyz;
-    
+    */
     frag_colour = vec4(0,0,0,1);
     //frag_colour.rgb = vec3(0,0,0);//phong (p_texel.rgb, normalize (n_texel).rgb); // ultimate phong usage
     //frag_colour.a   = 1;

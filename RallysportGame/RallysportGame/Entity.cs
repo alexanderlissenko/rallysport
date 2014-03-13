@@ -93,6 +93,7 @@ namespace RallysportGame
             GL.UniformMatrix4(GL.GetUniformLocation(program, "V"), false, ref viewMatrix);
             GL.UniformMatrix4(GL.GetUniformLocation(program, "M"), false, ref modelMatrix);
             GL.BindVertexArray(vertexArrayObject);
+
             GL.DrawArrays(PrimitiveType.Triangles, 0, numOfTri * 3);
 
         }

@@ -204,22 +204,7 @@ namespace RallysportGame
                 #region Load
                 game.Load += (sender, e) =>
                 {
-
-                    #region Let there be light
-
-                    Vector3 lp= sphericalToCartesian(light_theta,light_phi,light_r);
-
-                    Vector3 scaleVector = new Vector3(1000, 1000, 1000);
-                    Matrix4 lM = Matrix4.Identity;
-                    
-                    Matrix4.CreateScale(ref scaleVector, out lM);
-                    Matrix4.CreateTranslation(ref lp,out lM);
-
-
-
-
-                    #endregion
-
+                
                     SettingsParser.Init(iniDir + "default.ini");
                     //enable depthtest and face culling
                     GL.Enable(EnableCap.DepthTest);
@@ -466,6 +451,15 @@ namespace RallysportGame
                 game.RenderFrame += (sender, e) =>
                 {
                     
+
+
+
+
+
+
+
+
+
                     GL.ClearColor(0.2f, 0.2f, 0.8f, 1.0f);
                     GL.ClearDepth(1.0f);
                     //GL.UseProgram(basicShaderProgram);
@@ -473,10 +467,18 @@ namespace RallysportGame
                     #region Let there be light
                     Vector3 lightPosition = new Vector3(sphericalToCartesian(light_theta, light_phi, light_r));
                     Vector3 scaleVector = new Vector3(10, 10, 10);
+                    //Vector3 scaleVector = new Vector3(1000, 1000, 1000);
                     Matrix4 lM = Matrix4.Identity;
+                    lM = lM + Matrix4.CreateScale(10000.0f);
 
-                    Matrix4.CreateScale(ref scaleVector, out lM);
-                    Matrix4.CreateTranslation(ref lightPosition, out lM);
+                    lM = Matrix4.CreateTranslation(lightPosition) * lM;
+
+
+
+                    //Matrix4 lM = Matrix4.Identity;
+
+            //       Matrix4.CreateScale(ref scaleVector, out lM);
+                    //Matrix4.CreateTranslation(ref lightPosition, out lM);
                     #endregion
 
                     //Render Shadowmap
@@ -492,7 +494,7 @@ namespace RallysportGame
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer, shadowMapFBO);
                         
                     GL.Viewport(0, 0, shadowMapRes, shadowMapRes);
-                        //GL.CullFace(CullFaceMode.Front);
+                    //GL.CullFace(CullFaceMode.Front);
                     GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
                     GL.Enable(EnableCap.PolygonOffsetFill);
@@ -530,7 +532,7 @@ namespace RallysportGame
                     Matrix4 viewMatrix = Matrix4.LookAt(camera_position, camera_lookAt,up);
                     Matrix4 projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(pi / 4, (float)w / (float)h, 0.1f, 1000f);
                     // Here we start getting into the lighting model
-     
+                    
 
 
                     //Matrix4 bias = new Matrix4(0.9f, 0.0f, 0.0f, 0.0f, 0.0f, 0.9f, 0.0f, 0.0f, 0.0f, 0.0f, 0.9f, 0.0f, 0.9f, 0.9f, 0.9f, 1.0f);
@@ -560,7 +562,7 @@ namespace RallysportGame
                     GL.UseProgram(firstPassShader);
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer ,deferredFBO);
                     
-                    /*
+                    
                     //ShadowMap texture is on unit 1
                     GL.ActiveTexture(TextureUnit.Texture1);
                     GL.BindTexture(TextureTarget.Texture2D, shadowMapTexture);
@@ -580,43 +582,37 @@ namespace RallysportGame
 
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
                     #region secondPass
-                    GL.UseProgram(0);
 
-                    //GL.ClearColor(0.2f, 0.2f, 0.2f, 0.0f); //ambient light
-                    //GL.Clear(ClearBufferMask.ColorBufferBit);
+                    GL.ClearColor(0.2f, 0.2f, 0.2f, 0.0f); //ambient light
+                    GL.Clear(ClearBufferMask.ColorBufferBit);
 
-                    //GL.Enable(EnableCap.Blend);
+                    GL.Enable(EnableCap.Blend);
                     
-                    //GL.BlendEquation(BlendEquationMode.FuncAdd);
-                    //GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.One);
+                    GL.BlendEquation(BlendEquationMode.FuncAdd);
+                    GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.One);
 
                     GL.Disable(EnableCap.DepthTest);
                     GL.DepthMask(false);
 
-                    //GL.ActiveTexture(TextureUnit.Texture0);
-                    //GL.BindTexture(TextureTarget.Texture2D, deferredTex);
-                    //GL.ActiveTexture(TextureUnit.Texture1);
-                    //GL.BindTexture(TextureTarget.Texture2D, deferredNorm);
+                    GL.ActiveTexture(TextureUnit.Texture0);
+                    GL.BindTexture(TextureTarget.Texture2D, deferredTex);
+                    GL.ActiveTexture(TextureUnit.Texture1);
+                    GL.BindTexture(TextureTarget.Texture2D, deferredNorm);
                     GL.UseProgram(secondPassShader);
-                    GL.BindFramebuffer(FramebufferTarget.Framebuffer,0);
-                    //GL.Uniform1(GL.GetUniformLocation(secondPassShader, "p_tex"), deferredTex);
-                    //GL.Uniform1(GL.GetUniformLocation(secondPassShader, "np_tex"), deferredNorm);
+
+                    GL.Uniform1(GL.GetUniformLocation(secondPassShader, "p_tex"), deferredTex);
+                    GL.Uniform1(GL.GetUniformLocation(secondPassShader, "np_tex"), deferredNorm);
 
                     
-                    GL.BindVertexArray(unitSphere.vertexArrayObject);
-                    
-
-                    /*
                     GL.Uniform1(GL.GetUniformLocation(secondPassShader,"windowSize_x"), game.Width);
                     GL.Uniform1(GL.GetUniformLocation(secondPassShader, "windowSize_y"), game.Height);
                     GL.UniformMatrix4(GL.GetUniformLocation(secondPassShader, "lightV"),false,ref lightViewMatrix);
                     GL.Uniform3(GL.GetUniformLocation(secondPassShader,"lp"), ref lightPosition);
                     GL.Uniform3(GL.GetUniformLocation(secondPassShader, "ld"), ref environment.diffuse); // make separate diffuse 
                     GL.Uniform3(GL.GetUniformLocation(secondPassShader, "ls"), ref environment.specular); // make separate specular
-                    */
-                    GL.DrawArrays(PrimitiveType.Triangles, 0, unitSphere.numOfTri*3);// vertex might be faces if so there are abute 140 faces
+                    unitSphere.secondPass(secondPassShader, projectionMatrix, viewMatrix);
 
-                    //unitSphere.secondPass(secondPassShader, projectionMatrix, viewMatrix);
+                   
 
 
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
