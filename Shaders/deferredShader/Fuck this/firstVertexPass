@@ -1,7 +1,7 @@
 #version 420
 
-in vec3 vp;
-in vec3 vn;
+layout (location = 0) in vec3 vp;
+layout (location = 1) in vec3 vn;
 
 uniform mat4 P, V, M;
 

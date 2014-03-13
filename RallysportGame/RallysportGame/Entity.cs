@@ -25,14 +25,15 @@ namespace RallysportGame
 {
     class Entity
     {
-        private OpenTK.Vector3 ambient, diffuse, specular, emisive; 
+        private OpenTK.Vector3 ambient, emisive;
+        public OpenTK.Vector3 diffuse, specular; // test so return to private when possible
         String modelsDir = @"..\..\..\..\Models\";
         String fileName; 
         String texturePath;
         private int textureId;
         private float shininess;
 
-        private uint vertexArrayObject;
+        public uint vertexArrayObject;  // make private later, made public for testing
         private uint positionBuffer;
         public uint indexBuffer;
         public uint normalBuffer;
@@ -77,11 +78,9 @@ namespace RallysportGame
 
             setMatrices(program, projectionMatrix, viewMatrix);
 
-            GL.Uniform3(GL.GetUniformLocation(program, "material_diffuse_color"), diffuse);
-            GL.Uniform3(GL.GetUniformLocation(program, "material_specular_color"), specular);
-            GL.Uniform3(GL.GetUniformLocation(program, "material_emissive_color"), emisive);
-            GL.Uniform1(GL.GetUniformLocation(program, "material_shininess"), shininess);
-
+            GL.UniformMatrix4(GL.GetUniformLocation(program, "P"),false,ref projectionMatrix);
+            GL.UniformMatrix4(GL.GetUniformLocation(program, "V"), false, ref viewMatrix);
+            GL.UniformMatrix4(GL.GetUniformLocation(program, "M"), false, ref modelMatrix);
 
             GL.BindVertexArray(vertexArrayObject);
             GL.DrawArrays(PrimitiveType.Triangles, 0, numOfTri * 3);
@@ -89,19 +88,13 @@ namespace RallysportGame
         }
         public void secondPass(int program, Matrix4 projectionMatrix, Matrix4 viewMatrix)
         {
-            Matrix4 modelWorldMatrix;
-            // Transform from model to world
-            Matrix4.Mult(ref modelMatrix, ref worldMatrix, out modelWorldMatrix);
-            Matrix4 modelViewMatrix;
-            Matrix4.Mult(ref modelWorldMatrix, ref viewMatrix, out modelViewMatrix);
-
-            Matrix4 modelViewProjectionMatrix;
-            Matrix4.Mult(ref modelViewMatrix, ref projectionMatrix, out modelViewProjectionMatrix);
-            GL.UniformMatrix4(GL.GetUniformLocation(program,"modelViewProjectionMatrix"), false, ref modelViewProjectionMatrix);
-
+            GL.UseProgram(program);
+            GL.UniformMatrix4(GL.GetUniformLocation(program, "P"), false, ref projectionMatrix);
+            GL.UniformMatrix4(GL.GetUniformLocation(program, "V"), false, ref viewMatrix);
+            GL.UniformMatrix4(GL.GetUniformLocation(program, "M"), false, ref modelMatrix);
             GL.BindVertexArray(vertexArrayObject);
             GL.DrawArrays(PrimitiveType.Triangles, 0, numOfTri * 3);
-        
+
         }
 
         /*

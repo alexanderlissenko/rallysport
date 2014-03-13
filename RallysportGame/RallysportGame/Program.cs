@@ -33,7 +33,7 @@ namespace RallysportGame
         //*****************************************************************************
         //	Global variables
         //*****************************************************************************
-        static int basicShaderProgram,shadowShaderProgram;
+        static int basicShaderProgram, shadowShaderProgram, firstPassShader, secondPassShader;
         //static Vector3 lightPosition;
 
         //*****************************************************************************
@@ -63,7 +63,7 @@ namespace RallysportGame
 
         //test particles
         static ParticleSystem testPartSys;// = new ParticleSystem(new OpenTK.Vector3(0, 0, 0), 60f, 5, new TimeSpan(0, 0, 0, 4), new Entity());
-        static Entity environment,myCar2,skybox;
+        static Entity environment,myCar2,skybox,unitSphere;
 
         static Car playerCar;
 
@@ -204,6 +204,22 @@ namespace RallysportGame
                 #region Load
                 game.Load += (sender, e) =>
                 {
+
+                    #region Let there be light
+
+                    Vector3 lp= sphericalToCartesian(light_theta,light_phi,light_r);
+
+                    Vector3 scaleVector = new Vector3(1000, 1000, 1000);
+                    Matrix4 lM = Matrix4.Identity;
+                    
+                    Matrix4.CreateScale(ref scaleVector, out lM);
+                    Matrix4.CreateTranslation(ref lp,out lM);
+
+
+
+
+                    #endregion
+
                     SettingsParser.Init(iniDir + "default.ini");
                     //enable depthtest and face culling
                     GL.Enable(EnableCap.DepthTest);
@@ -218,48 +234,54 @@ namespace RallysportGame
                     myCar2 = new Entity("Cube\\testCube");//"Cube\\megu_koob");//"TeapotCar\\Teapot car\\Teapot-no-materials-tri");//
                     playerCar = new Car("TeapotCar\\Teapot car\\Teapot-no-materials-tri", new Vector3(0,20f,0));
                     skybox = new Entity("Cube\\inside_koob");
+                    unitSphere = new Entity("Cube\\unitSphere");
                     
                     //Particle System
                     testPartSys = new ParticleSystem(new OpenTK.Vector3(0, 0, 0), 60f, 1, new TimeSpan(0, 0, 0, 2), playerCar);
 
 
                     //Set up shaders
+                    /*
                     basicShaderProgram = loadShaderProgram(shaderDir+"Simple_VS.glsl",shaderDir+"Simple_FS.glsl");
                     GL.BindAttribLocation(basicShaderProgram, 0, "position");
                     GL.BindAttribLocation(basicShaderProgram, 1, "normalIn");
                     GL.BindAttribLocation(basicShaderProgram, 2, "textCoordIn");
                     GL.BindFragDataLocation(basicShaderProgram, 0, "fragmentColor");
                     GL.LinkProgram(basicShaderProgram);
-
+                    */
                     shadowShaderProgram = loadShaderProgram(shaderDir + "Shadow_VS.glsl", shaderDir + "Shadow_FS.glsl");
                     GL.BindAttribLocation(shadowShaderProgram, 0, "position");
                     GL.BindFragDataLocation(shadowShaderProgram, 0, "fragmentColor");
                     GL.LinkProgram(shadowShaderProgram);
 
-                    basicShaderProgram = loadShaderProgram(shaderDir + "deferredShader\\firstVertex", shaderDir + "deferredShader\\firstpass");
-                    GL.BindAttribLocation(basicShaderProgram, 0, "position");
-                    GL.BindAttribLocation(basicShaderProgram, 1, "normalIn");
-                    GL.BindAttribLocation(basicShaderProgram, 2, "textCoordIn");
-                    GL.BindFragDataLocation(basicShaderProgram, 0, "fragmentColor");
-                    GL.LinkProgram(basicShaderProgram);
+                    firstPassShader = loadShaderProgram(shaderDir + "deferredShader\\Fuck this\\firstVertexPass", shaderDir + "deferredShader\\Fuck this\\firstFragmentpass");
 
-                    basicShaderProgram = loadShaderProgram(shaderDir + "deferredShader\\secondVertex", shaderDir + "deferredShader\\secondPass");
-                    GL.BindAttribLocation(basicShaderProgram, 0, "position");
-                    GL.BindAttribLocation(basicShaderProgram, 1, "normalIn");
-                    GL.BindAttribLocation(basicShaderProgram, 2, "textCoordIn");
-                    GL.BindFragDataLocation(basicShaderProgram, 0, "fragmentColor");
-                    GL.LinkProgram(basicShaderProgram);
+                    GL.BindAttribLocation(firstPassShader, 0, "vp");
+                    GL.BindAttribLocation(firstPassShader, 1, "vn");
 
-                    Console.WriteLine(GL.GetProgramInfoLog(basicShaderProgram));
+                    GL.BindFragDataLocation(firstPassShader, 0, "def_p");
+                    GL.BindFragDataLocation(firstPassShader, 1, "def_n");
+                    GL.LinkProgram(firstPassShader);
+
+
+                    secondPassShader = loadShaderProgram(shaderDir + "deferredShader\\Fuck this\\secondVertexPass", shaderDir + "deferredShader\\Fuck this\\secondFragmentPass");
+
+                    GL.BindAttribLocation(secondPassShader, 0, "vp");
+
+                    GL.BindFragDataLocation(secondPassShader, 0, "frag_colour");
+                    GL.LinkProgram(secondPassShader);
+
+ 
+                    //Console.WriteLine(GL.GetProgramInfoLog(basicShaderProgram));
                     Console.WriteLine(GL.GetProgramInfoLog(shadowShaderProgram));
-                    
+
                     //Load uniforms and texture
-                    GL.UseProgram(basicShaderProgram);
+                    GL.UseProgram(firstPassShader);
                     environment.setUpMtl();
                     environment.loadTexture();
-                    environment.setUpBlenderModel();
-                    myCar2.setUpBlenderModel();
-                    playerCar.setUp3DSModel();
+                    //environment.setUpBlenderModel();
+                    //myCar2.setUpBlenderModel();
+                    //playerCar.setUp3DSModel();
 
                     skybox.setUp3DSModel();// setUpBlenderModel();
                     GL.UseProgram(0);
@@ -300,7 +322,7 @@ namespace RallysportGame
 
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
                     
-#endregion
+                    #endregion
 
                     //Deferred Rendering 
                     #region Deferred Rendering
@@ -316,6 +338,7 @@ namespace RallysportGame
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
 
+
                     deferredNorm = GL.GenTexture();
                     GL.BindTexture(TextureTarget.Texture2D, deferredNorm);
                     GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb16f, game.Width, game.Height, 0, PixelFormat.Rgb, PixelType.UnsignedByte, (IntPtr)0);
@@ -327,16 +350,17 @@ namespace RallysportGame
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer, deferredFBO);
                     GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, deferredTex, 0);
                     GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment1, TextureTarget.Texture2D, deferredNorm, 0);
+                    //GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
 
                     deferredRBO = GL.GenRenderbuffer();
                     GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, deferredRBO);
                     GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent32, game.Width, game.Height);
                     GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, deferredRBO);
+                   // GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer ,0);
 
-
-                    DrawBuffersEnum[] draw_buffs = {DrawBuffersEnum.ColorAttachment0,DrawBuffersEnum.ColorAttachment1};
+                    DrawBuffersEnum[] draw_buffs = {DrawBuffersEnum.ColorAttachment0, DrawBuffersEnum.ColorAttachment1};
                     GL.DrawBuffers(2, draw_buffs);
-
+                    
                     #endregion
 
                     //lightPosition = new Vector3(up);
@@ -445,12 +469,21 @@ namespace RallysportGame
                     GL.ClearColor(0.2f, 0.2f, 0.8f, 1.0f);
                     GL.ClearDepth(1.0f);
                     //GL.UseProgram(basicShaderProgram);
-                    Vector3 lightPosition = new Vector3(sphericalToCartesian(light_theta, light_phi, light_r));
 
-                    
+                    #region Let there be light
+                    Vector3 lightPosition = new Vector3(sphericalToCartesian(light_theta, light_phi, light_r));
+                    Vector3 scaleVector = new Vector3(10, 10, 10);
+                    Matrix4 lM = Matrix4.Identity;
+
+                    Matrix4.CreateScale(ref scaleVector, out lM);
+                    Matrix4.CreateTranslation(ref lightPosition, out lM);
+                    #endregion
+
                     //Render Shadowmap
                     Matrix4 lightViewMatrix = Matrix4.LookAt(lightPosition, new Vector3(0.0f, 0.0f, 0.0f), up);
                     Matrix4 lightProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(pi / 4, 1.0f, 300f, 1800f);
+                    
+                    /*
                     //ändra till 300f
                     GL.UseProgram(shadowShaderProgram);
                     //SHADOW MAP FBO RENDERING
@@ -483,7 +516,7 @@ namespace RallysportGame
                     ///////////////////////////////////////////////SKA BORT SUPER FEJK
                     //GL.DepthRange(0.3f, 1.0f);
                     //////////////////////////////////////////////////////////////////
-
+                    */
                     
                     int w = game.Width;
                     int h = game.Height;
@@ -491,15 +524,13 @@ namespace RallysportGame
                     GL.Viewport(0, 0, w, h);
                     //GL.UseProgram(basicShaderProgram);
 
-                    Vector3 camera_position = sphericalToCartesian(camera_theta, camera_phi, camera_r);
+                    Vector3 camera_position = sphericalToCartesian(camera_theta, camera_phi, 15);
                     //camera_lookAt = new Vector3(0.0f, camera_target_altitude, 0.0f);
                     Vector3 camera_lookAt = new Vector3(0.0f, 0.0f, 0.0f);//Vector4.Transform(camera_lookAt, camera_rotation_matrix);
                     Matrix4 viewMatrix = Matrix4.LookAt(camera_position, camera_lookAt,up);
                     Matrix4 projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(pi / 4, (float)w / (float)h, 0.1f, 1000f);
                     // Here we start getting into the lighting model
-                    
-                    
-                    GL.UseProgram(basicShaderProgram);
+     
 
 
                     //Matrix4 bias = new Matrix4(0.9f, 0.0f, 0.0f, 0.0f, 0.0f, 0.9f, 0.0f, 0.0f, 0.0f, 0.0f, 0.9f, 0.0f, 0.9f, 0.9f, 0.9f, 1.0f);
@@ -519,42 +550,86 @@ namespace RallysportGame
                     Matrix4.Mult(ref lightModelView, ref  lightProjectionMatrixtemp, out lightMatrix);
 
                     lightMatrix = lightMatrix * Matrix4.CreateScale(0.5f) * Matrix4.CreateTranslation(new OpenTK.Vector3(0.5f, 0.5f, 0.5f));
-                    GL.UniformMatrix4(GL.GetUniformLocation(basicShaderProgram, "lightMatrix"), false, ref lightMatrix);
+                    //  GL.UniformMatrix4(GL.GetUniformLocation(basicShaderProgram, "lightMatrix"), false, ref lightMatrix);
                     //GL.UniformMatrix4(GL.GetUniformLocation(basicShaderProgram, "lightMatrix"), false, ref bias);
                     
                     
                     GL.Viewport(0, 0, w, h);
+                    /*
+                    #region firstPass
+                    GL.UseProgram(firstPassShader);
+                    GL.BindFramebuffer(FramebufferTarget.Framebuffer ,deferredFBO);
                     
-
+                    /*
                     //ShadowMap texture is on unit 1
                     GL.ActiveTexture(TextureUnit.Texture1);
                     GL.BindTexture(TextureTarget.Texture2D, shadowMapTexture);
                     GL.Uniform1(GL.GetUniformLocation(basicShaderProgram, "shadowMapTex"), 1);
-                    
-                    //myCar2.render(basicShaderProgram, projectionMatrix, viewMatrix, lightPosition, lightViewMatrix, lightProjectionMatrix);
-                    playerCar.render(basicShaderProgram, projectionMatrix, viewMatrix, lightPosition, lightViewMatrix, lightProjectionMatrix);
-                    
-
+                 
                     //Model Texture is on Unit 0
                     GL.ActiveTexture(TextureUnit.Texture0);
                     GL.BindTexture(TextureTarget.Texture2D, environment.getTextureId());
                     GL.Uniform1(GL.GetUniformLocation(basicShaderProgram, "diffuse_texture"), 0);
+                    
 
-                    environment.render(basicShaderProgram, projectionMatrix, viewMatrix, lightPosition, lightViewMatrix, lightProjectionMatrix);
+                    environment.firstPass(firstPassShader,  projectionMatrix,  viewMatrix);
+                    
+                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+                    #endregion
+                    */
+
+                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+                    #region secondPass
+                    GL.UseProgram(0);
+
+                    //GL.ClearColor(0.2f, 0.2f, 0.2f, 0.0f); //ambient light
+                    //GL.Clear(ClearBufferMask.ColorBufferBit);
+
+                    //GL.Enable(EnableCap.Blend);
+                    
+                    //GL.BlendEquation(BlendEquationMode.FuncAdd);
+                    //GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.One);
+
+                    GL.Disable(EnableCap.DepthTest);
+                    GL.DepthMask(false);
+
+                    //GL.ActiveTexture(TextureUnit.Texture0);
+                    //GL.BindTexture(TextureTarget.Texture2D, deferredTex);
+                    //GL.ActiveTexture(TextureUnit.Texture1);
+                    //GL.BindTexture(TextureTarget.Texture2D, deferredNorm);
+                    GL.UseProgram(secondPassShader);
+                    GL.BindFramebuffer(FramebufferTarget.Framebuffer,0);
+                    //GL.Uniform1(GL.GetUniformLocation(secondPassShader, "p_tex"), deferredTex);
+                    //GL.Uniform1(GL.GetUniformLocation(secondPassShader, "np_tex"), deferredNorm);
 
                     
-                   
-                    GL.ActiveTexture(TextureUnit.Texture1);
-                    GL.BindTexture(TextureTarget.Texture2D, 0);
+                    GL.BindVertexArray(unitSphere.vertexArrayObject);
+                    
 
-                    skybox.render(basicShaderProgram, projectionMatrix, viewMatrix, lightPosition, lightViewMatrix, lightProjectionMatrix);
-                   
+                    /*
+                    GL.Uniform1(GL.GetUniformLocation(secondPassShader,"windowSize_x"), game.Width);
+                    GL.Uniform1(GL.GetUniformLocation(secondPassShader, "windowSize_y"), game.Height);
+                    GL.UniformMatrix4(GL.GetUniformLocation(secondPassShader, "lightV"),false,ref lightViewMatrix);
+                    GL.Uniform3(GL.GetUniformLocation(secondPassShader,"lp"), ref lightPosition);
+                    GL.Uniform3(GL.GetUniformLocation(secondPassShader, "ld"), ref environment.diffuse); // make separate diffuse 
+                    GL.Uniform3(GL.GetUniformLocation(secondPassShader, "ls"), ref environment.specular); // make separate specular
+                    */
+                    GL.DrawArrays(PrimitiveType.Triangles, 0, unitSphere.numOfTri*3);// vertex might be faces if so there are abute 140 faces
+
+                    //unitSphere.secondPass(secondPassShader, projectionMatrix, viewMatrix);
 
 
+                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+                    GL.Enable(EnableCap.DepthTest);
+                    GL.DepthMask(true);
+                    GL.Disable(EnableCap.Blend);
+                    
 
-
-                    testPartSys.tick();
-                    testPartSys.render();
+                    
+                    #endregion
+                    
+                    //testPartSys.tick();
+                    //testPartSys.render();
                     
                     
                     

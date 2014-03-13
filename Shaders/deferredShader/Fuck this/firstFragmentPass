@@ -3,8 +3,8 @@
 in vec3 p_eye;
 in vec3 n_eye;
 
-out vec3 def_p;
-out vec3 def_n;
+layout (location = 0) out vec3 def_p;
+layout (location = 1) out vec3 def_n;
 
 void main() {
     def_p = p_eye;
