@@ -1,8 +1,12 @@
 #version 420
 
-in vec3 vp;
-uniform mat4 P,V,M;
-
-void main(){
-    gl_Position = P* V* M * vec4(vp, 1.0);
-}
+precision mediump float;
+in vec3 positionIn;
+out vec2 position;	
+void main(void)
+{
+   gl_Position = vec4(positionIn,1)*2-1;
+   gl_Position.z = 0.0;
+   // Copy position to the fragment shader. Only x and y is needed.
+   position = positionIn.xy;
+}	
