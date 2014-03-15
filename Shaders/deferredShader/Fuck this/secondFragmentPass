@@ -40,16 +40,15 @@ void main(void)
    vec4 diffuse = texture2D(diffuseTex, position.xy);
    vec4 worldPos = texture2D(posTex, position.xy);
    vec4 normal = texture2D(normalTex, position.xy);
-   normal = normalize(normal);
    //Constants
    
    
    vec3 ambient = diffuse.xyz * vec3(0.5);
    vec3 specular = vec3(0.5);
-   float material_shininess = 25.0;
+   float material_shininess = 5.0;
    
-   vec3 directionToLight = normalize(vec3(light-worldPos));
-   vec3 directionFromEye = normalize(camera);
+   vec3 directionToLight = normalize(lightPos-worldPos.xyz);
+   vec3 directionFromEye = normalize(worldPos.xyz-camera);
    
    
    //Calculate Lighting

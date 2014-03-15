@@ -657,7 +657,7 @@ namespace RallysportGame
                     //GL.Uniform3(GL.GetUniformLocation(secondPassShader, "ls"), ref environment.specular); // make separate specular
                     //unitSphere.secondPass(secondPassShader, projectionMatrix, viewMatrix);
 
-                    plane.secondPass(secondPassShader);
+                    plane.secondPass(secondPassShader,viewMatrix,lightPosition,camera_position);
                     
                     GL.Enable(EnableCap.DepthTest);
                     GL.DepthMask(true);

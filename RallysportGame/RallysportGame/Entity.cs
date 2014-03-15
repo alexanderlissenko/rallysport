@@ -86,8 +86,13 @@ namespace RallysportGame
             GL.DrawArrays(PrimitiveType.Triangles, 0, numOfTri * 3);
 
         }
-        public void secondPass(int program)
+        public void secondPass(int program, Matrix4 viewMatrix, OpenTK.Vector3 lightPosition, OpenTK.Vector3 cameraPosition)
         {
+            //OpenTK.Vector3 viewSpaceLightPosition = OpenTK.Vector3.Transform(lightPosition, viewMatrix);
+            //GL.Uniform3(GL.GetUniformLocation(program, "lightPos"), viewSpaceLightPosition);
+
+            //OpenTK.Vector3 viewSpaceCameraPosition = OpenTK.Vector3.Transform(cameraPosition, viewMatrix);
+            //GL.Uniform3(GL.GetUniformLocation(program, "camera"), viewSpaceCameraPosition);
 
             GL.BindVertexArray(vertexArrayObject);
             GL.DrawArrays(PrimitiveType.Triangles, 0, numOfTri * 3);
