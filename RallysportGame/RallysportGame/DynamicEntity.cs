@@ -85,10 +85,11 @@ namespace RallysportGame
             //for all emitters do emitters.tick() 
         }
 
-        public void eventTest(EntityCollidable sender, Collidable other, CollidablePairHandler pair, ContactData contact)
+        public virtual void eventTest(EntityCollidable sender, Collidable other, CollidablePairHandler pair, ContactData contact)
         {
             Console.WriteLine("Contact detected");
-            Console.WriteLine(contact.ToString());
+            Console.WriteLine("sender: " + sender.ToString());
+            Console.WriteLine("contact: " + sender.ToString());
             //Console.WriteLine(sender.BoundingBox.ToString());
             sender.Entity.LinearVelocity = Vector3.Zero;
             

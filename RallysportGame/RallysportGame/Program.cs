@@ -10,6 +10,7 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using System.Drawing;
 using OpenTK.Input;
+using BEPUphysics.Vehicle;
 
 
 
@@ -62,6 +63,7 @@ namespace RallysportGame
         static Entity environment,myCar2,skybox;
 
         static Car playerCar;
+        static Wheel w;
 
 
 
@@ -212,12 +214,12 @@ namespace RallysportGame
                     
                     environment = new Entity("map\\uggly_test_track_Triangulate");//"TeapotCar\\Teapot car\\Teapot-no-materials-tri");//"Cube\\3ds-cube");//
                     //myCar2 = new Entity("Cube\\testCube");//"Cube\\megu_koob");//"TeapotCar\\Teapot car\\Teapot-no-materials-tri");//
-                    playerCar = new Car(@"Mustang\mustang-with-wheels", new Vector3(0,20f,0));
+                    playerCar = new Car(@"Mustang\mustang-no-wheels", @"Mustang\one-wheel");
+                    playerCar.position = new Vector3(0, 30, 0);
                     skybox = new Entity("Cube\\inside_koob");
                     
                     //Particle System
                     testPartSys = new ParticleSystem(new OpenTK.Vector3(0, 0, 0), 60f, 1, new TimeSpan(0, 0, 0, 2), playerCar);
-
                     //Set up shaders
                     basicShaderProgram = loadShaderProgram(shaderDir+"Simple_VS.glsl",shaderDir+"Simple_FS.glsl");
                     GL.BindAttribLocation(basicShaderProgram, 0, "position");
@@ -240,6 +242,7 @@ namespace RallysportGame
                     environment.loadTexture();
                     environment.setUpBlenderModel();
                     //myCar2.setUpBlenderModel();
+                    playerCar.setUpMtl();
                     playerCar.setUp3DSModel();
 
                     skybox.setUp3DSModel();// setUpBlenderModel();
@@ -490,14 +493,8 @@ namespace RallysportGame
 
                     skybox.render(basicShaderProgram, projectionMatrix, viewMatrix, lightPosition, lightViewMatrix, lightProjectionMatrix);
                    
-
-
-
-
                     testPartSys.tick();
                     testPartSys.render();
-                    
-                    
                     
                     GL.End();
 

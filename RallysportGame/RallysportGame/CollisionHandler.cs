@@ -29,13 +29,22 @@ namespace RallysportGame
             {
                 e.Update();
             }
-            
         }
 
         public void addObject(DynamicEntity e)
         {
             objects.Add(e);
             space.Add(e.GetBody());
+
+            // If e is car, add wheels as well
+            Car c = e as Car;
+            if (c != null)
+            {
+                foreach(CarWheel w in c.wheels){
+                    objects.Add(w);
+                    space.Add(w.GetBody());
+                }
+            }
         }
 
         

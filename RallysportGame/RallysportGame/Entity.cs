@@ -85,7 +85,7 @@ namespace RallysportGame
             GL.DrawArrays(PrimitiveType.Triangles, 0, numOfTri * 3);
         }
 
-        public void render(int program, Matrix4 projectionMatrix, Matrix4 viewMatrix,OpenTK.Vector3 lightPosition,Matrix4 lightViewMatrix,Matrix4 lightProjectionMatrix)
+        public virtual void render(int program, Matrix4 projectionMatrix, Matrix4 viewMatrix,OpenTK.Vector3 lightPosition,Matrix4 lightViewMatrix,Matrix4 lightProjectionMatrix)
         {
 
             setMatrices(program, projectionMatrix, viewMatrix);
@@ -139,12 +139,12 @@ namespace RallysportGame
 
         public void setUp3DSModel()
         {
-            modelMatrix = modelMatrix + Matrix4.CreateScale(0.1f); //TODO magic numbers go away!
+            modelMatrix = modelMatrix + Matrix4.CreateScale(0.01f); //TODO magic numbers go away!
         }
 
         public void setUpBlenderModel()
         {
-            modelMatrix = modelMatrix + Matrix4.CreateScale(10f);
+            modelMatrix = modelMatrix + Matrix4.CreateScale(20f);
         }
         public void render(int program, OpenTK.Vector3 position)
         {

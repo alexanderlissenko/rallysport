@@ -51,6 +51,51 @@ namespace RallysportGame
             }
             return vectorArray;
         }
+        public static BEPUutilities.Matrix ConvertToBEPU(OpenTK.Matrix4 open)
+        {
+            BEPUutilities.Matrix bepu;
+            bepu.M11 = open.M11;
+            bepu.M12 = open.M12;
+            bepu.M13 = open.M13;
+            bepu.M14 = open.M14;
+            bepu.M21 = open.M21;
+            bepu.M22 = open.M22;
+            bepu.M23 = open.M23;
+            bepu.M24 = open.M24;
+            bepu.M31 = open.M31;
+            bepu.M32 = open.M32;
+            bepu.M33 = open.M33;
+            bepu.M34 = open.M34;
+            bepu.M41 = open.M41;
+            bepu.M42 = open.M42;
+            bepu.M43 = open.M43;
+            bepu.M44 = open.M44;
+
+            return bepu;
+        }
+
+        public static OpenTK.Matrix4 ConvertToTK(BEPUutilities.Matrix bepu)
+        {
+            BEPUutilities.Matrix open;
+            open.M11 = bepu.M11;
+            open.M12 = bepu.M12;
+            open.M13 = bepu.M13;
+            open.M14 = bepu.M14;
+            open.M21 = bepu.M21;
+            open.M22 = bepu.M22;
+            open.M23 = bepu.M23;
+            open.M24 = bepu.M24;
+            open.M31 = bepu.M31;
+            open.M32 = bepu.M32;
+            open.M33 = bepu.M33;
+            open.M34 = bepu.M34;
+            open.M41 = bepu.M41;
+            open.M42 = bepu.M42;
+            open.M43 = bepu.M43;
+            open.M44 = bepu.M44;
+
+            return open;
+        }
     }
 
 }

@@ -72,6 +72,7 @@
   <ItemGroup>
     <Compile Include="Audio.cs" />
     <Compile Include="Car.cs" />
+    <Compile Include="CarWheel.cs" />
     <Compile Include="CollisionHandler.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="ParticleSystem.cs" />
