@@ -54,7 +54,8 @@ namespace RallysportGame
         //
 
         //Deferred Rendering
-        static int deferredTex, deferredNorm,deferredPos,deferredBlend,deferredFBO,deferredRBO;
+        static int deferredTex, deferredNorm,deferredPos,deferredBlend,deferredFBO,deferredRBO, quadVBO;
+        static float[] fullScreenArray;
         //
 
         static float light_theta = pi / 6.0f;
@@ -64,6 +65,7 @@ namespace RallysportGame
         //test particles
         static ParticleSystem testPartSys;// = new ParticleSystem(new OpenTK.Vector3(0, 0, 0), 60f, 5, new TimeSpan(0, 0, 0, 4), new Entity());
         static Entity environment,myCar2,skybox,unitSphere;
+        static Entity plane;
 
         static Car playerCar;
 
@@ -214,7 +216,8 @@ namespace RallysportGame
                     // setup settings, load textures, sounds
                     game.VSync = VSyncMode.On;
                     //myCar = new Entity("Cube\\koobe");//"Cube\\koobe");//"TeapotCar\\Teapot car\\Teapot-no-materials-tri");//"map\\uggly_test_track_Triangulate");//
-                    
+
+                    plane = new Entity("plane");
                     environment = new Entity("map\\uggly_test_track_Triangulate");//"TeapotCar\\Teapot car\\Teapot-no-materials-tri");//"Cube\\3ds-cube");//
                     myCar2 = new Entity("Cube\\testCube");//"Cube\\megu_koob");//"TeapotCar\\Teapot car\\Teapot-no-materials-tri");//
                     playerCar = new Car("TeapotCar\\Teapot car\\Teapot-no-materials-tri", new Vector3(0,20f,0));
@@ -253,7 +256,7 @@ namespace RallysportGame
 
                     secondPassShader = loadShaderProgram(shaderDir + "deferredShader\\Fuck this\\secondVertexPass", shaderDir + "deferredShader\\Fuck this\\secondFragmentPass");
                     GL.BindAttribLocation(secondPassShader, 0, "positionIn");
-                    GL.BindFragDataLocation(secondPassShader, 0, "frag_colour");
+                    GL.BindFragDataLocation(secondPassShader, 0, "fragColor");
                     GL.LinkProgram(secondPassShader);
                     
  
@@ -369,8 +372,10 @@ namespace RallysportGame
                     //GL.DrawBuffers(2, draw_buffs);
 
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-                    #endregion
 
+                    
+                    #endregion
+                    
                     //lightPosition = new Vector3(up);
            
                     game.KeyDown += handleKeyDown;
@@ -606,7 +611,6 @@ namespace RallysportGame
                     GL.Viewport(0, 0, w, h);
                     GL.ClearColor(0.2f, 0.2f, 0.2f, 0.0f); //ambient light
                     GL.Clear(ClearBufferMask.ColorBufferBit|ClearBufferMask.DepthBufferBit);
-
                     //GL.Enable(EnableCap.Blend);
                     
                     //GL.BlendEquation(BlendEquationMode.FuncAdd);
@@ -627,6 +631,7 @@ namespace RallysportGame
                     GL.Uniform1(GL.GetUniformLocation(secondPassShader, "normalTex"), 2);
 
                     GL.Uniform3(GL.GetUniformLocation(secondPassShader, "lampPos"), lightPosition);
+
                     //GL.Uniform1(GL.GetUniformLocation(secondPassShader,"windowSize_x"), game.Width);
                     //GL.Uniform1(GL.GetUniformLocation(secondPassShader, "windowSize_y"), game.Height);
                     //GL.UniformMatrix4(GL.GetUniformLocation(secondPassShader, "lightV"),false,ref lightViewMatrix);
@@ -634,6 +639,7 @@ namespace RallysportGame
                     //GL.Uniform3(GL.GetUniformLocation(secondPassShader, "ld"), ref environment.diffuse); // make separate diffuse 
                     //GL.Uniform3(GL.GetUniformLocation(secondPassShader, "ls"), ref environment.specular); // make separate specular
                     //unitSphere.secondPass(secondPassShader, projectionMatrix, viewMatrix);
+                    plane.secondPass(secondPassShader);
                     
                     GL.Enable(EnableCap.DepthTest);
                     GL.DepthMask(true);

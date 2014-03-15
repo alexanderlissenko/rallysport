@@ -26,13 +26,13 @@ void main(void)
    // Use this lighting effect to update 'diffuse'
    vec4 preBlend = diffuse * lamp + specularGlare;
    // manual blending, using premultiplied alpha.
-   fragColor = preBlend;//blend + preBlend*(1-blend.a);
+   //fragColor = preBlend;//blend + preBlend*(1-blend.a);
 
    
    // Some debug features. Enable any of them to get a visual representation
 // of an internal buffer.
 // fragColor = (normal+1)/2;
-//      fragColor = diffuse;
+      fragColor = diffuse;
 // fragColor = blend;
 // fragColor = worldPos; // Scaling may be needed to range [0,1]
 // fragColor = lamp*vec4(1,1,1,1);

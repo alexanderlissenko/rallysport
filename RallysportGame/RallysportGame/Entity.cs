@@ -86,14 +86,9 @@ namespace RallysportGame
             GL.DrawArrays(PrimitiveType.Triangles, 0, numOfTri * 3);
 
         }
-        public void secondPass(int program, Matrix4 projectionMatrix, Matrix4 viewMatrix)
+        public void secondPass(int program)
         {
             GL.BindVertexArray(vertexArrayObject);
-            GL.UniformMatrix4(GL.GetUniformLocation(program, "projectionMatrix"), false, ref projectionMatrix);
-            GL.UniformMatrix4(GL.GetUniformLocation(program, "viewMatrix"), false, ref viewMatrix);
-            GL.UniformMatrix4(GL.GetUniformLocation(program, "modelMatrix"), false, ref modelMatrix);
-
-
             GL.DrawArrays(PrimitiveType.Triangles, 0, numOfTri * 3);
 
         }
