@@ -14,11 +14,13 @@ void main(void)
    posOutput = vec4(positionOut,1);   // Position given by the vertext shader
    normOutput = vec4(fragmentNormal, 0);
    vec4 clr = texture(firstTexture, fragmentTexCoord);
+
    
    //float alpha = clr.a;
    //if (alpha < 0.1)
    //    discard;   // Optimization that will not change the depth buffer
    //blendOutput.rgb = clr.rgb * clr.a; // Pre multiplied alpha
    //blendOutput.a = clr.a;
+   
    diffuseOutput = clr;
 }

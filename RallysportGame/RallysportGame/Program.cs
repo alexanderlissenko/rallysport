@@ -41,7 +41,7 @@ namespace RallysportGame
         //*****************************************************************************
         static float camera_theta = pi / 6.0f;
         static float camera_phi = pi / 4.0f;
-        static float camera_r = 300.0f;
+        static float camera_r = 100.0f;
         static float camera_target_altitude = 5.2f;
         static float camera_horizontal_delta = 0.1f;
         static float camera_vertical_delta = 1.0f;
@@ -54,8 +54,7 @@ namespace RallysportGame
         //
 
         //Deferred Rendering
-        static int deferredTex, deferredNorm,deferredPos,deferredBlend,deferredFBO,deferredRBO, quadVBO;
-        static float[] fullScreenArray;
+        static int deferredTex, deferredNorm,deferredPos,deferredBlend,deferredFBO,deferredRBO;
         //
 
         static float light_theta = pi / 6.0f;
@@ -158,6 +157,18 @@ namespace RallysportGame
                         break;
                     case Key.S:
                         playerCar.accelerate(-0.1f);
+                        break;
+                    case Key.Left:
+                        camera_theta += camera_horizontal_delta;
+                        break;
+                    case Key.Right:
+                        camera_theta -= camera_horizontal_delta;
+                        break;
+                    case Key.Up:
+                        camera_r -= camera_vertical_delta;
+                        break;
+                    case Key.Down:
+                        camera_r += camera_vertical_delta;
                         break;
                     case Key.Z:
                         camera_phi -= camera_horizontal_delta*0.5f;
@@ -271,7 +282,7 @@ namespace RallysportGame
                     environment.loadTexture();
                     //environment.setUpBlenderModel();
                     //myCar2.setUpBlenderModel();
-                    //playerCar.setUp3DSModel();
+                    playerCar.setUp3DSModel();
 
                     skybox.setUp3DSModel();// setUpBlenderModel();
                     GL.UseProgram(0);
@@ -460,7 +471,7 @@ namespace RallysportGame
                     collisionHandler.Update();
 
                     updateCamera();
-                    UpdateMouse();
+                    //UpdateMouse();
                     //playerCar.Update();
                     //////////////////////////////////////////////////////ÄNDRA TILLBAKA!!!
                     //Audio management
@@ -485,13 +496,10 @@ namespace RallysportGame
                     //GL.UseProgram(basicShaderProgram);
 
                     #region Let there be light
-                    Vector3 lightPosition = new Vector3(sphericalToCartesian(light_theta, light_phi, light_r));
+                    Vector3 lightPosition = sphericalToCartesian(light_theta, light_phi, light_r);
                     Vector3 scaleVector = new Vector3(10, 10, 10);
                     //Vector3 scaleVector = new Vector3(1000, 1000, 1000);
-                    Matrix4 lM = Matrix4.Identity;
-                    lM = lM + Matrix4.CreateScale(100.0f);
-
-                    lM = Matrix4.CreateTranslation(lightPosition) * lM;
+                    
 
                     #endregion
 
@@ -540,7 +548,7 @@ namespace RallysportGame
                     GL.Viewport(0, 0, w, h);
                     //GL.UseProgram(basicShaderProgram);
 
-                    Vector3 camera_position = sphericalToCartesian(camera_theta, camera_phi, 100);
+                    Vector3 camera_position = sphericalToCartesian(camera_theta, camera_phi,camera_r);
                     //camera_lookAt = new Vector3(0.0f, camera_target_altitude, 0.0f);
                     Vector3 camera_lookAt = new Vector3(0.0f, 0.0f, 0.0f);//Vector4.Transform(camera_lookAt, camera_rotation_matrix);
                     Matrix4 viewMatrix = Matrix4.LookAt(camera_position, camera_lookAt,up);
@@ -578,10 +586,12 @@ namespace RallysportGame
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer ,deferredFBO);
                     DrawBuffersEnum[] draw_buffs = { DrawBuffersEnum.ColorAttachment0, DrawBuffersEnum.ColorAttachment1, DrawBuffersEnum.ColorAttachment2, DrawBuffersEnum.ColorAttachment3 };
                     GL.DrawBuffers(4, draw_buffs);
-                    GL.ClearColor(0f, 0f, 0f, 0f);
+                    GL.ClearColor(0f, 0f, 0f, 0.1f);
                     GL.ClearDepth(1.0f);
                     GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
+                    GL.DepthMask(true);
+                    GL.Enable(EnableCap.DepthTest);
+                    GL.Disable(EnableCap.Blend);
                     /*
                     //ShadowMap texture is on unit 1
                     GL.ActiveTexture(TextureUnit.Texture1);
@@ -600,6 +610,11 @@ namespace RallysportGame
 
                     environment.firstPass(firstPassShader,  projectionMatrix,  viewMatrix);
                     
+                    GL.BindTexture(TextureTarget.Texture2D, 0);
+                    myCar2.firstPass(firstPassShader, projectionMatrix, viewMatrix);
+
+                    GL.DepthMask(false);
+                    GL.Disable(EnableCap.DepthTest);
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
                     #endregion
                     
@@ -607,17 +622,16 @@ namespace RallysportGame
                     #region secondPass
                     GL.UseProgram(secondPassShader);
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+
                     
                     GL.Viewport(0, 0, w, h);
-                    GL.ClearColor(0.2f, 0.2f, 0.2f, 0.0f); //ambient light
-                    GL.Clear(ClearBufferMask.ColorBufferBit|ClearBufferMask.DepthBufferBit);
-                    //GL.Enable(EnableCap.Blend);
+                    GL.ClearColor(0.0f, 0.0f, 0.0f, 0.0f); //ambient light
+                    GL.Clear(ClearBufferMask.ColorBufferBit);
+                    GL.Enable(EnableCap.Blend);
                     
-                    //GL.BlendEquation(BlendEquationMode.FuncAdd);
-                    //GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.One);
+                    GL.BlendEquation(BlendEquationMode.FuncAdd);
+                    GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.One);
 
-                    //GL.Disable(EnableCap.DepthTest);
-                    //GL.DepthMask(false);
                     
                     GL.ActiveTexture(TextureUnit.Texture0);
                     GL.BindTexture(TextureTarget.Texture2D, deferredTex);
@@ -630,7 +644,10 @@ namespace RallysportGame
                     GL.Uniform1(GL.GetUniformLocation(secondPassShader, "posTex"), 1);
                     GL.Uniform1(GL.GetUniformLocation(secondPassShader, "normalTex"), 2);
 
-                    GL.Uniform3(GL.GetUniformLocation(secondPassShader, "lampPos"), lightPosition);
+                    GL.Uniform3(GL.GetUniformLocation(secondPassShader, "lightPos"), lightPosition);
+                    
+                    GL.Uniform3(GL.GetUniformLocation(secondPassShader, "camera"), camera_position);
+                    
 
                     //GL.Uniform1(GL.GetUniformLocation(secondPassShader,"windowSize_x"), game.Width);
                     //GL.Uniform1(GL.GetUniformLocation(secondPassShader, "windowSize_y"), game.Height);
@@ -639,6 +656,7 @@ namespace RallysportGame
                     //GL.Uniform3(GL.GetUniformLocation(secondPassShader, "ld"), ref environment.diffuse); // make separate diffuse 
                     //GL.Uniform3(GL.GetUniformLocation(secondPassShader, "ls"), ref environment.specular); // make separate specular
                     //unitSphere.secondPass(secondPassShader, projectionMatrix, viewMatrix);
+
                     plane.secondPass(secondPassShader);
                     
                     GL.Enable(EnableCap.DepthTest);
