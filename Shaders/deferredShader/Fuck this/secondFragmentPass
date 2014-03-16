@@ -2,7 +2,6 @@
 
 precision mediump float;
 in vec2 position;             // The world position
-
 out vec4 fragColor;           // layout(location = 0)
 
 
@@ -20,7 +19,8 @@ uniform mat4 lightMatrix;
 uniform mat4 modelViewMatrix;
 uniform vec3 scene_ambient_light = vec3(0.3,0.3,0.3);
 uniform vec3 scene_light = vec3(0.6,0.6,0.6);
-////
+
+//// lighting function
 vec3 calculateDiffuse(vec3 diffuseLight, vec3 materialDiffuse, vec3 normal, vec3 directionToLight)
 {
 	return diffuseLight *materialDiffuse* clamp(dot(normal,directionToLight),0,1);
@@ -35,20 +35,6 @@ vec3 calculateFresnel(vec3 materialSpecular, vec3 normal, vec3 directionFromEye)
 {
 	return materialSpecular + (vec3(1.0)-materialSpecular)*pow(clamp(1.0+dot(directionFromEye,normal),0.0,1.0),5.0);
 }
-/*
-float readShadowMap(vec3 eyeDir)
-{
-    mat4 cameraViewToProjectedLightSpace = lightMatrix;
-	vec4 projectedEyeDir = cameraViewToProjectedLightSpace *modelViewMatrix* vec4(eyeDir,1);
-    projectedEyeDir = projectedEyeDir/projectedEyeDir.w;
-
-    vec2 textureCoordinates = projectedEyeDir.xy * vec2(0.5,0.5) + vec2(0.5,0.5);
-
-    const float bias = 0.0001;
-    float depthValue = texture2D( shadowMapTex, textureCoordinates ).x;// - bias;
-    return depthValue;//projectedEyeDir.z * 0.5 + 0.5 <  ? 0.0 : 1.0;
-}
-*/
 ////
 
 void main(void)
@@ -61,6 +47,7 @@ void main(void)
    vec4 worldPos = texture2D(posTex, position.xy);
    vec4 normal = texture2D(normalTex, position.xy);
    vec4 depth = texture2D(depthTex, position.xy);
+   
    //Constants
    
    
@@ -70,29 +57,12 @@ void main(void)
    
    vec3 directionToLight = normalize(lightPos-worldPos.xyz);
    vec3 directionFromEye = normalize(worldPos.xyz-camera);
+   
    //Calculate Lighting
-   
    vec4 shadowMapCoord = lightMatrix * modelViewMatrix* vec4( worldPos.xyz,1);
-   shadowMapCoord.xyz *= vec3(0.5,0.5,0.5);
-   shadowMapCoord.xyz += shadowMapCoord.w * vec3(0.5,0.5,0.5);
+   //shadowMapCoord.xyz *= vec3(0.5,0.5,0.5);
+   //shadowMapCoord.xyz += shadowMapCoord.w * vec3(0.5,0.5,0.5);
    float visibility = textureProj(shadowMapTex, shadowMapCoord).x- 0.03;
-   //float visibility = (depth123 >= (shadowMapCoord.z/shadowMapCoord.w))? 1.0:0.0;
-   
-   //float visibility= textureProj(shadowMapTex,shadowMapCoord);
-   //vec4 smc = lightMatrix*vec4(position.xy,depth.x,1);
-   //smc.xyz *= vec3(0.5,0.5,0.5);
-   //smc.xyz += smc.w * vec3(0.5,0.5,0.5);
-   //float lightdepth = texture( shadowMapTex, smc.xy / smc.w ).x;
-   //float visibility = (lightdepth >= smc.z/smc.w) ? 1.0 : 0.0;
-   //float visibility = readShadowMap(worldPos.xyz-camera);
-   
-   //float depthNDC = depth.x * 2.0 - 1.0;
-   //vec4 posNDC = vec4(position.x, position.y, depthNDC, 1);
-   //vec4 posShadow = lightMatrix* posNDC;
-   //posShadow.xyz *= vec3(0.5,0.5,0.5);
-   //posShadow.xyz += posShadow.w * vec3(0.5,0.5,0.5);
-   //float shadowDepth = texture2D(shadowMapTex,posShadow.xy /posShadow.w) * 2.0 - 1.0;
-   //float visibility = (shadowDepth >= posShadow.z) ? 1.0 : 0.0;
 
    vec3 fresnelSpecular = calculateFresnel(specular,normal.xyz, directionFromEye);
    
@@ -103,13 +73,12 @@ void main(void)
   fragColor = vec4(shading,1.0);
    
 
-   
 // Some debug features. Enable any of them to get a visual representation
 // of an internal buffer.
-//fragColor = vec4(shadowMapCoord.z/shadowMapCoord.w);
+// fragColor = vec4(shadowMapCoord.z/shadowMapCoord.w);
 // fragColor = (normal+1)/2;
 // fragColor = diffuse;
- //fragColor = vec4(visibility);
+// fragColor = vec4(visibility);
 // fragColor = vec4(depth.x);
 // fragColor = vec4(worldPos.xyz,1); // Scaling may be needed to range [0,1]
 // fragColor = light*vec4(1,1,1,1);

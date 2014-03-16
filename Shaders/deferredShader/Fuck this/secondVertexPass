@@ -7,8 +7,6 @@ uniform mat4 lightMatrix;
 uniform mat4 modelViewMatrix;
 void main(void)
 {
-
-   //shadowMapCoord = lightMatrix *modelViewMatrix * vec4(positionIn,1.0);//vec4(viewSpacePosition,1.0);
    gl_Position = vec4(positionIn,1)*2-1;
    // Copy position to the fragment shader. Only x and y is needed.
    position = positionIn.xy;

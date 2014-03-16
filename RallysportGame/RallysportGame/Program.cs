@@ -494,7 +494,6 @@ namespace RallysportGame
                    
                     GL.ClearColor(0.2f, 0.2f, 0.8f, 1.0f);
                     GL.ClearDepth(1.0f);
-                    //GL.UseProgram(basicShaderProgram);
 
                     #region Let there be light
                     Vector3 lightPosition = sphericalToCartesian(light_theta, light_phi, light_r);
@@ -538,14 +537,10 @@ namespace RallysportGame
                     ///END OF SHADOWMAP FBO RENDERING
 
                     
-                    //GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-                    
                     
                     int w = game.Width;
                     int h = game.Height;
 
-                    //GL.Viewport(0, 0, w, h);
-                    //GL.UseProgram(basicShaderProgram);
 
                     Vector3 camera_position = sphericalToCartesian(camera_theta, camera_phi,camera_r);
                     //camera_lookAt = new Vector3(0.0f, camera_target_altitude, 0.0f);
@@ -558,28 +553,20 @@ namespace RallysportGame
 
                     //Matrix4 bias = new Matrix4(0.9f, 0.0f, 0.0f, 0.0f, 0.0f, 0.9f, 0.0f, 0.0f, 0.0f, 0.0f, 0.9f, 0.0f, 0.9f, 0.9f, 0.9f, 1.0f);
                     
-                    Matrix4 lightMatrix;// = Matrix4.Transpose(lightProjectionMatrix)*Matrix4.Transpose(lightViewMatrix)*Matrix4.Invert(Matrix4.Transpose(viewMatrix))*Matrix4.Invert(Matrix4.Transpose(projectionMatrix));// = (Matrix4.Invert(viewMatrix) * lightViewMatrix) * lightProjectionMatrix;//modelMatrix*lightViewMatrix*lightProjectionMatrix;//
+                    Matrix4 lightMatrix;
                     Matrix4 invProj = Matrix4.Invert(projectionMatrix);
                     Matrix4 invView = Matrix4.Invert(viewMatrix);
 
                     Matrix4 lightModelView;
-                    //lightViewMatrix.Transpose();
-                    //lightProjectionMatrix.Inverted();
-                    Matrix4 invMVP;
 
-                    Matrix4.Mult(ref invProj, ref invView, out invMVP);
-                    Matrix4 lightProjectionMatrixtemp = lightProjectionMatrix;
-                    Matrix4 lightViewTemp = lightViewMatrix;
 
-                    Matrix4.Mult(ref invView, ref lightViewTemp, out lightModelView);
+                    Matrix4.Mult(ref invView, ref lightViewMatrix, out lightModelView);
                     //lightViewMatrix.Transpose();
-                    Matrix4.Mult(ref lightModelView, ref  lightProjectionMatrixtemp, out lightMatrix);
+                    Matrix4.Mult(ref lightModelView, ref  lightProjectionMatrix, out lightMatrix);
                     Matrix4 test = Matrix4.Mult(viewMatrix, lightMatrix);
 
-                    //lightMatrix = lightMatrix * Matrix4.CreateScale(0.5f) * Matrix4.CreateTranslation(new OpenTK.Vector3(0.5f, 0.5f, 0.5f));
-                    //GL.UniformMatrix4(GL.GetUniformLocation(basicShaderProgram, "lightMatrix"), false, ref lightMatrix);
-                    //GL.UniformMatrix4(GL.GetUniformLocation(basicShaderProgram, "lightMatrix"), false, ref bias);
-                    
+                    lightMatrix = lightMatrix * Matrix4.CreateScale(0.5f) * Matrix4.CreateTranslation(new OpenTK.Vector3(0.5f, 0.5f, 0.5f));
+
                     
                     
                     
@@ -595,13 +582,6 @@ namespace RallysportGame
                     GL.DepthMask(true);
                     GL.Enable(EnableCap.DepthTest);
                     GL.Disable(EnableCap.Blend);
-                    /*
-                    //ShadowMap texture is on unit 1
-                    GL.ActiveTexture(TextureUnit.Texture1);
-                    GL.BindTexture(TextureTarget.Texture2D, shadowMapTexture);
-                    GL.Uniform1(GL.GetUniformLocation(basicShaderProgram, "shadowMapTex"), 1);
-                    */
-                    //Model Texture is on Unit 0
 
                     DrawBuffersEnum[] draw_buffs2 = { DrawBuffersEnum.ColorAttachment0, DrawBuffersEnum.ColorAttachment1, DrawBuffersEnum.ColorAttachment2, DrawBuffersEnum.None };
                     GL.DrawBuffers(4, draw_buffs2);
