@@ -506,7 +506,7 @@ namespace RallysportGame
                     //Render Shadowmap
                     #region shadowMapRender
                     Matrix4 lightViewMatrix = Matrix4.LookAt(lightPosition, new Vector3(0.0f, 0.0f, 0.0f), up);
-                    Matrix4 lightProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(pi / 4, 1.0f, 300f, 1800f);
+                    Matrix4 lightProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(pi / 4, 1.0f, 50f, 500f);
                     
                     
                     //ändra till 300f
@@ -558,18 +558,21 @@ namespace RallysportGame
                     //Matrix4 bias = new Matrix4(0.9f, 0.0f, 0.0f, 0.0f, 0.0f, 0.9f, 0.0f, 0.0f, 0.0f, 0.0f, 0.9f, 0.0f, 0.9f, 0.9f, 0.9f, 1.0f);
                     
                     Matrix4 lightMatrix;// = Matrix4.Transpose(lightProjectionMatrix)*Matrix4.Transpose(lightViewMatrix)*Matrix4.Invert(Matrix4.Transpose(viewMatrix))*Matrix4.Invert(Matrix4.Transpose(projectionMatrix));// = (Matrix4.Invert(viewMatrix) * lightViewMatrix) * lightProjectionMatrix;//modelMatrix*lightViewMatrix*lightProjectionMatrix;//
+                    Matrix4 invProj = Matrix4.Invert(projectionMatrix);
                     Matrix4 invView = Matrix4.Invert(viewMatrix);
 
                     Matrix4 lightModelView;
                     //lightViewMatrix.Transpose();
                     //lightProjectionMatrix.Inverted();
+                    Matrix4 invMVP;
 
+                    Matrix4.Mult(ref invProj, ref invView, out invMVP);
                     Matrix4 lightProjectionMatrixtemp = lightProjectionMatrix;
                     Matrix4 lightViewTemp = lightViewMatrix;
 
-                    Matrix4.Mult(ref invView, ref lightViewTemp, out lightModelView);
+                    Matrix4.Mult(ref invMVP, ref lightViewTemp, out lightModelView);
                     //lightViewMatrix.Transpose();
-                    Matrix4.Mult(ref lightViewTemp, ref  lightProjectionMatrixtemp, out lightMatrix);
+                    Matrix4.Mult(ref lightModelView, ref  lightProjectionMatrixtemp, out lightMatrix);
 
                     //lightMatrix = lightMatrix * Matrix4.CreateScale(0.5f) * Matrix4.CreateTranslation(new OpenTK.Vector3(0.5f, 0.5f, 0.5f));
                     //GL.UniformMatrix4(GL.GetUniformLocation(basicShaderProgram, "lightMatrix"), false, ref lightMatrix);
