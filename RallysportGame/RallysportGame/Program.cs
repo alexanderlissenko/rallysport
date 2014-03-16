@@ -521,8 +521,8 @@ namespace RallysportGame
                     //GL.CullFace(CullFaceMode.Front);
                     GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-                    //GL.Enable(EnableCap.PolygonOffsetFill);
-                    //GL.PolygonOffset(2.5f, 10f);
+                    GL.Enable(EnableCap.PolygonOffsetFill);
+                    GL.PolygonOffset(2.5f, 10f);
 
                     //GL.BindTexture(TextureTarget.Texture2D, shadowMapTexture);
 

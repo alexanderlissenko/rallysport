@@ -10,7 +10,7 @@ uniform sampler2D diffuseTex; // The color information
 uniform sampler2D posTex;     // World position
 uniform sampler2D normalTex;  // Normals
 uniform sampler2D depthTex;  // Depth
-uniform sampler2D shadowMapTex; 
+uniform sampler2DShadow shadowMapTex; 
 uniform vec3 camera;          // The coordinate of the camera
 uniform vec3 lightPos;
 uniform vec2 screenSize;
@@ -35,7 +35,7 @@ vec3 calculateFresnel(vec3 materialSpecular, vec3 normal, vec3 directionFromEye)
 {
 	return materialSpecular + (vec3(1.0)-materialSpecular)*pow(clamp(1.0+dot(directionFromEye,normal),0.0,1.0),5.0);
 }
-
+/*
 float readShadowMap(vec3 eyeDir)
 {
     mat4 cameraViewToProjectedLightSpace = lightMatrix;
@@ -48,7 +48,7 @@ float readShadowMap(vec3 eyeDir)
     float depthValue = texture2D( shadowMapTex, textureCoordinates ).x;// - bias;
     return depthValue;//projectedEyeDir.z * 0.5 + 0.5 <  ? 0.0 : 1.0;
 }
-
+*/
 ////
 
 void main(void)
@@ -72,11 +72,11 @@ void main(void)
    vec3 directionFromEye = normalize(worldPos.xyz-camera);
    //Calculate Lighting
    
-   vec4 shadowMapCoord = lightMatrix * modelViewMatrix* vec4( worldPos.xy,depth.x,1);
+   vec4 shadowMapCoord = lightMatrix * modelViewMatrix* vec4( worldPos.xyz,1);
    shadowMapCoord.xyz *= vec3(0.5,0.5,0.5);
    shadowMapCoord.xyz += shadowMapCoord.w * vec3(0.5,0.5,0.5);
-   float depth123 = texture(shadowMapTex, shadowMapCoord.xy/shadowMapCoord.w).x;
-   float visibility = (depth123 >= (shadowMapCoord.z/shadowMapCoord.w))? 1.0:0.0;
+   float depth123 = textureProj(shadowMapTex, shadowMapCoord).x;
+   float visibility = (depth123 -0.003 >= (shadowMapCoord.z/shadowMapCoord.w))? 1.0:0.0;
    
    //float visibility= textureProj(shadowMapTex,shadowMapCoord);
    //vec4 smc = lightMatrix*vec4(position.xy,depth.x,1);
