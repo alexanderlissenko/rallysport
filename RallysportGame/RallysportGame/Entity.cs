@@ -88,11 +88,16 @@ namespace RallysportGame
         }
         public void secondPass(int program, Matrix4 viewMatrix, OpenTK.Vector3 lightPosition, OpenTK.Vector3 cameraPosition)
         {
-            //OpenTK.Vector3 viewSpaceLightPosition = OpenTK.Vector3.Transform(lightPosition, viewMatrix);
-            //GL.Uniform3(GL.GetUniformLocation(program, "lightPos"), viewSpaceLightPosition);
 
-            //OpenTK.Vector3 viewSpaceCameraPosition = OpenTK.Vector3.Transform(cameraPosition, viewMatrix);
-            //GL.Uniform3(GL.GetUniformLocation(program, "camera"), viewSpaceCameraPosition);
+            Matrix4 modelWorldMatrix;
+            // Transform from model to world
+            Matrix4.Mult(ref modelMatrix, ref worldMatrix, out modelWorldMatrix);
+            Matrix4 modelViewMatrix;
+            Matrix4.Mult(ref modelWorldMatrix, ref viewMatrix, out modelViewMatrix);
+
+            GL.UniformMatrix4(GL.GetUniformLocation(program, "modelViewMatrix"), false, ref modelViewMatrix);
+            GL.Uniform3(GL.GetUniformLocation(program, "lightPos"), lightPosition);
+            GL.Uniform3(GL.GetUniformLocation(program, "camera"), cameraPosition);
 
             GL.BindVertexArray(vertexArrayObject);
             GL.DrawArrays(PrimitiveType.Triangles, 0, numOfTri * 3);

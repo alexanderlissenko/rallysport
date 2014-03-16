@@ -15,14 +15,13 @@ out vec3 fragmentNormal;
 out vec2 fragmentTexCoord;
 out float extIntensity;
 out float extAmbientLight;
-out vec3 positionOut;
+out vec4 positionOut;
 
 void main(void)
 {
    fragmentTexCoord = texCoordIn;
    fragmentNormal = normalize((modelMatrix*vec4(normalIn, 0.0)).xyz);
    gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(positionIn,1);
-   positionOut = vec3(modelMatrix * vec4(positionIn,1)); // Copy position to the fragment shader
-  // extIntensity = intensity/255.0;        // Scale the intensity from [0..255] to [0..1].
-   //extAmbientLight = ambientLight/255.0;
+   positionOut = modelMatrix * vec4(positionIn,1); // Copy position to the fragmentshader
+  
 }
