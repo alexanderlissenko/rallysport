@@ -517,11 +517,11 @@ namespace RallysportGame
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer,shadowMapFBO);
                         
                     GL.Viewport(0, 0, shadowMapRes, shadowMapRes);
-                    GL.CullFace(CullFaceMode.Front);
+                    //GL.CullFace(CullFaceMode.Front);
                     GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-                    //GL.Enable(EnableCap.PolygonOffsetFill);
-                    //GL.PolygonOffset(2.5f, 10f);
+                    GL.Enable(EnableCap.PolygonOffsetFill);
+                    GL.PolygonOffset(1.0f, 1.0f);
 
                     //GL.BindTexture(TextureTarget.Texture2D, shadowMapTexture);
 
@@ -530,7 +530,7 @@ namespace RallysportGame
                     
                     }
                     GL.PopAttrib(); 
-                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+                    //GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
                     GL.CullFace(CullFaceMode.Back);
                     //GL.Disable(EnableCap.PolygonOffsetFill);
                     #endregion
