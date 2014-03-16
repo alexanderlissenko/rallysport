@@ -75,8 +75,8 @@ void main(void)
    vec4 shadowMapCoord = lightMatrix * modelViewMatrix* vec4( worldPos.xyz,1);
    shadowMapCoord.xyz *= vec3(0.5,0.5,0.5);
    shadowMapCoord.xyz += shadowMapCoord.w * vec3(0.5,0.5,0.5);
-   float depth123 = textureProj(shadowMapTex, shadowMapCoord).x;
-   float visibility = (depth123 -0.003 >= (shadowMapCoord.z/shadowMapCoord.w))? 1.0:0.0;
+   float visibility = textureProj(shadowMapTex, shadowMapCoord).x- 0.03;
+   //float visibility = (depth123 >= (shadowMapCoord.z/shadowMapCoord.w))? 1.0:0.0;
    
    //float visibility= textureProj(shadowMapTex,shadowMapCoord);
    //vec4 smc = lightMatrix*vec4(position.xy,depth.x,1);

@@ -49,7 +49,7 @@ namespace RallysportGame
         static Matrix4 camera_rotation_matrix = Matrix4.Identity;
         
         //ShadowMap constants
-        static int shadowMapRes = 2048;
+        static int shadowMapRes;
         static int shadowMapTexture, shadowMapFBO;
         //
 
@@ -292,7 +292,7 @@ namespace RallysportGame
 
                     //Shadowmaps
                     #region ShadowMap
-                    shadowMapRes = 1024;
+                    shadowMapRes = 2048;
                     shadowMapTexture = GL.GenTexture();
                     GL.BindTexture(TextureTarget.Texture2D, shadowMapTexture);
                     GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent32, shadowMapRes, shadowMapRes, 0, PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
@@ -483,7 +483,7 @@ namespace RallysportGame
 
                     //move light
 
-                    //light_theta += camera_horizontal_delta*0.1f;
+                    light_theta += camera_horizontal_delta*0.1f;
                     
                 };
                 #endregion
@@ -518,11 +518,11 @@ namespace RallysportGame
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer,shadowMapFBO);
                         
                     GL.Viewport(0, 0, shadowMapRes, shadowMapRes);
-                    //GL.CullFace(CullFaceMode.Front);
+                    GL.CullFace(CullFaceMode.Front);
                     GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-                    GL.Enable(EnableCap.PolygonOffsetFill);
-                    GL.PolygonOffset(2.5f, 10f);
+                    //GL.Enable(EnableCap.PolygonOffsetFill);
+                    //GL.PolygonOffset(2.5f, 10f);
 
                     //GL.BindTexture(TextureTarget.Texture2D, shadowMapTexture);
 
@@ -532,7 +532,7 @@ namespace RallysportGame
                     }
                     GL.PopAttrib(); 
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-                    //GL.CullFace(CullFaceMode.Back);
+                    GL.CullFace(CullFaceMode.Back);
                     //GL.Disable(EnableCap.PolygonOffsetFill);
                     #endregion
                     ///END OF SHADOWMAP FBO RENDERING
