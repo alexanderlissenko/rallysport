@@ -1,25 +1,27 @@
 #version 420
-/*
-Implemented whith http://www.codinglabs.net/tutorial_simple_def_rendering.aspx 
-Marco Alamia as reference.
-*/
 
-in vec3 positionIn;
+precision mediump float;
+uniform mat4 projectionMatrix;
+uniform mat4 modelMatrix;
+uniform mat4 viewMatrix;
+
 in vec3 normalIn;
+in vec2 texCoordIn;
+in vec3 positionIn;
+//in float intensity; // sun light
+//in float ambientLight;
 
-out vec3 normals;
-out vec4 position;
+out vec3 fragmentNormal;
+out vec2 fragmentTexCoord;
+out float extIntensity;
+out float extAmbientLight;
+out vec4 positionOut;
 
-uniform mat4 worldMatrix, modelView , ModelViewProjectionMatrix,normalMatrix;
-
-
-void main(){
-
-    mat3 worldMatrixInvers = transpose(worldMatrix);
-    
-    gl_position    = ModelViewProjectionMatrix * vec4(positionIn,0);
-    gl_TexCoord[0] = gl_MultiTexCoord0;    
-    normals        = normalize(worldMatrixInvers * normalMatrix,normalIn);
-    position       = modelView * vec4(positionIn,0);
-    gl_FrontColor = vec4(1.0,1.0,1.0,1.0);
+void main(void)
+{
+   fragmentTexCoord = texCoordIn;
+   fragmentNormal = normalize((modelMatrix*vec4(normalIn, 0.0)).xyz);
+   gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(positionIn,1);
+   positionOut = modelMatrix * vec4(positionIn,1); // Copy position to the fragmentshader
+  
 }

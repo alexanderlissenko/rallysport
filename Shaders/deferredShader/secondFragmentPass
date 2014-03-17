@@ -1,31 +1,88 @@
 #version 420
-/*
-Implemented whith http://www.codinglabs.net/tutorial_simple_def_rendering.aspx 
-Marco Alamia as reference.
-*/
-uniform sampler2D textureDiffuse; 
-uniform sampler2D texturePosition;
-uniform sampler2D textureNormals;
-uniform vec3 cameraPosition;
+//http://ephenationopengl.blogspot.se/2012/01/setting-up-deferred-shader.html
+//http://ogldev.atspace.co.uk/www/tutorial36/tutorial36.html
+precision mediump float;
+in vec2 position;             // The world position
+out vec4 fragColor;           // layout(location = 0)
 
 
-void main(){
-    
-    vec4 colorImage = texture2D(textureDiffuse, gl_TexCoord[0].xy);
-    vec4 position   = texture2D(texturePosition, gl_TexCoord[0].xy);
-    vec4 normal   = texture2D(textureNormals, gl_TexCoord[0].xy);
-    
-    vec3 light = vec3(212,424,367);
-    vec3 lightDir = light-position.xyz;
-    
-    normal = normalize(normal);
-    lightDir = normalize(lightDir);
-    
-    vec3 eyeDirection = normalize(camraPosition-position.xyz);
-    
-    
-    fragColor = vec4(1.0,1.0,1.0,1.0);
-    
+uniform sampler2D diffuseTex; // The color information
+uniform sampler2D posTex;     // World position
+uniform sampler2D normalTex;  // Normals
+uniform sampler2D depthTex;  // Depth
+uniform sampler2DShadow shadowMapTex; 
+uniform vec3 camera;          // The coordinate of the camera
+uniform vec3 lightPos;
+uniform vec2 screenSize;
+
+
+uniform mat4 lightMatrix;
+uniform mat4 modelViewMatrix;
+uniform vec3 scene_ambient_light = vec3(0.3,0.3,0.3);
+uniform vec3 scene_light = vec3(0.6,0.6,0.6);
+
+//// lighting function
+vec3 calculateDiffuse(vec3 diffuseLight, vec3 materialDiffuse, vec3 normal, vec3 directionToLight)
+{
+	return diffuseLight *materialDiffuse* clamp(dot(normal,directionToLight),0,1);
+}
+vec3 calculateSpecular(vec3 specularLight, vec3 materialSpecular, float materialShininess, vec3 normal, vec3 directionToLight, vec3 directionFromEye)
+{
+	vec3 h = normalize(directionToLight - directionFromEye);
+	float normalizeFactor = ((materialShininess+2.0)/8.0);
+	return specularLight * materialSpecular* pow(max(0,dot(h,normal)), materialShininess)*normalizeFactor;
+	}
+vec3 calculateFresnel(vec3 materialSpecular, vec3 normal, vec3 directionFromEye) 
+{
+	return materialSpecular + (vec3(1.0)-materialSpecular)*pow(clamp(1.0+dot(directionFromEye,normal),0.0,1.0),5.0);
+}
+////
+
+void main(void)
+{
+	vec4 light = vec4(lightPos,1.0);
+	vec4 specularGlare = vec4(1.0,1.0,1.0,1.0);
+	
+   // Load data, stored in textures, from the first stage rendering.
+   vec4 diffuse = texture2D(diffuseTex, position.xy);
+   vec4 worldPos = texture2D(posTex, position.xy);
+   vec4 normal = texture2D(normalTex, position.xy);
+   vec4 depth = texture2D(depthTex, position.xy);
+   
+   //Constants
+   
+   
+   vec3 ambient = diffuse.xyz * vec3(0.4);
+   vec3 specular = vec3(0.5);
+   float material_shininess = 5.0;
+   
+   vec3 directionToLight = normalize(lightPos-worldPos.xyz);
+   vec3 directionFromEye = normalize(worldPos.xyz-camera);
+   
+   //Calculate Lighting
+   vec4 shadowMapCoord = lightMatrix * modelViewMatrix* vec4( worldPos.xyz,1);
+   //shadowMapCoord.xyz *= vec3(0.5,0.5,0.5);
+   //shadowMapCoord.xyz += shadowMapCoord.w * vec3(0.5,0.5,0.5);
+   float visibility = textureProj(shadowMapTex, shadowMapCoord);
+
+   vec3 fresnelSpecular = calculateFresnel(specular,normal.xyz, directionFromEye);
+   
+   vec3 shading = ambient*scene_ambient_light
+				+ (calculateSpecular(scene_light, fresnelSpecular,material_shininess,normal.xyz,directionToLight,directionFromEye)
+				+ calculateDiffuse(scene_light,diffuse.xyz,normal.xyz,directionToLight))*visibility;
+					
+  fragColor = vec4(shading,1.0);
+   
+
+// Some debug features. Enable any of them to get a visual representation
+// of an internal buffer.
+// fragColor = vec4(shadowMapCoord.z/shadowMapCoord.w);
+// fragColor = (normal+1)/2;
+// fragColor = diffuse;
+// fragColor = vec4(visibility);
+// fragColor = vec4(depth.x);
+// fragColor = vec4(worldPos.xyz,1); // Scaling may be needed to range [0,1]
+// fragColor = light*vec4(1,1,1,1);
 }
 
 

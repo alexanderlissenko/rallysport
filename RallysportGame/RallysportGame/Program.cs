@@ -240,38 +240,27 @@ namespace RallysportGame
 
 
                     //Set up shaders
-                    /*
-                    basicShaderProgram = loadShaderProgram(shaderDir+"Simple_VS.glsl",shaderDir+"Simple_FS.glsl");
-                    GL.BindAttribLocation(basicShaderProgram, 0, "position");
-                    GL.BindAttribLocation(basicShaderProgram, 1, "normalIn");
-                    GL.BindAttribLocation(basicShaderProgram, 2, "textCoordIn");
-                    GL.BindFragDataLocation(basicShaderProgram, 0, "fragmentColor");
-                    GL.LinkProgram(basicShaderProgram);
-                    */
+
                     shadowShaderProgram = loadShaderProgram(shaderDir + "Shadow_VS.glsl", shaderDir + "Shadow_FS.glsl");
                     GL.BindAttribLocation(shadowShaderProgram, 0, "position");
                     GL.BindFragDataLocation(shadowShaderProgram, 0, "fragmentColor");
                     GL.LinkProgram(shadowShaderProgram);
 
-                    firstPassShader = loadShaderProgram(shaderDir + "deferredShader\\Fuck this\\firstVertexPass", shaderDir + "deferredShader\\Fuck this\\firstFragmentpass");
-
+                    firstPassShader = loadShaderProgram(shaderDir + "deferredShader\\firstVertexPass", shaderDir + "deferredShader\\firstFragmentpass");
                     GL.BindAttribLocation(firstPassShader, 0, "positionIn");
                     GL.BindAttribLocation(firstPassShader, 1, "normalIn");
                     GL.BindAttribLocation(firstPassShader, 2, "texCoordIn");
                     GL.BindFragDataLocation(firstPassShader, 0, "diffuseOutput");
                     GL.BindFragDataLocation(firstPassShader, 1, "posOutput");
                     GL.BindFragDataLocation(firstPassShader, 2, "normOutput");
-                    //GL.BindFragDataLocation(firstPassShader, 3, "blendOutput");
                     GL.LinkProgram(firstPassShader);
 
 
-                    secondPassShader = loadShaderProgram(shaderDir + "deferredShader\\Fuck this\\secondVertexPass", shaderDir + "deferredShader\\Fuck this\\secondFragmentPass");
+                    secondPassShader = loadShaderProgram(shaderDir + "deferredShader\\secondVertexPass", shaderDir + "deferredShader\\secondFragmentPass");
                     GL.BindAttribLocation(secondPassShader, 0, "positionIn");
                     GL.BindFragDataLocation(secondPassShader, 0, "fragColor");
                     GL.LinkProgram(secondPassShader);
                     
- 
-                    //Console.WriteLine(GL.GetProgramInfoLog(basicShaderProgram));
                     Console.WriteLine(GL.GetProgramInfoLog(shadowShaderProgram));
                     Console.WriteLine(GL.GetProgramInfoLog(firstPassShader));
                     Console.WriteLine(GL.GetProgramInfoLog(secondPassShader));
