@@ -33,12 +33,16 @@ namespace RallysportGame
             floatSettings = new Dictionary<Settings, float>();
             boolSettings = new Dictionary<Settings, bool>();
             IniData data = new FileIniDataParser().ReadFile(path);
-            foreach(SectionData sd in data.Sections){
-                foreach(KeyData k in sd.Keys){
+
+            foreach (SectionData sd in data.Sections)
+            {
+                foreach (KeyData k in sd.Keys)
+                {
                     String kName = k.KeyName.ToUpper();
-                    foreach(Settings eValue in Enum.GetValues(typeof(Settings))){
+                    foreach (Settings eValue in Enum.GetValues(typeof(Settings)))
+                    {
                         //Compare kName and eName
-                        if (kName.Equals(Enum.GetName(typeof(Settings),eValue)))
+                        if (kName.Equals(Enum.GetName(typeof(Settings), eValue)))
                         {
                             if (k.Value.Equals("true") || k.Value.Equals("false"))
                                 boolSettings.Add(eValue, bool.Parse(k.Value));
@@ -49,7 +53,7 @@ namespace RallysportGame
                         }
                     }
                 }
-            }
+            } 
         }
         
         /*

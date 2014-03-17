@@ -85,8 +85,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="fragmentShader.frag" />
-    <None Include="vertexShader.vert" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5">
@@ -110,10 +108,6 @@
       <Project>{d52f55a8-08e5-488e-ad0f-bf49b1f29a5f}</Project>
       <Name>Meshomatic</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="fragmentShader.txt" />
-    <Content Include="vertexShader.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
