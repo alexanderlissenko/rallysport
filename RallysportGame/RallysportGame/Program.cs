@@ -626,16 +626,15 @@ namespace RallysportGame
 
                     GL.UniformMatrix4(GL.GetUniformLocation(secondPassShader, "lightMatrix"),false, ref lightMatrix);
                     GL.Uniform1(GL.GetUniformLocation(secondPassShader, "lightType"), 0.0f);
-                    plane.directionalLight(secondPassShader, viewMatrix, lightPosition, camera_position);
+                    //plane.directionalLight(secondPassShader, viewMatrix, lightPosition, camera_position);
 
 
                     GL.Uniform1(GL.GetUniformLocation(secondPassShader, "lightType"), 1.0f);
 
-                    plane.pointLight(secondPassShader,projectionMatrix, viewMatrix, new Vector3(10.0f, 0, 0), new Vector3(1, 0, 0), 15.0f, camera_position);
-                    plane.pointLight(secondPassShader, projectionMatrix, viewMatrix, new Vector3(-10.0f, 0, 0), new Vector3(0, 1, 0), 15.0f, camera_position);
-                    plane.pointLight(secondPassShader, projectionMatrix, viewMatrix, new Vector3(0, 0, 10.0f), new Vector3(0, 0, 1), 15.0f, camera_position);
-                    plane.pointLight(secondPassShader, projectionMatrix, viewMatrix, new Vector3(0,0,-10.0f), new Vector3(1, 1, 1), 15.0f, camera_position);
-
+                    plane.pointLight(secondPassShader, new Vector3(10.0f, 0, 0), new Vector3(1, 0, 0), 20.0f);
+                    plane.pointLight(secondPassShader, new Vector3(-10.0f, 0, 0), new Vector3(0, 1, 0), 20.0f);
+                    plane.pointLight(secondPassShader, new Vector3(0, 0, 10.0f), new Vector3(0, 0, 1), 20.0f);
+                    plane.pointLight(secondPassShader, new Vector3(0,0,-10.0f), new Vector3(1, 1, 0), 20.0f);
                     GL.Enable(EnableCap.DepthTest);
                     GL.DepthMask(true);
                     GL.Disable(EnableCap.Blend);
