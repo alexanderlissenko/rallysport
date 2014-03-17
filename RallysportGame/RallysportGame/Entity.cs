@@ -25,14 +25,15 @@ namespace RallysportGame
 {
     class Entity
     {
-        private OpenTK.Vector3 ambient, diffuse, specular, emisive; 
+        private OpenTK.Vector3 ambient, emisive;
+        public OpenTK.Vector3 diffuse, specular; // test so return to private when possible
         String modelsDir = @"..\..\..\..\Models\";
         String fileName; 
         String texturePath;
         private int textureId;
         private float shininess;
 
-        private uint vertexArrayObject;
+        public uint vertexArrayObject;  // make private later, made public for testing
         private uint positionBuffer;
         public uint indexBuffer;
         public uint normalBuffer;
@@ -71,6 +72,38 @@ namespace RallysportGame
             this.position = position;
         }
 
+
+        public void firstPass(int program, Matrix4 projectionMatrix, Matrix4 viewMatrix)
+        {
+
+            setMatrices(program, projectionMatrix, viewMatrix);
+
+            GL.UniformMatrix4(GL.GetUniformLocation(program, "projectionMatrix"),false,ref projectionMatrix);
+            GL.UniformMatrix4(GL.GetUniformLocation(program, "viewMatrix"), false, ref viewMatrix);
+            GL.UniformMatrix4(GL.GetUniformLocation(program, "modelMatrix"), false, ref modelMatrix);
+
+            GL.BindVertexArray(vertexArrayObject);
+            GL.DrawArrays(PrimitiveType.Triangles, 0, numOfTri * 3);
+
+        }
+        public void secondPass(int program, Matrix4 viewMatrix, OpenTK.Vector3 lightPosition, OpenTK.Vector3 cameraPosition)
+        {
+
+            Matrix4 modelWorldMatrix;
+            // Transform from model to world
+            Matrix4.Mult(ref modelMatrix, ref worldMatrix, out modelWorldMatrix);
+            Matrix4 modelViewMatrix;
+            Matrix4.Mult(ref modelWorldMatrix, ref viewMatrix, out modelViewMatrix);
+
+            GL.UniformMatrix4(GL.GetUniformLocation(program, "modelViewMatrix"), false, ref modelViewMatrix);
+            GL.Uniform3(GL.GetUniformLocation(program, "lightPos"), lightPosition);
+            GL.Uniform3(GL.GetUniformLocation(program, "camera"), cameraPosition);
+
+            GL.BindVertexArray(vertexArrayObject);
+            GL.DrawArrays(PrimitiveType.Triangles, 0, numOfTri * 3);
+
+        }
+
         /*
          *  Duh, renders the object using whatever shaders you've set up. 
          */
@@ -104,6 +137,7 @@ namespace RallysportGame
             GL.DrawArrays(PrimitiveType.Triangles, 0, numOfTri * 3);
         }
 
+
         public void renderShadowMap(int program, Matrix4 lightProjectionMatrix, Matrix4 lightViewMatrix)
         {
 
@@ -119,22 +153,20 @@ namespace RallysportGame
             // Transform from model to world
             Matrix4.Mult(ref modelMatrix, ref worldMatrix, out modelWorldMatrix);
             Matrix4 modelViewMatrix;
-            // =Matrix4.Transpose(viewMatrix)* Matrix4.Transpose(modelMatrix);// = modelMatrix*viewMatrix ; //I know this is opposite see down why
             Matrix4.Mult(ref modelWorldMatrix, ref viewMatrix, out modelViewMatrix);
 
-            Matrix4 modelViewProjectionMatrix;// = Matrix4.Transpose(projectionMatrix)*modelViewMatrix ;// = modelViewMatrix*projectionMatrix ;
+            Matrix4 modelViewProjectionMatrix;
             Matrix4.Mult(ref modelViewMatrix, ref projectionMatrix, out modelViewProjectionMatrix);
 
-            Matrix4 normalMatrix;// = Matrix4.Transpose(Matrix4.Invert(viewMatrix * modelMatrix));
+            Matrix4 normalMatrix;
             Matrix4.Mult(ref modelMatrix, ref viewMatrix, out normalMatrix);
             normalMatrix.Transpose();
             normalMatrix.Invert();
 
+            GL.UniformMatrix4(GL.GetUniformLocation(program, "worldMatrix"), false, ref modelWorldMatrix);
             GL.UniformMatrix4(GL.GetUniformLocation(program, "normalMatrix"), false, ref normalMatrix);
             GL.UniformMatrix4(GL.GetUniformLocation(program, "modelViewMatrix"), false, ref modelViewMatrix);
-            GL.UniformMatrix4(GL.GetUniformLocation(program, "modelViewProjectionMatrix"), false, ref modelViewProjectionMatrix);
-
-            
+            GL.UniformMatrix4(GL.GetUniformLocation(program, "modelViewProjectionMatrix"), false, ref modelViewProjectionMatrix);  
         }
 
         public void setUp3DSModel()
