@@ -625,16 +625,18 @@ namespace RallysportGame
                     GL.Uniform1(GL.GetUniformLocation(secondPassShader, "shadowMapTex"), 4);
 
                     GL.UniformMatrix4(GL.GetUniformLocation(secondPassShader, "lightMatrix"),false, ref lightMatrix);
-                    GL.Uniform1(GL.GetUniformLocation(secondPassShader, "lightType"), 0.0f);
-                    //plane.directionalLight(secondPassShader, viewMatrix, lightPosition, camera_position);
-
-
+                   
+                    //Point Lights
                     GL.Uniform1(GL.GetUniformLocation(secondPassShader, "lightType"), 1.0f);
-
                     plane.pointLight(secondPassShader, new Vector3(10.0f, 0, 0), new Vector3(1, 0, 0), 20.0f);
                     plane.pointLight(secondPassShader, new Vector3(-10.0f, 0, 0), new Vector3(0, 1, 0), 20.0f);
                     plane.pointLight(secondPassShader, new Vector3(0, 0, 10.0f), new Vector3(0, 0, 1), 20.0f);
                     plane.pointLight(secondPassShader, new Vector3(0,0,-10.0f), new Vector3(1, 1, 0), 20.0f);
+                    
+                    //Directional Lights
+                    GL.Uniform1(GL.GetUniformLocation(secondPassShader, "lightType"), 0.0f);
+                    //plane.directionalLight(secondPassShader, viewMatrix, lightPosition, camera_position);
+
                     GL.Enable(EnableCap.DepthTest);
                     GL.DepthMask(true);
                     GL.Disable(EnableCap.Blend);
