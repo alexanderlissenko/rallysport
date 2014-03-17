@@ -236,7 +236,7 @@ namespace RallysportGame
                     unitSphere = new Entity("Cube\\unitSphere");
                     
                     //Particle System
-                    testPartSys = new ParticleSystem(new OpenTK.Vector3(0, 0, 0), 60f, 1, new TimeSpan(0, 0, 0, 2), playerCar);
+                    testPartSys = new ParticleSystem(new OpenTK.Vector3(0, 0, 0), new OpenTK.Vector3(0, -1, 0), 90 * pi / 90.0f, 100, new TimeSpan(0, 0, 0, 2), unitSphere);
 
 
                     //Set up shaders
@@ -514,8 +514,8 @@ namespace RallysportGame
 
                     //GL.BindTexture(TextureTarget.Texture2D, shadowMapTexture);
 
-                    myCar2.renderShadowMap(shadowShaderProgram, lightProjectionMatrix, lightViewMatrix);
-                    environment.renderShadowMap(shadowShaderProgram, lightProjectionMatrix, lightViewMatrix);
+                    //myCar2.renderShadowMap(shadowShaderProgram, lightProjectionMatrix, lightViewMatrix);
+                    //environment.renderShadowMap(shadowShaderProgram, lightProjectionMatrix, lightViewMatrix);
                     
                     }
                     GL.PopAttrib(); 
@@ -579,14 +579,15 @@ namespace RallysportGame
                     GL.BindTexture(TextureTarget.Texture2D, environment.getTextureId());
                     GL.Uniform1(GL.GetUniformLocation(basicShaderProgram, "firstTexture"), 0);
                     
+                    testPartSys.firstPass(firstPassShader, projectionMatrix, viewMatrix);
 
-                    environment.firstPass(firstPassShader,  projectionMatrix,  viewMatrix);
+                    //environment.firstPass(firstPassShader,  projectionMatrix,  viewMatrix);
                     
                     GL.BindTexture(TextureTarget.Texture2D, 0);
-                    myCar2.firstPass(firstPassShader, projectionMatrix, viewMatrix);
+                    //myCar2.firstPass(firstPassShader, projectionMatrix, viewMatrix);
 
                     skybox.firstPass(firstPassShader, projectionMatrix, viewMatrix);
-
+                    
                     GL.DepthMask(false);
                     GL.Disable(EnableCap.DepthTest);
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
@@ -633,8 +634,8 @@ namespace RallysportGame
                     
                     #endregion
                     
-                    //testPartSys.tick();
-                    //testPartSys.render();
+                    testPartSys.tick();
+                    
                     
                     
                     

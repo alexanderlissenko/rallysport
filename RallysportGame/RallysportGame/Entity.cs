@@ -171,13 +171,22 @@ namespace RallysportGame
 
         public void setUp3DSModel()
         {
-            modelMatrix = modelMatrix + Matrix4.CreateScale(0.1f); //TODO magic numbers go away!
+            modelMatrix = modelMatrix + Matrix4.CreateScale(0.1f); //TODO magic numbers go away! // NO!
         }
 
         public void setUpBlenderModel()
         {
             modelMatrix = modelMatrix + Matrix4.CreateScale(10f);
         }
+
+        public void setCoordiants(float world_x,float world_y,float world_z)
+        {
+            modelMatrix =Matrix4.Translation(world_x,world_y,world_z);
+        }
+
+
+
+
         public void render(int program, OpenTK.Vector3 position)
         {
 

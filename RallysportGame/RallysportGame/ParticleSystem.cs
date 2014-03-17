@@ -10,6 +10,7 @@ namespace RallysportGame
 {
     class ParticleSystem : Entity
     {
+
         static int ID=0; // debugg
         private Vector3 emitterPos;
         private Vector3 frustumDir;
@@ -20,8 +21,6 @@ namespace RallysportGame
         private static Random random;
         private DateTime prevTime;
 
-
-
         //maybe better with Dictionary (~ HashMap)? we might want to know which particle to remove?
         //remove(particle) from arraylist might be slow, O(n)... remove from Dictionary is O(1)
         //capacity issue could be solved with some simple comparison, I guess...
@@ -29,7 +28,7 @@ namespace RallysportGame
         private TimeSpan meanLiveTime;
         
         //empty constructor, not to be used for real
-        public ParticleSystem() : this(new Vector3(0.0f, 0.0f, 0.0f), 
+        public ParticleSystem() : this(new Vector3(0.0f, 0.0f, 0.0f),new Vector3(0.0f, -1.0f, 0.0f), 
                                     45.0f, 20, new TimeSpan(0,0,10), null)
         {
 
@@ -44,7 +43,8 @@ namespace RallysportGame
         /// <param name="rate">Number of particles that are spawned each second.</param>
         /// <param name="liveTime">The fuzzy value of how long a particle lives.</param>
         /// <param name="particle">The particle object that is to be rendered.</param>
-        public ParticleSystem(Vector3 pos, float frustum, int rate,
+        /// <param name="spawnRate">Particals spawned eatch tenth of a second</param>
+        public ParticleSystem(Vector3 pos,Vector3 frustomDirIn, float frustum, int rate,
                         TimeSpan liveTime, Entity particle)
         {
             random = new Random();
@@ -55,9 +55,9 @@ namespace RallysportGame
             particleObject = particle;
             emit = true;
             prevTime = new DateTime(0);
-            frustumDir = new Vector3(0.0f, 1.0f, 0.0f);
+            frustumDir = frustomDirIn;
             
-            int capacity = (int)Math.Ceiling(meanLiveTime.Seconds * spawnRate * 1.5); 
+            int capacity = (int)Math.Ceiling(meanLiveTime.Seconds * spawnRate* 15.0f); // *10 * 1.5  10 bechus it's in milli seconds and 1.5 bechus of margins
             particleList = new ArrayList(capacity); //might be bad, if memory seems suspicious, double check
         }
          
@@ -70,19 +70,17 @@ namespace RallysportGame
         {
             emit = false;
         }
-        public void render()
+        new public void firstPass(int program, Matrix4 projectionMatrix, Matrix4 viewMatrix)
         { 
             foreach(Particle p in particleList){
-                // This method should render a particleObject at eatch particle possition
-                // This is how I whant it to wark, but dosen't as of yet
-                //Console.Out.WriteLine("X: " + p.GetPosition().X + " \t Y: " + p.GetPosition().Y + "\t Z: " + p.GetPosition().Z + "\t Emit: " + emit + "\t" + "ID: " + p.ID_part);
-               particleObject.render(0 ,new Vector3(p.GetPosition().X, p.GetPosition().Y, p.GetPosition().Z));
+                particleObject.setCoordiants(p.GetPosition().X, p.GetPosition().Y, p.GetPosition().Z);
+                particleObject.firstPass(program,projectionMatrix,viewMatrix);
             }
         }
         public void tick()
         {
 
-            if (emit && (prevTime.Add(new TimeSpan(0, 0, 1)) <= DateTime.Now))
+            if (emit && (prevTime.Add(new TimeSpan(0,0, 0, 0, 100)) <= DateTime.Now))
             {
                 prevTime = DateTime.Now;
 
@@ -90,57 +88,87 @@ namespace RallysportGame
 
                 for (int i = 0; i <= spawnRate; i++)
                 {
-                    
 
-                    // this is soo that eatch vector has a different length and thus different speed
-                    // it's cast to float becuse Vector4 whants floats.
-                    float tempScaleingFactor=(float)random.NextDouble();
-                    // here the scaling is applied in the matrix that moves the vector from origin back to where it was.
-                    Matrix4 transMatToOrigin =  new Matrix4(new Vector4(tempScaleingFactor, 0, 0, -emitterPos.X),
-                                                            new Vector4(0, tempScaleingFactor, 0, -emitterPos.Y),
-                                                            new Vector4(0, 0, tempScaleingFactor, -emitterPos.Z),
-                                                            new Vector4(0, 0, 0, 1)
-                                                            );
+                    //calculate the length of "Normal" in the XY-plane
+                    float lengthxy = frustumDir.X * frustumDir.X + frustumDir.Y * frustumDir.Y; // sqared length
+                    float alphaxy;
+                    if (lengthxy == 0)
+                    {
+                        alphaxy = 0.0f;
+                    }
+                    else
+                    {
+                        lengthxy = (float)Math.Sqrt(lengthxy); // real length
+
+                        //calculate the angle between the x-axis and "Normal" in the XY-plane
+                        alphaxy =(float)Math.Asin((double)(frustumDir.Y / lengthxy)); // sin alpha = y / hypotenuse
+                    }
+
+                    //calculate the length of "Normal" in the XZ-plane
+                   
+                    float lengthxz = frustumDir.X * frustumDir.X + frustumDir.Z * frustumDir.Z; // sqared length
+                    float alphaxz;
+                    if (lengthxz == 0)
+                    {
+                        alphaxz = 0.0f; // 90 degrees
+                    }
+                    else
+                    {
+                        lengthxz = (float)Math.Sqrt(lengthxz); // real length
+
+                        //calculate the angle between the x-axis and "Normal" in the XZ-plane
+                        alphaxz = (float)Math.Asin((double)(frustumDir.Z / lengthxz)); // sin alpha = z / hypotenuse
+                    }
 
 
-                    // uses random to select an angle in the interval +- spawnFrustum/2
-                    /*************************************
-                        * -spawnFrustum/2  +spawnFrustum/2  *
-                        *          |    |    |              *
-                        *           |   |   |               *
-                        *            |  |  |                *
-                        *             | | |                 *
-                        *              |||                  *
-                        *               |                   *
-                        *************************************/
-                    
-                    
+                    Vector4 vector_x = new Vector4(1, 0, 0, 0);             
                     // pick angle and make rotation matrix
-                    double tmpAngle = random.NextDouble() * spawnFrustum - spawnFrustum/2;
-                    Matrix4 rotMatX = new Matrix4(new Vector4(1,0,0,0),
-                                                new Vector4(0, (float)Math.Cos(tmpAngle), (float)-(Math.Sin(tmpAngle)),0),
-                                                new Vector4(0, (float)Math.Sin(tmpAngle), (float)Math.Cos(tmpAngle),0),
+                    double tempRand = random.NextDouble() * spawnFrustum - spawnFrustum/2;
+
+
+                     // pick a new angle and make another rotation matrix
+                    Matrix4 mat = new Matrix4(new Vector4((float)Math.Cos(tempRand), (float)-Math.Sin(tempRand),0, 0),                  //rot z
+                                                new Vector4((float)Math.Sin(tempRand), (float)Math.Cos(tempRand), 0, 0),
+                                                new Vector4(0,0,1,0),
                                                 new Vector4(0,0,0,1)
                                                 );
-                    // pick angle and make rotation matrix
-                    Matrix4 rotMatY = new Matrix4(new Vector4((float)Math.Cos(tmpAngle), 0, 0, (float)Math.Sin(tmpAngle)),
-                                                  new Vector4(0, 1, 0,0),
-                                                  new Vector4((float)-Math.Cos(tmpAngle),0,(float)Math.Sin(tmpAngle),1),
-                                                  new Vector4 (0,0,0,1)
-                                                  );
-                                                    
+
+                    vector_x = Vector4.Transform(vector_x, mat);
+                   
+                    tempRand = random.NextDouble() * 2 * 3.14 - 3.14;
+
+                     mat = new Matrix4(new Vector4(1,0,0,0),                                                                         // rot x
+                            new Vector4(0, (float)Math.Cos(tempRand), (float)-(Math.Sin(tempRand)),0),
+                            new Vector4(0, (float)Math.Sin(tempRand), (float)Math.Cos(tempRand),0),
+                            new Vector4(0,0,0,1)
+                            );
+                    
+                    vector_x = Vector4.Transform(vector_x, mat);
 
 
-                    // pick a new angle and make another rotation matrix
-                    tmpAngle = random.NextDouble()*spawnFrustum-spawnFrustum/2;
-                    Matrix4 rotMatZ = new Matrix4(new Vector4((float)Math.Cos(tmpAngle), (float)Math.Sin(tmpAngle),0, 0),
-                                                new Vector4(-(float)Math.Sin(tmpAngle), (float)Math.Cos(tmpAngle), 0, 0),
-                                                new Vector4((float)-Math.Sin(tmpAngle),(float)Math.Cos(tmpAngle),1,0),
-                                                new Vector4(0,0,0,1)
+                    mat = new Matrix4(new Vector4((float)Math.Cos(alphaxy), (float)-Math.Sin(alphaxy), 0, 0),                  //rot z
+                                                new Vector4((float)Math.Sin(alphaxy), (float)Math.Cos(alphaxy), 0, 0),
+                                                new Vector4(0, 0, 1, 0),
+                                                new Vector4(0, 0, 0, 1)
                                                 );
- 
+                    vector_x = Vector4.Transform(vector_x, mat);
+
+                     mat = new Matrix4(
+                              new Vector4((float)Math.Cos(alphaxz), 0, (float)Math.Sin(alphaxz), 0),
+                              new Vector4(0, 1, 0, 0),
+                              new Vector4((float)-Math.Sin(alphaxz), 0, (float)Math.Cos(alphaxz), 0),
+                              new Vector4(0, 0, 0, 1)
+                              );
+                     vector_x = Vector4.Transform(vector_x, mat);
+
+                     vector_x.Normalize();
+                     tempRand = random.NextDouble();
+                     vector_x.Scale((float)tempRand, (float)tempRand, (float)tempRand, 0);
+
+                     
+
                     // rotate the vector
-                    Vector4 velocity4 = Vector4.Transform((new Vector4(frustumDir.X, frustumDir.Y, frustumDir.Z, 1.0f)), transMatToOrigin * rotMatX * rotMatY * rotMatZ);
+                     Vector4 velocity4 = vector_x;
                     //make it a 3 vec for the patricle constructor
                     Vector3 velocity3 = new Vector3(velocity4.X, velocity4.Y, velocity4.Z);
                     // Spawn the particle
@@ -194,7 +222,7 @@ namespace RallysportGame
         public Particle(Vector3 velocity, Vector3 position, TimeSpan liveTime, int ID)
         {
             ID_part = ID;
-            gravity =  new Vector3(0, -0.1f, 0);
+            gravity =  new Vector3(0, -0.000001f, 0);
             random = new Random();
             pBirthTime = DateTime.Now;
             pVelocity = velocity;
