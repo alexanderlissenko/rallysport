@@ -587,8 +587,8 @@ namespace RallysportGame
                     environment.firstPass(firstPassShader,  projectionMatrix,  viewMatrix);
                     
                     GL.BindTexture(TextureTarget.Texture2D, 0);
-                    myCar2.firstPass(firstPassShader, projectionMatrix, viewMatrix);
-
+                    //myCar2.firstPass(firstPassShader, projectionMatrix, viewMatrix);
+                    playerCar.firstPass(firstPassShader, projectionMatrix, viewMatrix);
                     skybox.firstPass(firstPassShader, projectionMatrix, viewMatrix);
                     
                     GL.DepthMask(false);
