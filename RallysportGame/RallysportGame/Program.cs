@@ -627,8 +627,8 @@ namespace RallysportGame
                     int lTUniform = GL.GetUniformLocation(secondPassShader, "lightType");
                     //Point Lights
                     GL.Uniform1(lTUniform, 1.0f);
-                    //for (int i = 0; i < 100; i++ )
-                        //plane.pointLight(secondPassShader, new Vector3(15.0f, 10.0f, (float)i), new Vector3(1, 0, 0), 10.0f);
+                    for (int i = 0; i < 100; i++ )
+                        plane.pointLight(secondPassShader, new Vector3(0.0f, 1.0f, 0.0f), new Vector3(1, 0, 0), 10.0f);
                         //plane.pointLight(secondPassShader, new Vector3(-15.0f, 10.0f, 0), new Vector3(0, 1, 0), 10.0f);
                         //plane.pointLight(secondPassShader, new Vector3(0, 10.0f, 10.0f), new Vector3(0, 0, 1), 10.0f);
                         //plane.pointLight(secondPassShader, new Vector3(0,10.0f,-10.0f), new Vector3(1, 1, 0), 10.0f);

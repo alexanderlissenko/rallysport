@@ -89,16 +89,23 @@ void main(void)
    {
 		float cutoff = 0.0005;
 		vec3 lightVector = lightPos - worldPos.xyz;
-		float denom = (length(lightVector)/lightRadius)+1;
-		float atten_factor = 1/(denom*denom);
-		atten_factor = (atten_factor - cutoff) / (1-cutoff);
+		if(length(lightVector) < lightRadius)
+		{
+			float denom = (length(lightVector)/lightRadius)+1;
+			float atten_factor = 1/(denom*denom);
+			atten_factor = (atten_factor - cutoff) / (1-cutoff);
 		
-		atten_factor = max(atten_factor, 0);
-		//float atten_factor = clamp(1/(1+((2/lightRadius)*(length(lightVector)))+(1/(pow(lightRadius,2))*pow(length(lightVector),2))),0.0,1.0);//clamp(1.0 - pow((length(lightVector)/lightRadius),4),0.0,1.0); 
+			atten_factor = max(atten_factor, 0);
+			//float atten_factor = clamp(1/(1+((2/lightRadius)*(length(lightVector)))+(1/(pow(lightRadius,2))*pow(length(lightVector),2))),0.0,1.0);//clamp(1.0 - pow((length(lightVector)/lightRadius),4),0.0,1.0); 
 		
-		shading = (ambient*lightColor
-				+ calculateSpecular(lightColor*scene_light, fresnelSpecular,material_shininess,normal.xyz,directionToLight,directionFromEye)
-				+ calculateDiffuse(lightColor*scene_light,diffuse.xyz,normal.xyz,directionToLight))*atten_factor;//(vec4(lightColor,1)*atten_factor;//diffuse;
+			shading = (ambient*lightColor
+					+ calculateSpecular(lightColor*scene_light, fresnelSpecular,material_shininess,normal.xyz,directionToLight,directionFromEye)
+					+ calculateDiffuse(lightColor*scene_light,diffuse.xyz,normal.xyz,directionToLight))*atten_factor;//(vec4(lightColor,1)*atten_factor;//diffuse;
+		}
+		else
+		{
+			shading = vec3(0.0);
+		}
    }
    if(lightType == 2.0)
    {
@@ -107,16 +114,23 @@ void main(void)
 		if(sDL > lightWidht)
 		{	
 			vec3 lightVector = lightPos - worldPos.xyz;
-			
-			float cutoff = 0.0005;
-			float denom = (length(lightVector)/lightRadius)+1;
-			float atten_factor = 1/(denom*denom);
-			atten_factor = (atten_factor - cutoff) / (1-cutoff);
-			atten_factor = max(atten_factor, 0);
+			if(length(lightVector) < lightRadius)
+			{
+				float cutoff = 0.0005;
+				float denom = (length(lightVector)/lightRadius)+1;
+				float atten_factor = 1/(denom*denom);
+				atten_factor = (atten_factor - cutoff) / (1-cutoff);
+				atten_factor = max(atten_factor, 0);
 			 
-			shading = (ambient*lightColor 	
-					 + calculateSpecular(lightColor*scene_light, fresnelSpecular,material_shininess*4,normal.xyz,directionToLight,directionFromEye)
-					 + calculateDiffuse(lightColor*scene_light,diffuse.xyz,normal.xyz,directionToLight))*atten_factor;
+				shading = (ambient*lightColor 	
+						+ calculateSpecular(lightColor*scene_light, fresnelSpecular,material_shininess*4,normal.xyz,directionToLight,directionFromEye)
+						+ calculateDiffuse(lightColor*scene_light,diffuse.xyz,normal.xyz,directionToLight))*atten_factor;
+					 
+			}
+			else
+			{
+				shading = vec3(0.0);
+			}
 		}
 		else
 		{
