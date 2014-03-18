@@ -4,10 +4,13 @@ precision mediump float;
 in vec3 positionIn;
 out vec2 position;	
 
+uniform float lightType;
+uniform mat4 modelViewProjectionMatrix;
 void main(void)
 {
-
-   gl_Position = vec4(positionIn,1)*2-1;
+	gl_Position = vec4(positionIn,1)*2-1;  
+	//	gl_Position = modelViewProjectionMatrix * vec4(positionIn,1);
+   
    // Copy position to the fragment shader. Only x and y is needed.
    position = positionIn.xy;
 }	

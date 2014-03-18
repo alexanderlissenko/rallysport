@@ -625,16 +625,22 @@ namespace RallysportGame
                     GL.Uniform1(GL.GetUniformLocation(secondPassShader, "shadowMapTex"), 4);
 
                     GL.UniformMatrix4(GL.GetUniformLocation(secondPassShader, "lightMatrix"),false, ref lightMatrix);
-                   
+                    int lTUniform = GL.GetUniformLocation(secondPassShader, "lightType");
                     //Point Lights
-                    GL.Uniform1(GL.GetUniformLocation(secondPassShader, "lightType"), 1.0f);
-                    plane.pointLight(secondPassShader, new Vector3(10.0f, 0, 0), new Vector3(1, 0, 0), 20.0f);
-                    plane.pointLight(secondPassShader, new Vector3(-10.0f, 0, 0), new Vector3(0, 1, 0), 20.0f);
-                    plane.pointLight(secondPassShader, new Vector3(0, 0, 10.0f), new Vector3(0, 0, 1), 20.0f);
-                    plane.pointLight(secondPassShader, new Vector3(0,0,-10.0f), new Vector3(1, 1, 0), 20.0f);
+                    GL.Uniform1(lTUniform, 1.0f);
+                    //plane.pointLight(secondPassShader, new Vector3(15.0f, 10.0f, 0), new Vector3(1, 0, 0), 10.0f);
+                    //plane.pointLight(secondPassShader, new Vector3(-15.0f, 10.0f, 0), new Vector3(0, 1, 0), 10.0f);
+                    //plane.pointLight(secondPassShader, new Vector3(0, 10.0f, 10.0f), new Vector3(0, 0, 1), 10.0f);
+                    //plane.pointLight(secondPassShader, new Vector3(0,10.0f,-10.0f), new Vector3(1, 1, 0), 10.0f);
                     
+                    //Spot Light
+                    GL.Uniform1(lTUniform, 2.0f);
+                    plane.spotLight(secondPassShader, new Vector3(0, 3, 0), new Vector3(-1, -1, 0), new Vector3(1, 0, 0), 20.0f, (float)Math.Cos(pi/4));
+                    plane.spotLight(secondPassShader, new Vector3(0, 3, 0), new Vector3(1, -1, 0), new Vector3(1, 0, 0), 15.0f, (float)Math.Cos(pi / 4));
+                    plane.spotLight(secondPassShader, new Vector3(0, 3, 0), new Vector3(0, -1, -1), new Vector3(0, 1, 0), 15.0f, (float)Math.Cos(pi / 4));
+                    plane.spotLight(secondPassShader, new Vector3(0, 3, 0), new Vector3(0, -1, 1), new Vector3(0, 1, 0), 15.0f, (float)Math.Cos(pi / 4));
                     //Directional Lights
-                    GL.Uniform1(GL.GetUniformLocation(secondPassShader, "lightType"), 0.0f);
+                    GL.Uniform1(lTUniform, 0.0f);
                     //plane.directionalLight(secondPassShader, viewMatrix, lightPosition, camera_position);
 
                     GL.Enable(EnableCap.DepthTest);
