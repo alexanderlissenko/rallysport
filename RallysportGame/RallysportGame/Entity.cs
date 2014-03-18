@@ -13,6 +13,8 @@ using System.Globalization;
 using System.Drawing;
 using System.Drawing.Imaging;
 
+using System.Collections;
+
 
 
 /*
@@ -32,6 +34,8 @@ namespace RallysportGame
         String texturePath;
         private int textureId;
         private float shininess;
+
+        private Dictionary<string, int> uniformLoc = new Dictionary<string,int>();
 
         public uint vertexArrayObject;  // make private later, made public for testing
         private uint positionBuffer;
@@ -106,22 +110,32 @@ namespace RallysportGame
 
         public void pointLight(int program, OpenTK.Vector3 lightPosition, OpenTK.Vector3 lightColor,float lightRadius)
         {
+            /*
             GL.Uniform3(GL.GetUniformLocation(program, "lightColor"), lightColor);
             GL.Uniform3(GL.GetUniformLocation(program, "lightPos"), lightPosition);
             GL.Uniform1(GL.GetUniformLocation(program, "lightRadius"), lightRadius);
-
+            */
+            GL.Uniform3(uniformLoc["lightColor"], lightColor);
+            GL.Uniform3(uniformLoc["lightPos"], lightPosition);
+            GL.Uniform1(uniformLoc["lightRadius"], lightRadius);
             GL.BindVertexArray(vertexArrayObject);
             GL.DrawArrays(PrimitiveType.Triangles, 0, numOfTri * 3);
         }
 
         public void spotLight(int program, OpenTK.Vector3 lightPosition, OpenTK.Vector3 lightDirection,  OpenTK.Vector3 lightColor,float lightRadius, float lightWidht)
         {
+            /*
             GL.Uniform3(GL.GetUniformLocation(program, "lightColor"), lightColor);
             GL.Uniform3(GL.GetUniformLocation(program, "lightPos"), lightPosition);
             GL.Uniform3(GL.GetUniformLocation(program, "lightDirection"), lightDirection);
             GL.Uniform1(GL.GetUniformLocation(program, "lightRadius"), lightRadius);
             GL.Uniform1(GL.GetUniformLocation(program, "lightWidht"), lightWidht);
-
+            */
+            GL.Uniform3(uniformLoc["lightColor"], lightColor);
+            GL.Uniform3(uniformLoc["lightPos"], lightPosition);
+            GL.Uniform3(uniformLoc["lightDirection"], lightDirection);
+            GL.Uniform1(uniformLoc["lightRadius"], lightRadius);
+            GL.Uniform1(uniformLoc["lightWidht"], lightWidht);
             GL.BindVertexArray(vertexArrayObject);
             GL.DrawArrays(PrimitiveType.Triangles, 0, numOfTri * 3);
         }
@@ -200,6 +214,18 @@ namespace RallysportGame
         {
             modelMatrix = modelMatrix + Matrix4.CreateScale(10f);
         }
+        public void loadUniformLocations(int program)
+        {
+            uniformLoc.Add("lightColor", GL.GetUniformLocation(program, "lightColor"));
+            uniformLoc.Add("lightPos", GL.GetUniformLocation(program, "lightPos"));
+            uniformLoc.Add("lightDirection", GL.GetUniformLocation(program, "lightDirection"));
+            uniformLoc.Add("lightRadius", GL.GetUniformLocation(program, "lightRadius"));
+            uniformLoc.Add("lightWidht", GL.GetUniformLocation(program, "lightWidht"));
+            uniformLoc.Add("modelViewMatrix", GL.GetUniformLocation(program, "modelViewMatrix"));
+            uniformLoc.Add("camera", GL.GetUniformLocation(program, "camera"));
+
+        }
+
         public void render(int program, OpenTK.Vector3 position)
         {
 

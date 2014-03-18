@@ -229,7 +229,7 @@ namespace RallysportGame
                     //myCar = new Entity("Cube\\koobe");//"Cube\\koobe");//"TeapotCar\\Teapot car\\Teapot-no-materials-tri");//"map\\uggly_test_track_Triangulate");//
 
                     plane = new Entity("plane");
-                    environment = new Entity("map\\uggly_test_track_Triangulate");//"TeapotCar\\Teapot car\\Teapot-no-materials-tri");//"Cube\\3ds-cube");//
+                    environment = new Entity("map\\uggly_test_track_Triangulate");//new Entity("map\\finalTrack_0.04_reversNorm");//"TeapotCar\\Teapot car\\Teapot-no-materials-tri");//"Cube\\3ds-cube");//
                     myCar2 = new Entity("Cube\\testCube");//"Cube\\megu_koob");//"TeapotCar\\Teapot car\\Teapot-no-materials-tri");//
                     playerCar = new Car("TeapotCar\\Teapot car\\Teapot-no-materials-tri", new Vector3(0,20f,0));
                     skybox = new Entity("Cube\\inside_koob");
@@ -278,6 +278,7 @@ namespace RallysportGame
                     
                     //Set up Uniforms
 
+                    plane.loadUniformLocations(secondPassShader);
 
                     //Shadowmaps
                     #region ShadowMap
@@ -486,8 +487,6 @@ namespace RallysportGame
 
                     #region Let there be light
                     Vector3 lightPosition = sphericalToCartesian(light_theta, light_phi, light_r);
-                    Vector3 scaleVector = new Vector3(10, 10, 10);
-                    //Vector3 scaleVector = new Vector3(1000, 1000, 1000);
                     
 
                     #endregion
@@ -628,20 +627,22 @@ namespace RallysportGame
                     int lTUniform = GL.GetUniformLocation(secondPassShader, "lightType");
                     //Point Lights
                     GL.Uniform1(lTUniform, 1.0f);
-                    //plane.pointLight(secondPassShader, new Vector3(15.0f, 10.0f, 0), new Vector3(1, 0, 0), 10.0f);
-                    //plane.pointLight(secondPassShader, new Vector3(-15.0f, 10.0f, 0), new Vector3(0, 1, 0), 10.0f);
-                    //plane.pointLight(secondPassShader, new Vector3(0, 10.0f, 10.0f), new Vector3(0, 0, 1), 10.0f);
-                    //plane.pointLight(secondPassShader, new Vector3(0,10.0f,-10.0f), new Vector3(1, 1, 0), 10.0f);
-                    
-                    //Spot Light
+                    //for (int i = 0; i < 100; i++ )
+                        //plane.pointLight(secondPassShader, new Vector3(15.0f, 10.0f, (float)i), new Vector3(1, 0, 0), 10.0f);
+                        //plane.pointLight(secondPassShader, new Vector3(-15.0f, 10.0f, 0), new Vector3(0, 1, 0), 10.0f);
+                        //plane.pointLight(secondPassShader, new Vector3(0, 10.0f, 10.0f), new Vector3(0, 0, 1), 10.0f);
+                        //plane.pointLight(secondPassShader, new Vector3(0,10.0f,-10.0f), new Vector3(1, 1, 0), 10.0f);
+
+                        //Spot Light
                     GL.Uniform1(lTUniform, 2.0f);
                     plane.spotLight(secondPassShader, new Vector3(0, 3, 0), new Vector3(-1, -1, 0), new Vector3(1, 0, 0), 20.0f, (float)Math.Cos(pi/4));
                     plane.spotLight(secondPassShader, new Vector3(0, 3, 0), new Vector3(1, -1, 0), new Vector3(1, 0, 0), 15.0f, (float)Math.Cos(pi / 4));
                     plane.spotLight(secondPassShader, new Vector3(0, 3, 0), new Vector3(0, -1, -1), new Vector3(0, 1, 0), 15.0f, (float)Math.Cos(pi / 4));
                     plane.spotLight(secondPassShader, new Vector3(0, 3, 0), new Vector3(0, -1, 1), new Vector3(0, 1, 0), 15.0f, (float)Math.Cos(pi / 4));
+                    
                     //Directional Lights
                     GL.Uniform1(lTUniform, 0.0f);
-                    //plane.directionalLight(secondPassShader, viewMatrix, lightPosition, camera_position);
+                    plane.directionalLight(secondPassShader, viewMatrix, lightPosition, camera_position);
 
                     GL.Enable(EnableCap.DepthTest);
                     GL.DepthMask(true);
