@@ -22,6 +22,9 @@ uniform vec3 lightColor;
 uniform float lightRadius;
 uniform mat4 lightMatrix;
 uniform mat4 modelViewMatrix;
+
+uniform mat4 projectionMatrix;
+uniform vec4 projectParam;
 uniform vec3 scene_ambient_light = vec3(0.3,0.3,0.3);
 uniform vec3 scene_light = vec3(0.6,0.6,0.6);
 
@@ -40,7 +43,13 @@ vec3 calculateFresnel(vec3 materialSpecular, vec3 normal, vec3 directionFromEye)
 {
 	return materialSpecular + (vec3(1.0)-materialSpecular)*pow(clamp(1.0+dot(directionFromEye,normal),0.0,1.0),5.0);
 }
+vec3 reconstructPosition(float p_depth, vec2 p_ndc, vec4 p_projParams)
+{ 
+    float depth = p_depth * 2.0f - 1.0f;
+    float viewDepth = p_projParams.w / (depth - p_projParams.z);
 
+    return vec3((p_ndc * viewDepth) / p_projParams.xy, viewDepth);
+}
 ////
 
 void main(void)
@@ -50,10 +59,13 @@ void main(void)
 	
    // Load data, stored in textures, from the first stage rendering.
    vec4 diffuse = texture2D(diffuseTex, position.xy);
-   vec4 worldPos = texture2D(posTex, position.xy);
+   //vec3 worldPos = texture2D(posTex, position.xy).xyz;
    vec4 normal = texture2D(normalTex, position.xy);
    vec4 depth = texture2D(depthTex, position.xy);
    
+   vec4 screen = vec4((position.xy*2)-1, (depth.x*2)-1, 1.0);
+   vec4 worldPosUnHo = inverse(modelViewMatrix)*projectionMatrix * screen;
+   vec3 worldPos = worldPosUnHo.xyz/worldPosUnHo.w;//reconstructPosition(depth,position.xy,projectParam);//
    //Constants
    vec3 ambient;
    if(diffuse.xyz != vec3(0.0))
@@ -67,14 +79,14 @@ void main(void)
    vec3 specular = vec3(0.5);
    float material_shininess = 5.0;
    
-   vec3 directionToLight = normalize(lightPos-worldPos.xyz);
-   vec3 directionFromEye = normalize(worldPos.xyz-camera);
+   vec3 directionToLight = normalize(lightPos-worldPos);
+   vec3 directionFromEye = normalize(worldPos-camera);
    vec3 fresnelSpecular = calculateFresnel(specular,normal.xyz, directionFromEye);
    vec3 shading;
    //Calculate Lighting
    if(lightType == 0)
    {
-   vec4 shadowMapCoord = lightMatrix * modelViewMatrix* vec4( worldPos.xyz,1);
+   vec4 shadowMapCoord = lightMatrix *modelViewMatrix* vec4( worldPos,1);
    //shadowMapCoord.xyz *= vec3(0.5,0.5,0.5);
    //shadowMapCoord.xyz += shadowMapCoord.w * vec3(0.5,0.5,0.5);
    float visibility = textureProj(shadowMapTex, shadowMapCoord);

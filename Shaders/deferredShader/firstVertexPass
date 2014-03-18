@@ -22,6 +22,6 @@ void main(void)
    fragmentTexCoord = texCoordIn;
    fragmentNormal = normalize((modelMatrix*vec4(normalIn, 0.0)).xyz);
    gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(positionIn,1);
-   positionOut = modelMatrix * vec4(positionIn,1); // Copy position to the fragmentshader
+   //positionOut = modelMatrix * vec4(positionIn,1); // Copy position to the fragmentshader
   
 }

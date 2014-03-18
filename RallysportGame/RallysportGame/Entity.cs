@@ -90,16 +90,19 @@ namespace RallysportGame
             GL.DrawArrays(PrimitiveType.Triangles, 0, numOfTri * 3);
 
         }
-        public void directionalLight(int program, Matrix4 viewMatrix, OpenTK.Vector3 lightPosition, OpenTK.Vector3 cameraPosition)
+        public void directionalLight(int program, Matrix4 projectionMatrix, Matrix4 viewMatrix, OpenTK.Vector3 lightPosition, OpenTK.Vector3 cameraPosition)
         {
 
-            Matrix4 modelWorldMatrix;
-            // Transform from model to world
-            Matrix4.Mult(ref modelMatrix, ref worldMatrix, out modelWorldMatrix);
             Matrix4 modelViewMatrix;
-            Matrix4.Mult(ref modelWorldMatrix, ref viewMatrix, out modelViewMatrix);
+            Matrix4.Mult(ref modelMatrix, ref viewMatrix, out modelViewMatrix);
 
+
+            Vector4 projectParam = new Vector4(projectionMatrix.M11, projectionMatrix.M22, projectionMatrix.M33, projectionMatrix.M34);
+
+            GL.Uniform4(GL.GetUniformLocation(program, "projectParam"), projectParam);
+            GL.UniformMatrix4(GL.GetUniformLocation(program, "projectionMatrix"), false, ref projectionMatrix);
             GL.UniformMatrix4(GL.GetUniformLocation(program, "modelViewMatrix"), false, ref modelViewMatrix);
+
             GL.Uniform3(GL.GetUniformLocation(program, "lightPos"), lightPosition);
             GL.Uniform3(GL.GetUniformLocation(program, "camera"), cameraPosition);
 
