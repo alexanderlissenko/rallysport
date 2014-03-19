@@ -7,7 +7,6 @@ out vec4 fragColor;           // layout(location = 0)
 
 
 uniform sampler2D diffuseTex; // The color information
-uniform sampler2D posTex;     // World position
 uniform sampler2D normalTex;  // Normals
 uniform sampler2D depthTex;  // Depth
 uniform sampler2DShadow shadowMapTex; 
