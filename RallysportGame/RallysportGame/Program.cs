@@ -11,6 +11,7 @@ using OpenTK.Graphics.OpenGL;
 using System.Drawing;
 using OpenTK.Input;
 using BEPUphysics.Vehicle;
+using System.Threading;
 
 
 
@@ -209,11 +210,10 @@ namespace RallysportGame
             }
             previous = current;
         }
-
-
-        static void Main(string[] args)
-        { 
-          
+        //creates the game loop
+        private static void startGame()
+        {
+            
             using (var game = new GameWindow())
             {
                 #region Load
@@ -650,6 +650,20 @@ namespace RallysportGame
                 // Run the game at 60 updates per second
                 game.Run(60.0);
             }
+        }
+        static void Main(string[] args)
+        {
+            Thread menuThread = new Thread(new ThreadStart(startMenu));
+            menuThread.Start();
+            startGame();
+        }
+        //creates the menu window
+        private static void startMenu()
+        {
+            //int[] resolution = { SettingsParser.GetInt(Settings.WINDOW_WIDTH), SettingsParser.GetInt(Settings.WINDOW_HEIGHT) };
+            int[] resolution = { 800, 600};
+            new Menu(resolution).Run(60);
+
         }
     }
 }

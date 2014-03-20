@@ -75,6 +75,7 @@
     <Compile Include="CarWheel.cs" />
     <Compile Include="CollisionHandler.cs" />
     <Compile Include="Entity.cs" />
+    <Compile Include="Menu.cs" />
     <Compile Include="ParticleSystem.cs" />
     <Compile Include="DynamicEntity.cs" />
     <Compile Include="GenericVector3.cs" />
