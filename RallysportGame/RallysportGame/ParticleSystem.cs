@@ -14,25 +14,28 @@ namespace RallysportGame
         static int ID=0; // debugg
         private Vector3 emitterPos;
         private Vector3 frustumDir;
+        private Vector3 systemGravity;
         private float spawnFrustum; //angle
         private Entity particleObject;
         private int spawnRate;
+        
         private static bool emit;
         private static Random random;
         private DateTime prevTime;
-
+        
         //maybe better with Dictionary (~ HashMap)? we might want to know which particle to remove?
         //remove(particle) from arraylist might be slow, O(n)... remove from Dictionary is O(1)
         //capacity issue could be solved with some simple comparison, I guess...
         private ArrayList particleList; 
         private TimeSpan meanLiveTime;
-        
-        //empty constructor, not to be used for real
-        public ParticleSystem() : this(new Vector3(0.0f, 0.0f, 0.0f),new Vector3(0.0f, -1.0f, 0.0f), 
-                                    45.0f, 20, new TimeSpan(0,0,10), null)
-        {
 
-        }
+
+        // special partical mode
+        private float particalRadius;
+        private bool sphereMode;
+
+        //empty constructor, not to be used for real
+
         
         /// <summary>
         /// This is the constructor for the particle system
@@ -44,23 +47,51 @@ namespace RallysportGame
         /// <param name="liveTime">The fuzzy value of how long a particle lives.</param>
         /// <param name="particle">The particle object that is to be rendered.</param>
         /// <param name="spawnRate">Particals spawned eatch tenth of a second</param>
-        public ParticleSystem(Vector3 pos,Vector3 frustomDirIn, float frustum, int rate,
-                        TimeSpan liveTime, Entity particle)
+        /// <param name="gravity">Sets the systems gravity</param>
+        #region constructors
+        public ParticleSystem(Entity particle,Vector3 pos,Vector3 frustomDirIn, float frustum, int rate, Vector3 gravity,
+                        TimeSpan liveTime)
         {
+            particleObject = particle;
+            systemGravity = gravity;
             random = new Random();
             emitterPos = pos;
             spawnFrustum = frustum;
             spawnRate = rate;
             meanLiveTime = liveTime;
-            particleObject = particle;
             emit = true;
             prevTime = new DateTime(0);
             frustumDir = frustomDirIn;
-            
             int capacity = (int)Math.Ceiling(meanLiveTime.Seconds * spawnRate* 15.0f); // *10 * 1.5  10 bechus it's in milli seconds and 1.5 bechus of margins
             particleList = new ArrayList(capacity); //might be bad, if memory seems suspicious, double check
         }
-         
+        public ParticleSystem() : this(null, new Vector3(0,0,0), new Vector3(0,-1,0), 20.0f*3.14f/90.0f, 20,new Vector3(0.0f,-0.982f,0.0f), new TimeSpan(0, 0, 2)){}
+
+        public ParticleSystem(Entity particle,Vector3 pos,Vector3 frustomDirIn, float frustum):this(particle, pos, frustomDirIn, frustum, 20,new Vector3(0.0f,-0.982f,0.0f), new TimeSpan(0, 0, 2)){}
+        
+        public ParticleSystem(Entity particle,Vector3 pos,Vector3 frustomDirIn, float frustum, int rate):this(particle, pos, frustomDirIn, frustum, rate,new Vector3(0.0f,-0.982f,0.0f), new TimeSpan(0, 0, 2)){}
+        
+        public ParticleSystem(Entity particle,Vector3 pos,Vector3 frustomDirIn, float frustum, int rate,Vector3 gravity):this(particle, pos, frustomDirIn, frustum, rate, gravity, new TimeSpan(0, 0, 2)){}
+        /// <summary>
+        /// This is the constructor for the particle system when drawing whit sphere mode
+        /// </summary>
+        /// <param name="pos">The emitter's initial position.</param>
+        /// <param name="frustum">Spans the possible directions where particles may
+        ///     be shot. Format is (angle, x-aspect, y-aspect).</param>
+        /// <param name="rate">Number of particles that are spawned each second.</param>
+        /// <param name="liveTime">The fuzzy value of how long a particle lives.</param>
+        /// <param name="particalRad">The particle spheres Radius.</param>
+        /// <param name="spawnRate">Particals spawned eatch tenth of a second</param>
+        /// <param name="gravity">Sets the systems gravity</param>
+        public ParticleSystem(float particalRad,Vector3 pos,Vector3 frustomDirIn, float frustum, int rate, Vector3 gravity,
+                        TimeSpan liveTime):this(null, pos, frustomDirIn, frustum, rate, gravity, liveTime){
+                            sphereMode = true;
+                            particalRadius = particalRad;  
+        }
+
+
+        #endregion
+
         public void startEmit()
         {
             emit = true;
@@ -74,7 +105,9 @@ namespace RallysportGame
         { 
             foreach(Particle p in particleList){
                 particleObject.setCoordiants(p.GetPosition().X, p.GetPosition().Y, p.GetPosition().Z);
+
                 particleObject.firstPass(program,projectionMatrix,viewMatrix);
+                
             }
         }
         public void tick()
@@ -168,12 +201,12 @@ namespace RallysportGame
                      
 
                     // rotate the vector
-                     Vector4 velocity4 = vector_x;
+                    
                     //make it a 3 vec for the patricle constructor
-                    Vector3 velocity3 = new Vector3(velocity4.X, velocity4.Y, velocity4.Z);
+                     Vector3 velocity3 = new Vector3(vector_x.X, vector_x.Y, vector_x.Z);
                     // Spawn the particle
                     ID++;
-                    particleList.Add(new Particle(velocity3, emitterPos, meanLiveTime, ID));
+                    particleList.Add(new Particle(velocity3, emitterPos, meanLiveTime, systemGravity, ID));
                 }
             }
             
@@ -219,10 +252,10 @@ namespace RallysportGame
 
         }
        
-        public Particle(Vector3 velocity, Vector3 position, TimeSpan liveTime, int ID)
+        public Particle(Vector3 velocity, Vector3 position, TimeSpan liveTime,Vector3 systemGravity, int ID)
         {
             ID_part = ID;
-            gravity =  new Vector3(0, -0.000001f, 0);
+            gravity =  systemGravity;
             random = new Random();
             pBirthTime = DateTime.Now;
             pVelocity = velocity;
@@ -252,4 +285,6 @@ namespace RallysportGame
         }
         public Vector3 GetPosition(){ return pPosition; }
     }
+
+ 
 }
