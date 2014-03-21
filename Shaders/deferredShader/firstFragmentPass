@@ -24,7 +24,7 @@ void main(void)
    
    diffuseOutput = clr;
    
-   vec2 a = (positionOut.xy/positionOut.w)*0.5+0.5;
-   vec2 b = (prevPositionOut.xy/prevPositionOut.w)*0.5+0.5;
-   velOutput = vec4(a-b,0,1);
+   vec2 a = (positionOut.xy/positionOut.w);
+   vec2 b = (prevPositionOut.xy/prevPositionOut.w);
+   velOutput = vec4(a-b,0,1)*0.5+0.5;
 }

@@ -63,7 +63,6 @@ void main(void)
    vec4 normal = texture2D(normalTex, position.xy);
    vec4 depth = texture2D(depthTex, position.xy);
    vec4 vel =texture2D(velTex, position.xy);
-   
    vec4 screen = vec4((position.xy*2)-1, (depth.x*2)-1, 1.0);
    vec4 worldPosUnHo = inverse(modelViewMatrix)*projectionMatrix * screen;
    vec3 worldPos = worldPosUnHo.xyz/worldPosUnHo.w;//reconstructPosition(depth,position.xy,projectParam);//

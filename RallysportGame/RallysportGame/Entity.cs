@@ -181,10 +181,26 @@ namespace RallysportGame
         public void renderShadowMap(int program, Matrix4 lightProjectionMatrix, Matrix4 lightViewMatrix)
         {
 
-            setMatrices(program, lightProjectionMatrix, lightViewMatrix);
+            setSMMatrices(program, lightProjectionMatrix, lightViewMatrix);
 
             GL.BindVertexArray(vertexArrayObject);
             GL.DrawArrays(PrimitiveType.Triangles, 0, numOfTri * 3);
+        }
+
+        private void setSMMatrices(int program, Matrix4 projectionMatrix, Matrix4 viewMatrix)
+        {
+            Matrix4 modelWorldMatrix;
+            // Transform from model to world
+            Matrix4.Mult(ref modelMatrix, ref worldMatrix, out modelWorldMatrix);
+            Matrix4 modelViewMatrix;
+            Matrix4.Mult(ref modelWorldMatrix, ref viewMatrix, out modelViewMatrix);
+
+            Matrix4 lmodelViewProjectionMatrix;
+            
+            Matrix4.Mult(ref modelViewMatrix, ref projectionMatrix, out lmodelViewProjectionMatrix);
+
+            GL.UniformMatrix4(GL.GetUniformLocation(program, "modelViewProjectionMatrix"), false, ref lmodelViewProjectionMatrix);
+
         }
 
         private void setMatrices(int program, Matrix4 projectionMatrix, Matrix4 viewMatrix)

@@ -336,7 +336,7 @@ namespace RallysportGame
                     
                     deferredVel = GL.GenTexture();
                     GL.BindTexture(TextureTarget.Texture2D, deferredVel);
-                    GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba32f, game.Width, game.Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, (IntPtr)0);
+                    GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, game.Width, game.Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, (IntPtr)0);
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
@@ -593,7 +593,7 @@ namespace RallysportGame
                     
                     #region secondPass
                     GL.UseProgram(secondPassShader);
-
+                    
                     GL.DepthMask(false);
                     GL.Disable(EnableCap.DepthTest);
                     GL.Viewport(0, 0, w, h);
