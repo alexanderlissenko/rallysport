@@ -4,9 +4,11 @@ precision mediump float;
 uniform sampler2D firstTexture;
 in vec3 fragmentNormal;
 in vec2 fragmentTexCoord;
-in vec4 positionOut;       // The model coordinate, as given by the vertex shader
+in vec4 positionOut;
+in vec4 prevPositionOut;       // The model coordinate, as given by the vertex shader
 out vec4 diffuseOutput; // layout(location = 0)
 out vec4 normOutput;    // layout(location = 2)
+out vec4 velOutput;
 //out vec4 blendOutput;   // layout(location = 3)
 void main(void)
 {
@@ -21,4 +23,8 @@ void main(void)
    //blendOutput.a = clr.a;
    
    diffuseOutput = clr;
+   
+   vec2 a = (positionOut.xy/positionOut.w)*0.5+0.5;
+   vec2 b = (prevPositionOut.xy/prevPositionOut.w)*0.5+0.5;
+   velOutput = vec4(a-b,0,1);
 }

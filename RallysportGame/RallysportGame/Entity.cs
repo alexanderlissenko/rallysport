@@ -46,6 +46,7 @@ namespace RallysportGame
 
         protected Matrix4 modelMatrix;
         protected Matrix4 worldMatrix;
+        protected Matrix4 prevMVP, modelViewProjectionMatrix;
         // 3D position in world space
         public OpenTK.Vector3 position;
         public List<int> vertIndices;
@@ -194,7 +195,7 @@ namespace RallysportGame
             Matrix4 modelViewMatrix;
             Matrix4.Mult(ref modelWorldMatrix, ref viewMatrix, out modelViewMatrix);
 
-            Matrix4 modelViewProjectionMatrix;
+            prevMVP = modelViewProjectionMatrix;
             Matrix4.Mult(ref modelViewMatrix, ref projectionMatrix, out modelViewProjectionMatrix);
 
             Matrix4 normalMatrix;
@@ -205,7 +206,8 @@ namespace RallysportGame
             //GL.UniformMatrix4(GL.GetUniformLocation(program, "worldMatrix"), false, ref modelWorldMatrix);
             //GL.UniformMatrix4(GL.GetUniformLocation(program, "normalMatrix"), false, ref normalMatrix);
             GL.UniformMatrix4(GL.GetUniformLocation(program, "modelViewMatrix"), false, ref modelViewMatrix);
-            GL.UniformMatrix4(GL.GetUniformLocation(program, "modelViewProjectionMatrix"), false, ref modelViewProjectionMatrix);  
+            GL.UniformMatrix4(GL.GetUniformLocation(program, "modelViewProjectionMatrix"), false, ref modelViewProjectionMatrix);
+            GL.UniformMatrix4(GL.GetUniformLocation(program, "prevMVP"), false, ref prevMVP);  
         }
 
         public void setUp3DSModel()
