@@ -44,7 +44,7 @@ namespace RallysportGame
         public uint textureBuffer;
         public int numOfTri;
 
-        protected Matrix4 modelMatrix;
+        public Matrix4 modelMatrix;
         protected Matrix4 worldMatrix;
         protected Matrix4 prevMVP, modelViewProjectionMatrix;
         // 3D position in world space
@@ -205,11 +205,9 @@ namespace RallysportGame
 
         private void setMatrices(int program, Matrix4 projectionMatrix, Matrix4 viewMatrix)
         {
-            Matrix4 modelWorldMatrix;
-            // Transform from model to world
-            Matrix4.Mult(ref modelMatrix, ref worldMatrix, out modelWorldMatrix);
+
             Matrix4 modelViewMatrix;
-            Matrix4.Mult(ref modelWorldMatrix, ref viewMatrix, out modelViewMatrix);
+            Matrix4.Mult(ref modelMatrix, ref viewMatrix, out modelViewMatrix);
 
             prevMVP = modelViewProjectionMatrix;
             Matrix4.Mult(ref modelViewMatrix, ref projectionMatrix, out modelViewProjectionMatrix);
@@ -219,8 +217,6 @@ namespace RallysportGame
             normalMatrix.Transpose();
             normalMatrix.Invert();
 
-            //GL.UniformMatrix4(GL.GetUniformLocation(program, "worldMatrix"), false, ref modelWorldMatrix);
-            //GL.UniformMatrix4(GL.GetUniformLocation(program, "normalMatrix"), false, ref normalMatrix);
             GL.UniformMatrix4(GL.GetUniformLocation(program, "modelViewMatrix"), false, ref modelViewMatrix);
             GL.UniformMatrix4(GL.GetUniformLocation(program, "modelViewProjectionMatrix"), false, ref modelViewProjectionMatrix);
             GL.UniformMatrix4(GL.GetUniformLocation(program, "prevMVP"), false, ref prevMVP);  

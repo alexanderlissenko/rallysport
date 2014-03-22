@@ -8,7 +8,7 @@ in vec4 positionOut;
 in vec4 prevPositionOut;       // The model coordinate, as given by the vertex shader
 out vec4 diffuseOutput; // layout(location = 0)
 out vec4 normOutput;    // layout(location = 2)
-out vec4 velOutput;
+out vec2 velOutput;
 //out vec4 blendOutput;   // layout(location = 3)
 void main(void)
 {
@@ -24,7 +24,8 @@ void main(void)
    
    diffuseOutput = clr;
    
-   vec2 a = (positionOut.xy/positionOut.w);
-   vec2 b = (prevPositionOut.xy/prevPositionOut.w);
-   velOutput = vec4(a-b,0,1)*0.5+0.5;
+   vec2 a = vec2(positionOut.xy/positionOut.w);
+   vec2 b = vec2(prevPositionOut.xy/prevPositionOut.w);
+   velOutput = (a-b)*0.5+0.5;
+   velOutput = pow(velOutput, vec2(3.0));
 }
