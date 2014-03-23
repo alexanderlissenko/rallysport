@@ -31,9 +31,10 @@ namespace RallysportGame
         #region Constructors
 
         //empty constructor, not to be used for real but C# wants it
-        public ParticleSystem() : this(new Vector3(0.0f, 0.0f, 0.0f),new Vector3(0.0f, -1.0f, 0.0f), 
-                                    45.0f, 20, new TimeSpan(0,0,10), null)
-        {
+        public ParticleSystem()
+            : this(null,new Vector3(0.0f, 0.0f, 0.0f), new Vector3(0.0f, -1.0f, 0.0f),
+                45.0f, 20)
+        { }
 
         
         /// <summary>
@@ -64,8 +65,7 @@ namespace RallysportGame
             int capacity = (int)Math.Ceiling(meanLiveTime.Seconds * spawnRate* 15.0f); // *10 * 1.5  10 bechus it's in milli seconds and 1.5 bechus of margins
             particleList = new ArrayList(capacity); //might be bad, if memory seems suspicious, double check
         }
-        public ParticleSystem() : this(null, new Vector3(0,0,0), new Vector3(0,-1,0), 20.0f*3.14f/90.0f, 20,new Vector3(0.0f,-0.982f,0.0f), new TimeSpan(0, 0, 2)){}
-
+       
         public ParticleSystem(Entity particle,Vector3 pos,Vector3 frustomDirIn, float frustum):this(particle, pos, frustomDirIn, frustum, 20,new Vector3(0.0f,-0.982f,0.0f), new TimeSpan(0, 0, 2)){}
         
         public ParticleSystem(Entity particle,Vector3 pos,Vector3 frustomDirIn, float frustum, int rate):this(particle, pos, frustomDirIn, frustum, rate,new Vector3(0.0f,-0.982f,0.0f), new TimeSpan(0, 0, 2)){}
@@ -84,8 +84,6 @@ namespace RallysportGame
         /// <param name="gravity">Sets the systems gravity</param>
         public ParticleSystem(float particalRad,Vector3 pos,Vector3 frustomDirIn, float frustum, int rate, Vector3 gravity,
                         TimeSpan liveTime):this(null, pos, frustomDirIn, frustum, rate, gravity, liveTime){
-                            sphereMode = true;
-                            particalRadius = particalRad;  
         }
 
 
@@ -281,7 +279,7 @@ namespace RallysportGame
         /// <param name="position">The particle's initial position.</param>
         /// <param name="liveTime">The particle's set livetime.</param>
         /// <param name="ID">The particle's set ID.</param>
-        public Particle(Vector3 velocity, Vector3 position, TimeSpan liveTime, int ID)
+        public Particle(Vector3 velocity, Vector3 position, TimeSpan liveTime,Vector3 systemGravity, int ID)
         {
             ID_part = ID;
             gravity =  systemGravity;

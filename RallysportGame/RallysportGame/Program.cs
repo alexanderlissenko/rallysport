@@ -619,11 +619,11 @@ namespace RallysportGame
                     #endregion
 
 
-                    gaussBlurr.gaussianBlurr(deferredTex, game.Width, game.Height, projectionMatrix, viewMatrix);
+                    //gaussBlurr.gaussianBlurr(deferredTex, game.Width, game.Height, projectionMatrix, viewMatrix);
 
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);                    
                     #region secondPass
-                    GL.UseProgram(secondPassShader);
+                    GL.UseProgram(verticalGaussianFilterShader);
 
                     GL.DepthMask(false);
                     GL.Disable(EnableCap.DepthTest);
