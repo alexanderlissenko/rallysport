@@ -1,7 +1,5 @@
 #version 420
 
-uniform mat4 projectionMatrix;
-uniform mat4 modelViewMatrix;
 in vec3 vertexPos;
 in vec2 texCoordIn;
 

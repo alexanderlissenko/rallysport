@@ -423,7 +423,7 @@ namespace RallysportGame
                     collisionHandler.setupEnvironment(environment, environmentLocation);
 
 
-                    gaussBlurr = new GaussianFilter(verticalGaussianFilterShader, horizontalGaussianFilterShader);
+                    gaussBlurr = new GaussianFilter(verticalGaussianFilterShader, horizontalGaussianFilterShader, game.Width, game.Height, deferredTex);
 
                 
                 };
@@ -619,9 +619,10 @@ namespace RallysportGame
                     #endregion
 
 
-                    //gaussBlurr.gaussianBlurr(deferredTex, game.Width, game.Height, projectionMatrix, viewMatrix);
+                    gaussBlurr.gaussianBlurr(deferredTex, game.Width, game.Height, projectionMatrix, viewMatrix);
 
-                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);                    
+                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);      
+                    
                     #region secondPass
                     GL.UseProgram(secondPassShader);
 
