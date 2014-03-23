@@ -623,7 +623,7 @@ namespace RallysportGame
 
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);                    
                     #region secondPass
-                    GL.UseProgram(verticalGaussianFilterShader);
+                    GL.UseProgram(secondPassShader);
 
                     GL.DepthMask(false);
                     GL.Disable(EnableCap.DepthTest);

@@ -1,0 +1,30 @@
+#version 420
+
+uniform sampler2D diffuseTex; // 0
+uniform float rt_w= 800; // render target width
+uniform float rt_h=600; // render target height
+//uniform float vx_offset;
+
+in vec2 fragmentTexCoord;
+out vec4 fragColor;
+
+float offset[10] = float[]( 0.0, 1.0, 2.0, 3.0 , 4.0, 5.0 ,6.0,7.0 ,8.0 , 9.0);//float[](1.00001 , 2.0001, 3.0001, 4.0001, 5.00001, 6.0001, 7.0001);//
+float weight[10] = float[](0.0000,0.0040,0.0080 ,0.0120, 0.0160, 0.0199,	0.0239,	0.0279,	0.0319,	0.0359);//float[](0.5 ,0.4960 ,0.492 ,0.488 ,0.484 ,0.4761f ,0.4721f,0.4681f);//
+
+
+
+
+void main() 
+{ 
+  vec3 tc = vec3(1.0, 0.0, 0.0);
+    vec2 uv = fragmentTexCoord.xy;
+    tc = texture(diffuseTex, uv).rgb * weight[0];
+    for (int i=1; i < 10; i++) 
+    {
+      tc += texture(diffuseTex, uv + vec2(0.0, offset[i])/rt_h).rgb * weight[i];
+      
+      tc += texture(diffuseTex, uv - vec2(0.0, offset[i])/rt_h).rgb * weight[i];
+    }
+
+  fragColor = vec4(tc, 1.0);
+}
