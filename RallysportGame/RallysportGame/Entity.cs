@@ -98,6 +98,13 @@ namespace RallysportGame
             Matrix4.Mult(ref modelMatrix, ref viewMatrix, out modelViewMatrix);
 
 
+            Matrix4 normalMatrix;
+            Matrix4.Mult(ref modelMatrix, ref viewMatrix, out normalMatrix);
+            normalMatrix.Transpose();
+            normalMatrix.Invert();
+
+            GL.UniformMatrix4(GL.GetUniformLocation(program, "normalMatrix"), false, ref normalMatrix);
+
             Vector4 projectParam = new Vector4(projectionMatrix.M11, projectionMatrix.M22, projectionMatrix.M33, projectionMatrix.M34);
 
             GL.Uniform4(GL.GetUniformLocation(program, "projectParam"), projectParam);
@@ -219,6 +226,7 @@ namespace RallysportGame
 
             GL.UniformMatrix4(GL.GetUniformLocation(program, "modelViewMatrix"), false, ref modelViewMatrix);
             GL.UniformMatrix4(GL.GetUniformLocation(program, "modelViewProjectionMatrix"), false, ref modelViewProjectionMatrix);
+            GL.UniformMatrix4(GL.GetUniformLocation(program, "normalMatrix"), false, ref normalMatrix);
             GL.UniformMatrix4(GL.GetUniformLocation(program, "prevMVP"), false, ref prevMVP);  
         }
 

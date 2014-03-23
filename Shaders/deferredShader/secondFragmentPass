@@ -23,6 +23,7 @@ uniform float lightRadius;
 uniform mat4 lightMatrix;
 uniform mat4 modelViewMatrix;
 
+uniform mat4 normalMatrix;
 uniform mat4 projectionMatrix;
 uniform vec4 projectParam;
 uniform vec3 scene_ambient_light = vec3(0.3,0.3,0.3);
@@ -112,10 +113,13 @@ void main(void)
    float visibility = textureProj(shadowMapTex, shadowMapCoord);
 	
 	//SSAO test
-	float AO = 0;
+	
+	
+	float occlusion = 0;
+	normal = normalMatrix* normal*2-1;
 	for (int i = 0; i < sample_count; i++)
 	{
-		vec2 sampleCoord = position.xy + (poisson16[i]);
+		vec2 sampleCoord = position.xy + (poisson16[i]*5);
 		float sampleDepth = texture(depthTex,sampleCoord).x;
 		vec3 samplePos = getPosition(sampleCoord, sampleDepth); 
 		vec3 sampleDir = normalize(samplePos- worldPos.xyz);
@@ -123,20 +127,20 @@ void main(void)
 		 // angle between SURFACE-NORMAL and SAMPLE-DIRECTION (vector from SURFACE-POSITION to SAMPLE-POSITION)
         float NdotS = max(dot(normal.xyz, sampleDir), 0);
         // distance between SURFACE-POSITION and SAMPLE-POSITION
-        float VPdistSP = distance(worldPos.xyz, samplePos);
+        float VPdistSP = distance(worldPos*2-1, samplePos);
 		// a = distance function
-        float a = 1.0 - smoothstep(5, 5 * 2, VPdistSP);
+        float a = 1.0 - smoothstep(0, 10 * 2, VPdistSP);
         // b = dot-Product
         float b = NdotS;
 		
-		AO += (a*b);
+		occlusion += NdotS;//(a*b);
 	}
-	AO /= sample_count;
+	occlusion /= sample_count;
 	//
    
-		shading = ambient*scene_ambient_light
-				+ (calculateSpecular(scene_light, fresnelSpecular,material_shininess,normal.xyz,directionToLight,directionFromEye)
-				+ calculateDiffuse(scene_light,diffuse.xyz,normal.xyz,directionToLight))*visibility;
+		shading = vec3(occlusion);//ambient*scene_ambient_light
+				//+ (calculateSpecular(scene_light, fresnelSpecular,material_shininess,normal.xyz,directionToLight,directionFromEye)
+				//+ calculateDiffuse(scene_light,diffuse.xyz,normal.xyz,directionToLight))*visibility;
 					
    }
    if(lightType == 1.0)

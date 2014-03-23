@@ -626,7 +626,7 @@ namespace RallysportGame
                     
                     
                     #region secondPass
-                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, postFBO);
+                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
                     GL.UseProgram(secondPassShader);
                     
                     GL.DepthMask(false);
@@ -689,7 +689,7 @@ namespace RallysportGame
 
                    
                     #region PostProcessing pass
-                    
+                    /*
                     GL.UseProgram(postShader);
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
                     GL.DepthMask(false);
@@ -713,7 +713,7 @@ namespace RallysportGame
                     
                     GL.Enable(EnableCap.DepthTest);
                     GL.DepthMask(true);
-                    
+                    */
                     #endregion
                     
                     
