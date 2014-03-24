@@ -644,7 +644,6 @@ namespace RallysportGame
 
                     game.SwapBuffers();
                     GL.UseProgram(0);
-
                 };
                 #endregion
                 // Run the game at 60 updates per second

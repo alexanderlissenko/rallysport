@@ -5,19 +5,21 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using System.Drawing;
 using System.Drawing.Imaging;
+using QuickFont;
 
 namespace RallysportGame
 {
     public class Menu : GameWindow
     {
         private int[] resolution;
-
+        private QFont font;
         public Menu(int[] resolution)
             : base(resolution[0], resolution[1], GraphicsMode.Default, "Hoard of Upgrades")
         {
             GL.ClearColor(0, 0.1f, 0.4f, 1);
             this.resolution = resolution;
             texture = LoadTexture(@"..\..\..\..\Models\2d\temp.jpg");
+            font = new QFont("calibri.ttf", 16);
         }
 
         private int texture;
@@ -103,12 +105,18 @@ namespace RallysportGame
             GL.MatrixMode(MatrixMode.Modelview);
         }
 
+        protected override void OnUpdateFrame(FrameEventArgs e)
+        {
+            base.OnUpdateFrame(e);
+        }
+
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
-            DrawImage(texture, 800, 600);
-
+            //DrawImage(texture, 800, 600);
+            QFont.Begin();
+            font.Print("hi everyone");
+            QFont.End();
             SwapBuffers();
         }
     }
