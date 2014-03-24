@@ -40,8 +40,6 @@ namespace RallysportGame
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
 
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, gaussFBO2);
-            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, texture, 0);
 
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, gaussFBO);
             GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, tempTex, 0);
@@ -52,156 +50,53 @@ namespace RallysportGame
         {
 
             #region Make temp texture and bind to FrameBuffer
-            
-                            
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, gaussFBO2);
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, texture, 0);
+            #endregion
 
 
-                    #endregion
+            #region Horizontal
+            GL.UseProgram(horizontalGaussianFilterShader);
 
-                    
-                    #region Horizontal
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, gaussFBO);
+            GL.DepthMask(false);
+            GL.Disable(EnableCap.DepthTest);
+            GL.Viewport(0, 0, width, height);
+            GL.ClearColor(0.0f, 0.0f, 0.0f, 0.0f); //ambient light
+            GL.Clear(ClearBufferMask.ColorBufferBit);
 
-                    GL.UseProgram(horizontalGaussianFilterShader);
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, texture);
 
-                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, gaussFBO);
-                    GL.DepthMask(false);
-                    GL.Disable(EnableCap.DepthTest);
-                    GL.Viewport(0, 0, width, height);
-                    GL.ClearColor(0.0f, 0.0f, 0.0f, 0.0f); //ambient light
-                    GL.Clear(ClearBufferMask.ColorBufferBit);
+            GL.Uniform1(GL.GetUniformLocation(horizontalGaussianFilterShader, "diffuseTex"), 0);
 
-                    GL.ActiveTexture(TextureUnit.Texture0);
-                    GL.BindTexture(TextureTarget.Texture2D, texture);
+            //GL.UniformMatrix4(GL.GetUniformLocation(verticalGaussianFilterShader, "projectionMatrix"), false, ref projectionMatrix);
+            plane.secondPass(horizontalGaussianFilterShader, viewMatrix, new Vector3(0,0,0), new Vector3(0,0,0));
 
-                    GL.Uniform1(GL.GetUniformLocation(horizontalGaussianFilterShader, "diffuseTex"), 0);
-
-                    //GL.UniformMatrix4(GL.GetUniformLocation(verticalGaussianFilterShader, "projectionMatrix"), false, ref projectionMatrix);
-                    plane.secondPass(horizontalGaussianFilterShader, viewMatrix, new Vector3(0,0,0), new Vector3(0,0,0));
-
-                    GL.Enable(EnableCap.DepthTest);
-                    GL.DepthMask(true);
-
-                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-
-
-
-            /*
-                    GL.UseProgram(horizontalGaussianFilterShader);
-                    GL.DepthMask(false);
-                    GL.Disable(EnableCap.DepthTest);
-                    GL.Viewport(0, 0, width, height);
-                    GL.ClearColor(0.0f, 0.0f, 0.0f, 0.0f); //ambient light
-                    GL.Clear(ClearBufferMask.ColorBufferBit);
-                    GL.Enable(EnableCap.Blend);
-
-                    GL.ActiveTexture(TextureUnit.Texture0);
-                    GL.BindTexture(TextureTarget.Texture2D, tempTex);
-          
-                    GL.BlendEquation(BlendEquationMode.FuncAdd);
-                    GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.One);
-                    
-                    
-                    GL.Uniform1(GL.GetUniformLocation(horizontalGaussianFilterShader, "diffuseTex"), 1);
-                    GL.Uniform1(GL.GetUniformLocation(horizontalGaussianFilterShader, "rt_w"), width);
-                    GL.Uniform1(GL.GetUniformLocation(horizontalGaussianFilterShader, "rt_h"), height);
-                    
-                    GL.UniformMatrix4(GL.GetUniformLocation(horizontalGaussianFilterShader, "projectionMatrix"), false, ref projectionMatrix);
-                    plane.secondPass(horizontalGaussianFilterShader,viewMatrix , new Vector3(0,0,0), new Vector3(0,0,0));
-            */
-                    #endregion
-
+            GL.Enable(EnableCap.DepthTest);
+            GL.DepthMask(true);
+            #endregion
 
                   
-                    #region Vertical
+            #region Vertical
                     
-                    GL.UseProgram(verticalGaussianFilterShader);
-                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, gaussFBO2);
-                    GL.DepthMask(false);
-                    GL.Disable(EnableCap.DepthTest);
-                    GL.Viewport(0, 0, width, height);
-                    GL.ClearColor(0.0f, 0.0f, 0.0f, 0.0f); //ambient light
-                    GL.Clear(ClearBufferMask.ColorBufferBit);
+            GL.UseProgram(verticalGaussianFilterShader);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, gaussFBO2);
+            GL.DepthMask(false);
+            GL.Disable(EnableCap.DepthTest);
+            GL.Viewport(0, 0, width, height);
+            GL.ClearColor(0.0f, 0.0f, 0.0f, 0.0f); //ambient light
+            GL.Clear(ClearBufferMask.ColorBufferBit);
 
-                    GL.ActiveTexture(TextureUnit.Texture0);
-                    GL.BindTexture(TextureTarget.Texture2D, tempTex);
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, tempTex);
 
-                    GL.Uniform1(GL.GetUniformLocation(verticalGaussianFilterShader, "diffuseTex"), 0);
+            GL.Uniform1(GL.GetUniformLocation(verticalGaussianFilterShader, "diffuseTex"), 0);
 
-                    //GL.UniformMatrix4(GL.GetUniformLocation(verticalGaussianFilterShader, "projectionMatrix"), false, ref projectionMatrix);
-                    plane.secondPass(verticalGaussianFilterShader, viewMatrix, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
-
-                    GL.Enable(EnableCap.DepthTest);
-                    GL.DepthMask(true);
-
-
-
-            /*
-                    GL.UseProgram(verticalGaussianFilterShader);
-                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, gaussFBO);
-                    GL.Viewport(0, 0, width, height);
-                    GL.ClearColor(1.0f, 0f, 0f, 0.1f);
-                    GL.ClearDepth(1.0f);
-                    GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-                    GL.DepthMask(true);
-                    GL.Enable(EnableCap.DepthTest);
-                    GL.Disable(EnableCap.Blend);
-
-
-                    GL.ActiveTexture(TextureUnit.Texture1);
-                    GL.BindTexture(TextureTarget.Texture2D, tempTex);
-
-                    GL.Uniform1(GL.GetUniformLocation(verticalGaussianFilterShader, "diffuseTex"), 1);
-                    GL.Uniform1(GL.GetUniformLocation(verticalGaussianFilterShader, "rt_w"), width);
-                    GL.Uniform1(GL.GetUniformLocation(verticalGaussianFilterShader, "rt_h"), height);
-
-
-
-                    plane.secondPass(verticalGaussianFilterShader, viewMatrix, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
-
-
-                    GL.BindTexture(TextureTarget.Texture2D, 0);
-
-                    GL.DepthMask(false);
-                    GL.Disable(EnableCap.DepthTest);
-                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-
-
-            */
-
-
-/*            
-                    GL.UseProgram(verticalGaussianFilterShader);
-                    
-                    GL.DepthMask(false);
-                    GL.Disable(EnableCap.DepthTest);
-                    GL.Viewport(0, 0, width, height);
-                    GL.ClearColor(0.0f, 0.0f, 0.0f, 0.0f); //ambient light
-                    GL.Clear(ClearBufferMask.ColorBufferBit);
-                    GL.Enable(EnableCap.Blend);
-                    
-                    
-                    
-                    GL.ActiveTexture(TextureUnit.Texture1);
-                    GL.BindTexture(TextureTarget.Texture2D, texture);
-                    
-                    GL.BlendEquation(BlendEquationMode.FuncAdd);
-                    GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.One);
-                    
-                    
-                    
-                    GL.Uniform1(GL.GetUniformLocation(verticalGaussianFilterShader, "diffuseTex"), 0);
-                    GL.Uniform1(GL.GetUniformLocation(verticalGaussianFilterShader, "rt_w"), width);
-                    GL.Uniform1(GL.GetUniformLocation(verticalGaussianFilterShader, "rt_h"), height);
-                    
-                    GL.UniformMatrix4(GL.GetUniformLocation(verticalGaussianFilterShader, "projectionMatrix"), false, ref projectionMatrix);
-                    plane.secondPass(verticalGaussianFilterShader,viewMatrix,new Vector3(0,0,0),new Vector3(0,0,0));
-                    
-                    GL.Enable(EnableCap.DepthTest);
-                    GL.DepthMask(true);
-                    GL.Disable(EnableCap.Blend);
-                    */
-                    #endregion
-                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+            //GL.UniformMatrix4(GL.GetUniformLocation(verticalGaussianFilterShader, "projectionMatrix"), false, ref projectionMatrix);
+            plane.secondPass(verticalGaussianFilterShader, viewMatrix, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
+            #endregion
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
         }
 
 

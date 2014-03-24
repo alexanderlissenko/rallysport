@@ -20,6 +20,7 @@ namespace RallysportGame
         private float spawnFrustum; //angle
         private Entity particleObject;
         private int spawnRate;
+        private float maximumVelocity;
         
         private static bool emit;
         private static Random random;
@@ -31,12 +32,8 @@ namespace RallysportGame
         #region Constructors
 
         //empty constructor, not to be used for real but C# wants it
-        public ParticleSystem()
-            : this(null,new Vector3(0.0f, 0.0f, 0.0f), new Vector3(0.0f, -1.0f, 0.0f),
-                45.0f, 20)
-        { }
-
-        
+        public ParticleSystem(){ }
+               
         /// <summary>
         /// This is the constructor for the particle system
         /// </summary>
@@ -49,7 +46,7 @@ namespace RallysportGame
         /// <param name="spawnRate">Particals spawned eatch tenth of a second</param>
         /// <param name="gravity">Sets the systems gravity</param>
         #region constructors
-        public ParticleSystem(Entity particle,Vector3 pos,Vector3 frustomDirIn, float frustum, int rate, Vector3 gravity,
+        public ParticleSystem(Entity particle,Vector3 pos,Vector3 frustomDirIn, float frustum, int rate, float velocityMax, Vector3 gravity,
                         TimeSpan liveTime)
         {
             particleObject = particle;
@@ -58,6 +55,7 @@ namespace RallysportGame
             emitterPos = pos;
             spawnFrustum = frustum;
             spawnRate = rate;
+            maximumVelocity = velocityMax;
             meanLiveTime = liveTime;
             emit = true;
             prevTime = new DateTime(0);
@@ -66,11 +64,6 @@ namespace RallysportGame
             particleList = new ArrayList(capacity); //might be bad, if memory seems suspicious, double check
         }
        
-        public ParticleSystem(Entity particle,Vector3 pos,Vector3 frustomDirIn, float frustum):this(particle, pos, frustomDirIn, frustum, 20,new Vector3(0.0f,-0.982f,0.0f), new TimeSpan(0, 0, 2)){}
-        
-        public ParticleSystem(Entity particle,Vector3 pos,Vector3 frustomDirIn, float frustum, int rate):this(particle, pos, frustomDirIn, frustum, rate,new Vector3(0.0f,-0.982f,0.0f), new TimeSpan(0, 0, 2)){}
-         
-        public ParticleSystem(Entity particle,Vector3 pos,Vector3 frustomDirIn, float frustum, int rate,Vector3 gravity):this(particle, pos, frustomDirIn, frustum, rate, gravity, new TimeSpan(0, 0, 2)){}
         /// <summary>
         /// This is the constructor for the particle system when drawing whit sphere mode
         /// </summary>
@@ -82,9 +75,7 @@ namespace RallysportGame
         /// <param name="particalRad">The particle spheres Radius.</param>
         /// <param name="spawnRate">Particals spawned eatch tenth of a second</param>
         /// <param name="gravity">Sets the systems gravity</param>
-        public ParticleSystem(float particalRad,Vector3 pos,Vector3 frustomDirIn, float frustum, int rate, Vector3 gravity,
-                        TimeSpan liveTime):this(null, pos, frustomDirIn, frustum, rate, gravity, liveTime){
-        }
+
 
 
         #endregion
@@ -205,7 +196,7 @@ namespace RallysportGame
                      vector_x = Vector4.Transform(vector_x, mat);
 
                      vector_x.Normalize();
-                     tempRand = random.NextDouble();
+                     tempRand = maximumVelocity*random.NextDouble();
                      vector_x.Scale((float)tempRand, (float)tempRand, (float)tempRand, 0);
 
                      

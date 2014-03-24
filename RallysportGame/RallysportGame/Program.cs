@@ -242,7 +242,7 @@ namespace RallysportGame
                     unitSphere = new Entity("Cube\\unitSphere");
                     
                     //Particle System
-                    megaParticles = new ParticleSystem(unitSphere, new Vector3(0, 0, 0), new Vector3(0, -1, 0), 20.0f * 3.14f / 90.0f, 10, new Vector3(0, -0.001f, 0));
+                    megaParticles = new ParticleSystem(unitSphere, new Vector3(0, 0, 0), new Vector3(0, -1, 0), 20.0f * 3.14f / 90.0f, 10,0.1f, new Vector3(0, -0.001f, 0),new TimeSpan(0,0,5));
 
                     //Set up shaders
 
@@ -544,8 +544,8 @@ namespace RallysportGame
 
                     //GL.BindTexture(TextureTarget.Texture2D, shadowMapTexture);
 
-                    //myCar2.renderShadowMap(shadowShaderProgram, lightProjectionMatrix, lightViewMatrix);
-                    //environment.renderShadowMap(shadowShaderProgram, lightProjectionMatrix, lightViewMatrix);
+                    myCar2.renderShadowMap(shadowShaderProgram, lightProjectionMatrix, lightViewMatrix);
+                    environment.renderShadowMap(shadowShaderProgram, lightProjectionMatrix, lightViewMatrix);
                     
                     }
                     GL.PopAttrib(); 
@@ -609,7 +609,7 @@ namespace RallysportGame
                     
 
                     GL.BindTexture(TextureTarget.Texture2D, 0);
-                    //myCar2.firstPass(firstPassShader, projectionMatrix, viewMatrix);
+                    myCar2.firstPass(firstPassShader, projectionMatrix, viewMatrix);
 
                     skybox.firstPass(firstPassShader, projectionMatrix, viewMatrix);
                     
