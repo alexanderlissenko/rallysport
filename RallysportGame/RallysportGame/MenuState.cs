@@ -9,20 +9,22 @@ using QuickFont;
 
 namespace RallysportGame
 {
-    public class Menu : GameWindow
+    /// <summary>
+    /// Class representing the menu. This class is responisble for graphics and logic for the menu
+    /// 
+    /// TODO currently has some magic numbers
+    /// </summary>
+    public class MenuState : IState
     {
-        private int[] resolution;
         private QFont font;
-        public Menu(int[] resolution)
-            : base(resolution[0], resolution[1], GraphicsMode.Default, "Hoard of Upgrades")
-        {
-            GL.ClearColor(0, 0.1f, 0.4f, 1);
-            this.resolution = resolution;
-            texture = LoadTexture(@"..\..\..\..\Models\2d\temp.jpg");
-            font = new QFont("Fonts/Calibri.ttf", 72, new QFontBuilderConfiguration(true));
-        }
-
         private int texture;
+        private Window window;
+
+        //: base(resolution[0], resolution[1], GraphicsMode.Default, "Hoard of Upgrades")
+        public MenuState(Window window)
+        {
+            this.window = window;
+        }
 
         public int LoadTexture(string file)
         {
@@ -93,7 +95,7 @@ namespace RallysportGame
 
             GL.TexCoord2(1, 0);
             GL.Vertex3(0, resolutionY, 0);
-
+            
             GL.End();
 
             GL.Disable(EnableCap.Texture2D);
@@ -105,19 +107,26 @@ namespace RallysportGame
             GL.MatrixMode(MatrixMode.Modelview);
         }
 
-        protected override void OnUpdateFrame(FrameEventArgs e)
+        public void Load(GameWindow gameWindow)
         {
-            base.OnUpdateFrame(e);
+            GL.ClearColor(0, 0.1f, 0.4f, 1);
+            texture = LoadTexture(@"..\..\..\..\Models\2d\temp.jpg");
+            font = new QFont("Fonts/Calibri.ttf", 72, new QFontBuilderConfiguration(true));
         }
 
-        protected override void OnRenderFrame(FrameEventArgs e)
+        public void Render(GameWindow gameWindow)
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            //DrawImage(texture, 800, 600);
+            DrawImage(texture, 800, 600);
             QFont.Begin();
             font.Print("hi everyone");
             QFont.End();
-            SwapBuffers();
+            gameWindow.SwapBuffers();
+        }
+
+        public void Update(GameWindow gameWindow)
+        {
+           
         }
     }
 }
