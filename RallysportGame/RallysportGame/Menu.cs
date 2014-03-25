@@ -19,7 +19,7 @@ namespace RallysportGame
             GL.ClearColor(0, 0.1f, 0.4f, 1);
             this.resolution = resolution;
             texture = LoadTexture(@"..\..\..\..\Models\2d\temp.jpg");
-            font = new QFont("calibri.ttf", 16);
+            font = new QFont("Fonts/Calibri.ttf", 72, new QFontBuilderConfiguration(true));
         }
 
         private int texture;
