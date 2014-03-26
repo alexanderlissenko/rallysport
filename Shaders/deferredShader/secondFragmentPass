@@ -140,9 +140,9 @@ void main(void)
 	occlusion = 1- occlusion;
 	//
    
-		shading = ambient*scene_ambient_light*occlusion
-				+ (calculateSpecular(scene_light, fresnelSpecular,material_shininess,normal.xyz,directionToLight,directionFromEye)
-				+ calculateDiffuse(scene_light,diffuse.xyz,normal.xyz,directionToLight))*visibility;
+		shading = vec3(occlusion);//ambient*scene_ambient_light*occlusion
+				//+ (calculateSpecular(scene_light, fresnelSpecular,material_shininess,normal.xyz,directionToLight,directionFromEye)
+				//+ calculateDiffuse(scene_light,diffuse.xyz,normal.xyz,directionToLight))*visibility;
 					
    }
    if(lightType == 1.0)

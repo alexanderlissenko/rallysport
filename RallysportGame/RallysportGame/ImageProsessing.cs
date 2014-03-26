@@ -76,7 +76,7 @@ namespace RallysportGame
                     GL.Uniform1(GL.GetUniformLocation(horizontalGaussianFilterShader, "diffuseTex"), 0);
 
                     //GL.UniformMatrix4(GL.GetUniformLocation(verticalGaussianFilterShader, "projectionMatrix"), false, ref projectionMatrix);
-                    plane.secondPass(horizontalGaussianFilterShader, viewMatrix, new Vector3(0,0,0), new Vector3(0,0,0));
+                    plane.directionalLight(horizontalGaussianFilterShader, projectionMatrix, viewMatrix, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
 
                     GL.Enable(EnableCap.DepthTest);
                     GL.DepthMask(true);
@@ -128,7 +128,7 @@ namespace RallysportGame
                     GL.Uniform1(GL.GetUniformLocation(verticalGaussianFilterShader, "diffuseTex"), 0);
 
                     //GL.UniformMatrix4(GL.GetUniformLocation(verticalGaussianFilterShader, "projectionMatrix"), false, ref projectionMatrix);
-                    plane.secondPass(verticalGaussianFilterShader, viewMatrix, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
+                    plane.directionalLight(verticalGaussianFilterShader, projectionMatrix, viewMatrix, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
 
                     GL.Enable(EnableCap.DepthTest);
                     GL.DepthMask(true);
