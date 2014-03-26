@@ -113,7 +113,7 @@ void main(void)
    //shadowMapCoord.xyz *= vec3(0.5,0.5,0.5);
    //shadowMapCoord.xyz += shadowMapCoord.w * vec3(0.5,0.5,0.5);
    float visibility = textureProj(shadowMapTex, shadowMapCoord);
-	
+
 	//SSAO test
 	
 	vec4 nNormal = normal*2-1;
@@ -200,7 +200,7 @@ void main(void)
    
 
 	fragColor = vec4(shading,1);
-
+   
 
 // Some debug features. Enable any of them to get a visual representation
 // of an internal buffer.

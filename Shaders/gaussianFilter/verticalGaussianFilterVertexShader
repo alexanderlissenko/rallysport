@@ -1,0 +1,17 @@
+#version 420
+
+uniform mat4 projectionMatrix;
+uniform mat4 modelViewMatrix;
+in vec3 vertexPos;
+in vec2 texCoordIn;
+
+out vec2 fragmentTexCoord;
+
+    
+
+
+void main(){
+
+   gl_Position = vec4(vertexPos,1)*2-1; //projectionMatrix * modelViewMatrix * vec4(vertexPos, 1.0);    
+   fragmentTexCoord = vertexPos.xy;//texCoordIn;
+}

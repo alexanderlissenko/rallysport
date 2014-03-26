@@ -135,7 +135,7 @@ namespace RallysportGame
 
         public void spotLight(int program, OpenTK.Vector3 lightPosition, OpenTK.Vector3 lightDirection,  OpenTK.Vector3 lightColor,float lightRadius, float lightWidht)
         {
-            /*
+        /*
             GL.Uniform3(GL.GetUniformLocation(program, "lightColor"), lightColor);
             GL.Uniform3(GL.GetUniformLocation(program, "lightPos"), lightPosition);
             GL.Uniform3(GL.GetUniformLocation(program, "lightDirection"), lightDirection);
@@ -225,14 +225,14 @@ namespace RallysportGame
             normalMatrix.Invert();
 
             GL.UniformMatrix4(GL.GetUniformLocation(program, "modelViewMatrix"), false, ref modelViewMatrix);
-            GL.UniformMatrix4(GL.GetUniformLocation(program, "modelViewProjectionMatrix"), false, ref modelViewProjectionMatrix);
+            GL.UniformMatrix4(GL.GetUniformLocation(program, "modelViewProjectionMatrix"), false, ref modelViewProjectionMatrix);  
             GL.UniformMatrix4(GL.GetUniformLocation(program, "normalMatrix"), false, ref normalMatrix);
             GL.UniformMatrix4(GL.GetUniformLocation(program, "prevMVP"), false, ref prevMVP);  
         }
 
         public void setUp3DSModel()
         {
-            modelMatrix = modelMatrix + Matrix4.CreateScale(0.1f); //TODO magic numbers go away!
+            modelMatrix = modelMatrix + Matrix4.CreateScale(0.1f); //TODO magic numbers go away! // NO!
         }
 
         public void setUpBlenderModel()
@@ -250,6 +250,15 @@ namespace RallysportGame
             uniformLoc.Add("camera", GL.GetUniformLocation(program, "camera"));
 
         }
+
+
+        public void setCoordiants(float world_x,float world_y,float world_z)
+        {
+            modelMatrix =Matrix4.Translation(world_x,world_y,world_z);
+        }
+
+
+
 
         public void render(int program, OpenTK.Vector3 position)
         {
