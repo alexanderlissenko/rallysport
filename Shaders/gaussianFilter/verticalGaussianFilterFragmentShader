@@ -19,7 +19,7 @@ void main()
   vec3 tc = vec3(1.0, 0.0, 0.0);
     vec2 uv = fragmentTexCoord.xy;
     tc = texture(diffuseTex, uv).rgb * weight[0];
-    for (int i=1; i < 10; i++) 
+    for (int i=1; i < 3; i++) 
     {
       tc += texture(diffuseTex, uv + vec2(0.0, offset[i])/rt_h).rgb * weight[i];
       

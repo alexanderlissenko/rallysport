@@ -198,7 +198,7 @@ void main(void)
 		}
    }
    
-
+					
 	fragColor = vec4(shading,1);
    
 

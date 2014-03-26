@@ -227,7 +227,7 @@ namespace RallysportGame
                 #region Load
                 game.Load += (sender, e) =>
                 {
-                
+
                     SettingsParser.Init(iniDir + "default.ini");
                     //enable depthtest and face culling
                     GL.Enable(EnableCap.DepthTest);
@@ -246,7 +246,7 @@ namespace RallysportGame
                     unitSphere = new Entity("Cube\\unitSphere");
                     
                     //Particle System
-                    megaParticles = new ParticleSystem(unitSphere, new Vector3(0, 0, 0), new Vector3(0, -1, 0), 20.0f * 3.14f / 90.0f, 10, new Vector3(0, -0.001f, 0));
+                    megaParticles = new ParticleSystem(unitSphere, new Vector3(0, 0, 0), new Vector3(0, -1, 0), 20.0f * 3.14f / 90.0f, 10,0.1f, new Vector3(0, -0.001f, 0),new TimeSpan(0,0,5));
 
                     //Set up shaders
 
@@ -270,7 +270,7 @@ namespace RallysportGame
                     GL.BindAttribLocation(secondPassShader, 0, "positionIn");
                     GL.BindFragDataLocation(secondPassShader, 0, "fragColor");
                     GL.LinkProgram(secondPassShader);
-                    
+
 
                     verticalGaussianFilterShader = loadShaderProgram(shaderDir + "gaussianFilter\\verticalGaussianFilterVertexShader",shaderDir + "gaussianFilter\\verticalGaussianFilterFragmentShader");
                     GL.BindAttribLocation(verticalGaussianFilterShader, 0, "vertexPos");
@@ -426,7 +426,7 @@ namespace RallysportGame
 
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
 
-                    
+
 
                     
                     #endregion
@@ -638,7 +638,7 @@ namespace RallysportGame
                     GL.ActiveTexture(TextureUnit.Texture0);
                     GL.BindTexture(TextureTarget.Texture2D, environment.getTextureId());
                     GL.Uniform1(GL.GetUniformLocation(firstPassShader, "firstTexture"), 0);
-
+                    
                     //megaParticles.firstPass(firstPassShader, projectionMatrix, viewMatrix);
                     environment.firstPass(firstPassShader,  projectionMatrix,  viewMatrix);
                     
@@ -647,13 +647,13 @@ namespace RallysportGame
                     myCar2.firstPass(firstPassShader, projectionMatrix, viewMatrix);
 
                     skybox.firstPass(firstPassShader, projectionMatrix, viewMatrix);
-
+                    
                     GL.DepthMask(false);
                     GL.Disable(EnableCap.DepthTest);
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
                     #endregion
-                    
-                    
+
+
                     #region secondPass
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer, postFBO);
                     GL.UseProgram(secondPassShader);
@@ -713,7 +713,7 @@ namespace RallysportGame
                     //plane.spotLight(secondPassShader, new Vector3(0, 3, 0), new Vector3(0, -1, -1), new Vector3(0, 1, 0), 15.0f, (float)Math.Cos(pi / 4));
                     //plane.spotLight(secondPassShader, new Vector3(0, 3, 0), new Vector3(0, -1, 1), new Vector3(0, 1, 0), 15.0f, (float)Math.Cos(pi / 4));
                     
-                    
+
                     //GL.UniformMatrix4(GL.GetUniformLocation(verticalGaussianFilterShader, "projectionMatrix"), false, ref projectionMatrix);
                     //plane.directionalLight(secondPassShader,projectionMatrix, viewMatrix, lightPosition, camera_position);
                     
