@@ -70,7 +70,7 @@ vec3 calculateFresnel(vec3 materialSpecular, vec3 normal, vec3 directionFromEye)
 vec3 getPosition(vec2 pos,float depth)
 {
 	vec4 screen = vec4((position.xy*2)-1, (depth.x*2)-1, 1.0);
-   vec4 worldPosUnHo = inverse(modelViewMatrix)*projectionMatrix * screen;
+   vec4 worldPosUnHo = projectionMatrix * screen;
    return worldPosUnHo.xyz/worldPosUnHo.w;
 }
 ////
@@ -86,7 +86,8 @@ void main(void)
    vec4 normal = texture2D(normalTex, position.xy);
    vec4 depth = texture2D(depthTex, position.xy);
    vec4 vel =texture2D(velTex, position.xy);
-   vec3 worldPos = getPosition(position, depth);
+   vec3 screenPos = getPosition(position, depth);
+   vec3 worldPos = vec3(inverse(modelViewMatrix)*vec4(screenPos,1));
    //Constants
    vec3 ambient;
    if(diffuse.xyz != vec3(0.0))
@@ -104,6 +105,7 @@ void main(void)
    vec3 directionFromEye = normalize(worldPos-camera);
    vec3 fresnelSpecular = calculateFresnel(specular,normal.xyz, directionFromEye);
    vec3 shading;
+   float occlusion= 0;
    //Calculate Lighting
    if(lightType == 0)
    {
@@ -114,33 +116,33 @@ void main(void)
 	
 	//SSAO test
 	
-	
-	float occlusion = 0;
-	normal = normalMatrix* normal*2-1;
+	vec4 nNormal = normal*2-1;
+	vec2 threshold = vec2(5/screenSize.x,5/screenSize.y);
 	for (int i = 0; i < sample_count; i++)
 	{
-		vec2 sampleCoord = position.xy + (poisson16[i]*5);
+		vec2 sampleCoord = position.xy + (poisson16[i]*threshold);
 		float sampleDepth = texture(depthTex,sampleCoord).x;
 		vec3 samplePos = getPosition(sampleCoord, sampleDepth); 
-		vec3 sampleDir = normalize(samplePos- worldPos.xyz);
+		vec3 sampleDir = normalize(samplePos- screenPos.xyz);
 		
 		 // angle between SURFACE-NORMAL and SAMPLE-DIRECTION (vector from SURFACE-POSITION to SAMPLE-POSITION)
         float NdotS = max(dot(normal.xyz, sampleDir), 0);
         // distance between SURFACE-POSITION and SAMPLE-POSITION
-        float VPdistSP = distance(worldPos*2-1, samplePos);
+        float VPdistSP = distance(screenPos, samplePos);
 		// a = distance function
-        float a = 1.0 - smoothstep(0, 10 * 2, VPdistSP);
+        float a = 1.0 - smoothstep(5, 5 * 2, VPdistSP);
         // b = dot-Product
         float b = NdotS;
 		
-		occlusion += NdotS;//(a*b);
+		occlusion +=b;//(a*b);
 	}
 	occlusion /= sample_count;
+	occlusion = 1- occlusion;
 	//
    
-		shading = vec3(occlusion);//ambient*scene_ambient_light
-				//+ (calculateSpecular(scene_light, fresnelSpecular,material_shininess,normal.xyz,directionToLight,directionFromEye)
-				//+ calculateDiffuse(scene_light,diffuse.xyz,normal.xyz,directionToLight))*visibility;
+		shading = ambient*scene_ambient_light*occlusion
+				+ (calculateSpecular(scene_light, fresnelSpecular,material_shininess,normal.xyz,directionToLight,directionFromEye)
+				+ calculateDiffuse(scene_light,diffuse.xyz,normal.xyz,directionToLight))*visibility;
 					
    }
    if(lightType == 1.0)
@@ -197,7 +199,7 @@ void main(void)
    }
    
 
-	fragColor = vec4(shading,1.0);
+	fragColor = vec4(shading,1);
 
 
 // Some debug features. Enable any of them to get a visual representation
@@ -207,8 +209,9 @@ void main(void)
 // fragColor = diffuse;
 // fragColor = vec4(visibility);
 // fragColor = vec4(depth.x);
-// fragColor = vec4(worldPos.xyz,1); // Scaling may be needed to range [0,1]
+// fragColor = vec4(screenPos.xyz,1); // Scaling may be needed to range [0,1]
 // fragColor = light*vec4(1,1,1,1);
+// fragColor = vec4(1,1,1,occlusion);
 }
 
 

@@ -656,6 +656,8 @@ namespace RallysportGame
                     GL.Uniform1(GL.GetUniformLocation(secondPassShader, "depthTex"), 2);
                     GL.Uniform1(GL.GetUniformLocation(secondPassShader, "velTex"), 3);
                     GL.Uniform1(GL.GetUniformLocation(secondPassShader, "shadowMapTex"), 4);
+                    Vector2 size = new Vector2(game.Width,game.Height);
+                    GL.Uniform2(GL.GetUniformLocation(secondPassShader, "screenSize"), ref size);
 
                     GL.UniformMatrix4(GL.GetUniformLocation(secondPassShader, "lightMatrix"),false, ref lightMatrix);
                     int lTUniform = GL.GetUniformLocation(secondPassShader, "lightType");
