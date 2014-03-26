@@ -655,7 +655,7 @@ namespace RallysportGame
 
 
                     #region secondPass
-                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, postFBO);
+                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
                     GL.UseProgram(secondPassShader);
 
                     GL.DepthMask(false);
@@ -678,16 +678,15 @@ namespace RallysportGame
                     GL.ActiveTexture(TextureUnit.Texture3);
                     GL.BindTexture(TextureTarget.Texture2D, deferredVel);
                     GL.ActiveTexture(TextureUnit.Texture4);
-                    GL.BindTexture(TextureTarget.Texture2D,shadowMapTexture);
-
-                    //GL.Uniform1(GL.GetUniformLocation(verticalGaussianFilterShader, "diffuseTex"), 0);
-
+                    GL.BindTexture(TextureTarget.Texture2D, shadowMapTexture);
+                    
 
                     GL.Uniform1(GL.GetUniformLocation(secondPassShader, "diffuseTex"), 0);
                     GL.Uniform1(GL.GetUniformLocation(secondPassShader, "normalTex"), 1);
                     GL.Uniform1(GL.GetUniformLocation(secondPassShader, "depthTex"), 2);
                     GL.Uniform1(GL.GetUniformLocation(secondPassShader, "velTex"), 3);
                     GL.Uniform1(GL.GetUniformLocation(secondPassShader, "shadowMapTex"), 4);
+                    
                     Vector2 size = new Vector2(game.Width,game.Height);
                     GL.Uniform2(GL.GetUniformLocation(secondPassShader, "screenSize"), ref size);
 
@@ -723,7 +722,7 @@ namespace RallysportGame
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
                     #endregion
 
-                    gaussBlurr.gaussianBlurr(postTex, game.Width, game.Height, projectionMatrix, viewMatrix);
+                    //gaussBlurr.gaussianBlurr(postTex, game.Width, game.Height, projectionMatrix, viewMatrix);
                    
                     #region PostProcessing pass
                     /*

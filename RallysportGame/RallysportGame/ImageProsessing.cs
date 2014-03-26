@@ -81,7 +81,7 @@ namespace RallysportGame
                     #region Vertical
                     
                     GL.UseProgram(verticalGaussianFilterShader);
-                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, gaussFBO2);
+                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
                     GL.DepthMask(false);
                     GL.Disable(EnableCap.DepthTest);
                     GL.Viewport(0, 0, width, height);
@@ -94,7 +94,7 @@ namespace RallysportGame
                     GL.Uniform1(GL.GetUniformLocation(verticalGaussianFilterShader, "diffuseTex"), 0);
 
                     //GL.UniformMatrix4(GL.GetUniformLocation(verticalGaussianFilterShader, "projectionMatrix"), false, ref projectionMatrix);
-            plane.secondPass(verticalGaussianFilterShader, viewMatrix, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
+                    plane.directionalLight(verticalGaussianFilterShader,projectionMatrix, viewMatrix, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
                     #endregion
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
         }
