@@ -16,9 +16,13 @@ namespace RallysportGame
     /// </summary>
     public class MenuState : IState
     {
+        private String shaderDir = @"..\..\..\..\Shaders\";
         private QFont font;
         private int texture;
         private Window window;
+
+        private int shader;
+        private Entity plane;
 
         //: base(resolution[0], resolution[1], GraphicsMode.Default, "Hoard of Upgrades")
         public MenuState(Window window)
@@ -27,101 +31,67 @@ namespace RallysportGame
         }
 
         public int LoadTexture(string file)
-        {
+        {           
+            TextureTarget Target = TextureTarget.Texture2D;
+            int texture = GL.GenTexture();
+            GL.BindTexture(Target, texture);
+            //GL.PixelStore(PixelStoreParameter.UnpackAlignment, 1);
+            //GL.TexEnv(TextureEnvTarget.TextureEnv, TextureEnvParameter.TextureEnvMode, (int)All.Modulate);
+
             Bitmap bitmap = new Bitmap(file);
-
-            int tex;
-            GL.Hint(HintTarget.PerspectiveCorrectionHint, HintMode.Nicest);
-
-            GL.GenTextures(1, out tex);
-            GL.BindTexture(TextureTarget.Texture2D, tex);
-
-            BitmapData data = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height),
-                ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, data.Width, data.Height, 0,
-                OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
+            BitmapData data = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            GL.TexImage2D(Target, 0, PixelInternalFormat.Rgba, data.Width, data.Height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
+            
             bitmap.UnlockBits(data);
 
+            GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+            GL.TexParameter(Target, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+            GL.TexParameter(Target, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);
 
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
-
-            return tex;
-        }
-
-        public static void DrawImage(int image, int resolutionX, int resolutionY)
-        {
-            GL.MatrixMode(MatrixMode.Projection);
-            GL.PushMatrix();
-            GL.LoadIdentity();
-
-            GL.Ortho(0, 800, 0, 600, -1, 1);
-
-            GL.MatrixMode(MatrixMode.Modelview);
-            GL.PushMatrix();
-            GL.LoadIdentity();
-
-            GL.Disable(EnableCap.Lighting);
-
-            GL.Enable(EnableCap.Texture2D);
-
-            GL.BindTexture(TextureTarget.Texture2D, image);
-
-            GL.Begin(BeginMode.Quads);
-            /*
-            GL.TexCoord2(0, 0);
-            GL.Vertex3(0, 0, 0);
-
-            GL.TexCoord2(1, 0);
-            GL.Vertex3(resolutionX, 0, 0);
-
-            GL.TexCoord2(1, 1);
-            GL.Vertex3(resolutionX, resolutionY, 0);
-
-            GL.TexCoord2(0, 1);
-            GL.Vertex3(0, resolutionY, 0);
-            */
-            GL.TexCoord2(1, 1);
-            GL.Vertex3(0, 0, 0);
-
-            GL.TexCoord2(0, 1);
-            GL.Vertex3(resolutionX, 0, 0);
-
-            GL.TexCoord2(0, 0);
-            GL.Vertex3(resolutionX, resolutionY, 0);
-
-            GL.TexCoord2(1, 0);
-            GL.Vertex3(0, resolutionY, 0);
-            
-            GL.End();
-
-            GL.Disable(EnableCap.Texture2D);
-            GL.PopMatrix();
-
-            GL.MatrixMode(MatrixMode.Projection);
-            GL.PopMatrix();
-
-            GL.MatrixMode(MatrixMode.Modelview);
+            GL.TexParameter(Target, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToBorder);
+            GL.TexParameter(Target, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToBorder);
+            GL.BindTexture(Target, 0);
+            return texture;
         }
 
         public void Load(GameWindow gameWindow)
         {
-            GL.ClearColor(0, 0.1f, 0.4f, 1);
-            texture = LoadTexture(@"..\..\..\..\Models\2d\temp.jpg");
-            font = new QFont("Fonts/Calibri.ttf", 72, new QFontBuilderConfiguration(true));
+            plane = new Entity("plane");
+            shader = GameState.loadShaderProgram(shaderDir + "Menu_VS.glsl", shaderDir + "Menu_FS.glsl");
+            GL.BindAttribLocation(shader, 0, "positionIn");
+            GL.BindFragDataLocation(shader, 0, "diffuseOutput");
+            GL.LinkProgram(shader);
+
+            texture = LoadTexture(@"..\\..\\..\\..\\Models\\2d\\temp.jpg");//vegitation_bana_berg.jpg");//
+            font = new QFont(@"..\\..\\Fonts\\Calibri.ttf", 72, new QFontBuilderConfiguration(true));
         }
 
         public void Render(GameWindow gameWindow)
         {
+            
+            GL.ClearColor(1.0f, 0f, 0f, 0f);
+            GL.ClearDepth(1.0f);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            DrawImage(texture, 800, 600);
+            GL.Enable(EnableCap.Texture2D);
+           
+            GL.UseProgram(shader);
+
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, texture);
+            GL.Uniform1(GL.GetUniformLocation(shader, "diffuseTex"), 0);
+                
+            GL.BindVertexArray(plane.vertexArrayObject);
+            GL.DrawArrays(PrimitiveType.Triangles, 0, plane.numOfTri * 3);
+            GL.UseProgram(0);
+
             QFont.Begin();
             font.Print("hi everyone");
             QFont.End();
+
+            GL.End();
+
             gameWindow.SwapBuffers();
+            GL.UseProgram(0);
         }
 
         public void Update(GameWindow gameWindow)

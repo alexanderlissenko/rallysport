@@ -37,7 +37,7 @@ namespace RallysportGame
         {
             gameState = new GameState(this);
             menuState = new MenuState(this);
-            currentState = gameState;
+            currentState = menuState;
 
 
             //using (var game = new GameWindow(SettingsParser.GetInt(Settings.WINDOW_WIDTH), SettingsParser.GetInt(Settings.WINDOW_HEIGHT),GraphicsMode.Default, "Speed Junkies"))
@@ -47,7 +47,7 @@ namespace RallysportGame
                 {
                     menuState.Load(game);
 
-                    gameState.Load(game);
+                    //gameState.Load(game);
                 };
 
                 game.Resize += (sender, e) =>

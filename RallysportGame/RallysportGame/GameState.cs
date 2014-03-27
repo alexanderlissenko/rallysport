@@ -58,7 +58,6 @@ namespace RallysportGame
         //Deferred Rendering
         static int deferredTex, deferredNorm, deferredPos, deferredDepth, deferredFBO, deferredRBO;
         //
-
         static float light_theta = pi / 6.0f;
         static float light_phi = pi / 4.0f;
         static float light_r = 200.0f;
@@ -66,7 +65,7 @@ namespace RallysportGame
         //test particles
         static ParticleSystem testPartSys;// = new ParticleSystem(new OpenTK.Vector3(0, 0, 0), 60f, 5, new TimeSpan(0, 0, 0, 4), new Entity());
         static Entity environment, myCar2, skybox, unitSphere;
-        static Entity plane;
+        public static Entity plane;
 
         static Car playerCar;
         static Wheel w;
@@ -96,7 +95,7 @@ namespace RallysportGame
                                 (float)(r * Math.Cos(theta) * Math.Sin(phi)));
         }
 
-        static int loadShaderProgram(String vShaderPath, String fShaderPath)
+        static public int loadShaderProgram(String vShaderPath, String fShaderPath)
         {
             int shaderProgram;
             int vShader = GL.CreateShader(ShaderType.VertexShader);
