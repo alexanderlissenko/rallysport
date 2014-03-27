@@ -42,21 +42,19 @@ namespace RallysportGame
 
         #region Constructors
         public DynamicEntity(String name)
-            : base(name)   
+            : this(name, new Vector3(0,0,0))   
         {
-            direction = forward;
-            position = velocity = acceleration = Vector3.Zero;
         }
         public DynamicEntity(String name, Vector3 pos)
             : base(name, pos)
         {
-            direction = forward;
+            direction = up;
             velocity = acceleration = Vector3.Zero;
-
-
             body = new Box(Utilities.ConvertToBepu(pos), 5f, 5f, 5f, 5f);
-            
             body.CollisionInformation.Events.ContactCreated += new ContactCreatedEventHandler<EntityCollidable>(eventTest);
+            body.Orientation = new Quaternion(Utilities.ConvertToBepu(direction), 1);
+            Matrix4 modelRotation = Matrix4.CreateRotationY(MathHelper.Pi / 2);
+            worldMatrix = Matrix4.Identity;
         }
         #endregion
 
@@ -67,20 +65,16 @@ namespace RallysportGame
         public virtual void Update()
         {
             
+            worldMatrix += Utilities.ConvertToTK(body.WorldTransform);
+            Console.WriteLine(body.LinearVelocity.ToString());
+            body.LinearVelocity += Utilities.ConvertToBepu(acceleration);
+            
             position = Utilities.ConvertToTK(body.Position);
-        
-            worldMatrix = Matrix4.Identity;
-            velocity += acceleration;
-            //  - /*CalculateDrag() * */ (velocity.Normalized() * -1f); 
-            position += Utilities.ConvertToTK(body.LinearVelocity);
-            Matrix4 modelRotation = Matrix4.CreateRotationY(MathHelper.Pi / 2);
-            //Matrix4 directionRotation = Matrix4.CreateRotationY(turning_angle);
+            
+            Matrix4 directionRotation = Utilities.ConvertToTK(BEPUutilities.Matrix.CreateFromQuaternion(body.Orientation));
             Matrix4 translation = Matrix4.CreateTranslation(position);
-            Matrix4.Mult(ref worldMatrix, ref modelRotation, out worldMatrix);
-            //Matrix4.Mult(ref worldMatrix, ref directionRotation, out worldMatrix);
+            Matrix4.Mult(ref worldMatrix, ref directionRotation, out worldMatrix);
             Matrix4.Mult(ref worldMatrix, ref translation, out worldMatrix);
-            acceleration = Vector3.Zero;
-            body.Position = Utilities.ConvertToBepu(position);
 
             //for all emitters do emitters.tick() 
         }
@@ -90,8 +84,7 @@ namespace RallysportGame
             Console.WriteLine("Contact detected");
             Console.WriteLine("sender: " + sender.ToString());
             Console.WriteLine("contact: " + sender.ToString());
-            //Console.WriteLine(sender.BoundingBox.ToString());
-            sender.Entity.LinearVelocity = Vector3.Zero;
+            //sender.Entity.LinearVelocity = Vector3.Zero;
             
         }
 

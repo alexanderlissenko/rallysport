@@ -73,7 +73,7 @@ namespace RallysportGame
         }
 
 
-        public void firstPass(int program, Matrix4 projectionMatrix, Matrix4 viewMatrix)
+        public virtual void firstPass(int program, Matrix4 projectionMatrix, Matrix4 viewMatrix)
         {
 
             setMatrices(program, projectionMatrix, viewMatrix);
@@ -86,7 +86,7 @@ namespace RallysportGame
             GL.DrawArrays(PrimitiveType.Triangles, 0, numOfTri * 3);
 
         }
-        public void secondPass(int program, Matrix4 viewMatrix, OpenTK.Vector3 lightPosition, OpenTK.Vector3 cameraPosition)
+        public virtual void secondPass(int program, Matrix4 viewMatrix, OpenTK.Vector3 lightPosition, OpenTK.Vector3 cameraPosition)
         {
 
             Matrix4 modelWorldMatrix;

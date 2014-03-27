@@ -30,7 +30,6 @@ namespace RallysportGame
 
         public override void Update()
         {
-            modelMatrix += Utilities.ConvertToTK(wheel.Shape.WorldTransform);
             base.Update();
         }
 

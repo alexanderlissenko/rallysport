@@ -96,6 +96,24 @@ namespace RallysportGame
             }
         }
 
+        public override void firstPass(int program, Matrix4 projectionMatrix, Matrix4 viewMatrix)
+        {
+            base.firstPass(program, projectionMatrix, viewMatrix);
+            foreach (CarWheel w in wheels)
+            {
+                w.firstPass(program, projectionMatrix, viewMatrix);
+            }
+        }
+
+        public override void secondPass(int program, Matrix4 viewMatrix, Vector3 lightPosition, Vector3 cameraPosition)
+        {
+            base.secondPass(program, viewMatrix, lightPosition, cameraPosition);
+            foreach (CarWheel w in wheels)
+            {
+                secondPass(program, viewMatrix, lightPosition, cameraPosition);
+            }
+        }
+
         public override void Update()
         {
             
@@ -110,14 +128,8 @@ namespace RallysportGame
 
         public void accelerate(float rate)
         {
-            if (ground_contact)
-            {
-                acceleration += direction * rate;
-                acceleration *= friction_coefficient;
-            }
-            
-            // Trying stuff out
-            body.LinearVelocity = body.LinearVelocity + Utilities.ConvertToBepu(up) * rate;
+            acceleration = direction;
+            acceleration *= rate; 
         }
         // Angle in radians
         public void Turn(float angle)
