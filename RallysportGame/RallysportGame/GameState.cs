@@ -72,11 +72,9 @@ namespace RallysportGame
 
 
 
-        static ArrayList keyList = new ArrayList();
 
         static int source = 0;
         static bool musicPaused;
-        static bool keyHandled = false;
         static MouseState current;
         static MouseState previous;
         private static CollisionHandler collisionHandler;
@@ -120,31 +118,6 @@ namespace RallysportGame
             if (error != 0)
                 Console.WriteLine(error);
             return shaderProgram;
-        }
-
-        /// <summary>
-        /// Will handle key events so multiple keys can be triggered at once
-        /// 
-        /// alla loopar kan säkert optimeras och borde kanske ses över detta e mest som ett snabb test 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-
-        static void handleKeyDown(object sender, KeyboardKeyEventArgs e)
-        {
-            if (!keyList.Contains(e.Key)) /// FULHACK tydligen så kan den annars generera 30+ keydown events om man håller inne
-                keyList.Add(e.Key);
-        }
-        static void handleKeyUp(object sender, KeyboardKeyEventArgs e)
-        {
-            keyHandled = false;
-            for (int i = 0; i < keyList.Count; i++)
-            {
-                if (keyList[i].Equals(e.Key))
-                {
-                    keyList.RemoveAt(i);
-                }
-            }
         }
 
         static void updateCamera()
@@ -380,8 +353,8 @@ namespace RallysportGame
 
             //lightPosition = new Vector3(up);
 
-            gameWindow.KeyDown += handleKeyDown;
-            gameWindow.KeyUp += handleKeyUp;
+            //gameWindow.KeyDown += handleKeyDown;
+            //gameWindow.KeyUp += handleKeyUp;
 
 
             //Music
@@ -568,6 +541,7 @@ namespace RallysportGame
         {
             camera_rotation_matrix = Matrix4.Identity;
             // add game logic, input handling
+            /*
             if (gameWindow.Keyboard[Key.Escape])
             {
                 GL.DeleteTextures(1, ref shadowMapTexture);
@@ -617,6 +591,7 @@ namespace RallysportGame
                     keyHandled = !keyHandled;
                 }
             }
+            */
             collisionHandler.Update();
 
             updateCamera();

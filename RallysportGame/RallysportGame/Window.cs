@@ -29,6 +29,8 @@ namespace RallysportGame
         private IState gameState;
         private IState menuState;
         private IState currentState;
+
+
         public Window()
         {
             startGame();
@@ -82,5 +84,12 @@ namespace RallysportGame
         {
             return currentState == menuState;
         }
+        /// <summary>
+        /// Will handle key events so multiple keys can be triggered at once
+        /// 
+        /// alla loopar kan säkert optimeras och borde kanske ses över detta e mest som ett snabb test 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
     }
 }
