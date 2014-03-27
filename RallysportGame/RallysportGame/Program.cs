@@ -655,12 +655,13 @@ namespace RallysportGame
 
 
                     #region secondPass
-                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, postFBO);
                     GL.UseProgram(secondPassShader);
 
                     GL.DepthMask(false);
                     GL.Disable(EnableCap.DepthTest);
                     GL.Viewport(0, 0, w, h);
+                    GL.DrawBuffer(DrawBufferMode.ColorAttachment0);
                     GL.ClearColor(0.0f, 0.0f, 0.0f, 0.0f); //ambient light
                     GL.Clear(ClearBufferMask.ColorBufferBit);
                     GL.Enable(EnableCap.Blend);
@@ -722,7 +723,7 @@ namespace RallysportGame
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
                     #endregion
 
-                    //gaussBlurr.gaussianBlurr(postTex, game.Width, game.Height, projectionMatrix, viewMatrix);
+                    gaussBlurr.gaussianBlurr(postTex, game.Width, game.Height, projectionMatrix, viewMatrix);
                    
                     #region PostProcessing pass
                     /*
