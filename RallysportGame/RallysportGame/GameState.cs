@@ -122,6 +122,55 @@ namespace RallysportGame
 
         static void updateCamera()
         {
+            foreach (var pair in InputHandler.Instance.inputDictionary())
+            {
+                if (pair.Value)
+                {
+                    switch (pair.Key)
+                    {
+                        case Key.A:
+                            playerCar.Turn(pi / 32);
+                            break;
+                        case Key.D:
+                            playerCar.Turn(-pi / 32);
+                            break;
+                        case Key.W:
+                            playerCar.accelerate(0.1f);
+                            break;
+                        case Key.S:
+                            playerCar.accelerate(-0.1f);
+                            break;
+                        case Key.Left:
+                            camera_theta += camera_horizontal_delta;
+                            break;
+                        case Key.Right:
+                            camera_theta -= camera_horizontal_delta;
+                            break;
+                        case Key.Up:
+                            camera_r -= camera_vertical_delta;
+                            break;
+                        case Key.Down:
+                            camera_r += camera_vertical_delta;
+                            break;
+                        case Key.Z:
+                            camera_phi -= camera_horizontal_delta * 0.5f;
+                            break;
+                        case Key.X:
+                            camera_phi += camera_horizontal_delta * 0.5f;
+                            break;
+                        case Key.L:
+                            testPartSys.stopEmit();
+                            break;
+                        case Key.K:
+                            testPartSys.startEmit();
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+            }
+            /*
             foreach (Key key in keyList)
             {
                 switch (key)
@@ -167,6 +216,7 @@ namespace RallysportGame
                         break;
                 }
             }
+            */
         }
 
         // Move camera with mouse

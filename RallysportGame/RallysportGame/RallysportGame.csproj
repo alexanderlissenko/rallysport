@@ -81,6 +81,7 @@
     <Compile Include="CollisionHandler.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="GameState.cs" />
+    <Compile Include="InputHandler.cs" />
     <Compile Include="IState.cs" />
     <Compile Include="MenuState.cs" />
     <Compile Include="ParticleSystem.cs" />

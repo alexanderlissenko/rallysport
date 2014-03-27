@@ -45,6 +45,8 @@ namespace RallysportGame
             //using (var game = new GameWindow(SettingsParser.GetInt(Settings.WINDOW_WIDTH), SettingsParser.GetInt(Settings.WINDOW_HEIGHT),GraphicsMode.Default, "Speed Junkies"))
             using (var game = new GameWindow(800, 600, GraphicsMode.Default, "Speed Junkies"))
             {
+                InputHandler.Initialize(game);
+
                 game.Load += (sender, e) =>
                 {
                     menuState.Load(game);
@@ -66,6 +68,7 @@ namespace RallysportGame
                 {
                     currentState.Render(game);
                 };
+
                 // Run the game at 60 updates per second
                 game.Run(60.0);
             }
