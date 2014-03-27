@@ -54,7 +54,7 @@ namespace RallysportGame
         //
 
         //Deferred Rendering
-        static int deferredTex, deferredNorm, deferredDepth, deferredFBO,deferredVel;
+        static int deferredTex, deferredNorm, deferredDepth, deferredFBO,deferredVel,deferredSSAO;
         //
 
         //postProcessing
@@ -262,6 +262,7 @@ namespace RallysportGame
                     GL.BindFragDataLocation(firstPassShader, 0, "diffuseOutput");
                     GL.BindFragDataLocation(firstPassShader, 1, "normOutput");
                     GL.BindFragDataLocation(firstPassShader, 2, "velOutput");
+                    GL.BindFragDataLocation(firstPassShader, 3, "ssaoOutput");
                     
                     GL.LinkProgram(firstPassShader);
 
@@ -370,13 +371,6 @@ namespace RallysportGame
                     #region Deferred Rendering
 
                     deferredFBO = GL.GenFramebuffer();
-                    //FBOtest = GL.GenFramebuffer();
-                    //GL.BindFramebuffer(FramebufferTarget.Framebuffer, deferredFBO);
-
-                    //deferredRBO = GL.GenRenderbuffer();
-                    //GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, deferredRBO);
-                    //GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent24, game.Width, game.Height);
-
                    
                     deferredTex = GL.GenTexture();
                     GL.BindTexture(TextureTarget.Texture2D, deferredTex);
@@ -410,12 +404,23 @@ namespace RallysportGame
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
 
+                    deferredSSAO = GL.GenTexture();
+                    GL.BindTexture(TextureTarget.Texture2D, deferredSSAO);
+                    GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, game.Width, game.Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, (IntPtr)0);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
+
 
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer, deferredFBO);
                     GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, deferredTex, 0);
                     GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment1, TextureTarget.Texture2D, deferredNorm, 0);
                     GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment2, TextureTarget.Texture2D, deferredVel, 0);
+                    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment3, TextureTarget.Texture2D, deferredSSAO, 0);
                     GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthStencilAttachment, TextureTarget.Texture2D, deferredDepth, 0);
+
+
                     //GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
 
                     
@@ -624,16 +629,16 @@ namespace RallysportGame
                     GL.UseProgram(firstPassShader);
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer ,deferredFBO);
                     GL.Viewport(0, 0, w, h);
-                    DrawBuffersEnum[] draw_buffs = { DrawBuffersEnum.ColorAttachment0, DrawBuffersEnum.ColorAttachment1, DrawBuffersEnum.ColorAttachment2 };
-                    GL.DrawBuffers(3, draw_buffs);
+                    DrawBuffersEnum[] draw_buffs = { DrawBuffersEnum.ColorAttachment0, DrawBuffersEnum.ColorAttachment1, DrawBuffersEnum.ColorAttachment2,DrawBuffersEnum.ColorAttachment3 };
+                    GL.DrawBuffers(4, draw_buffs);
                     GL.ClearColor(1.0f, 0f, 0f, 0.1f);
                     GL.ClearDepth(1.0f);
                     GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
                     GL.DepthMask(true);
                     GL.Enable(EnableCap.DepthTest);
                     GL.Disable(EnableCap.Blend);
-                    DrawBuffersEnum[] draw_buffs2 = { DrawBuffersEnum.ColorAttachment0, DrawBuffersEnum.ColorAttachment1, DrawBuffersEnum.ColorAttachment2 };
-                    GL.DrawBuffers(3, draw_buffs2);
+                    DrawBuffersEnum[] draw_buffs2 = { DrawBuffersEnum.ColorAttachment0, DrawBuffersEnum.ColorAttachment1, DrawBuffersEnum.ColorAttachment2, DrawBuffersEnum.ColorAttachment3 };
+                    GL.DrawBuffers(4, draw_buffs2);
 
                     GL.ActiveTexture(TextureUnit.Texture0);
                     GL.BindTexture(TextureTarget.Texture2D, environment.getTextureId());
@@ -723,10 +728,10 @@ namespace RallysportGame
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
                     #endregion
 
-                    gaussBlurr.gaussianBlurr(postTex, game.Width, game.Height, projectionMatrix, viewMatrix);
+                    //gaussBlurr.gaussianBlurr(postTex, game.Width, game.Height, projectionMatrix, viewMatrix);
                    
                     #region PostProcessing pass
-                    /*
+                    
                     GL.UseProgram(postShader);
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
                     GL.DepthMask(false);
@@ -750,7 +755,7 @@ namespace RallysportGame
                     
                     GL.Enable(EnableCap.DepthTest);
                     GL.DepthMask(true);
-                    */
+                    
                     #endregion
                     
                     
