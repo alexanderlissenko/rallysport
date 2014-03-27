@@ -39,7 +39,7 @@ namespace RallysportGame
         {
             gameState = new GameState(this);
             menuState = new MenuState(this);
-            currentState = menuState;
+            this.enterMenu();
 
 
             //using (var game = new GameWindow(SettingsParser.GetInt(Settings.WINDOW_WIDTH), SettingsParser.GetInt(Settings.WINDOW_HEIGHT),GraphicsMode.Default, "Speed Junkies"))
@@ -87,12 +87,5 @@ namespace RallysportGame
         {
             return currentState == menuState;
         }
-        /// <summary>
-        /// Will handle key events so multiple keys can be triggered at once
-        /// 
-        /// alla loopar kan säkert optimeras och borde kanske ses över detta e mest som ett snabb test 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
     }
 }
