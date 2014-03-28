@@ -146,7 +146,13 @@ namespace RallysportGame
             GL.BindVertexArray(vertexArrayObject);
             GL.DrawArrays(PrimitiveType.Triangles, 0, numOfTri * 3);
         }
+        public void scale(float scale) {
 
+            modelMatrix = modelMatrix * Matrix4.CreateScale(scale);
+          
+        
+        
+        }
         private void setMatrices(int program, Matrix4 projectionMatrix, Matrix4 viewMatrix)
         {
             Matrix4 modelWorldMatrix;
@@ -169,9 +175,9 @@ namespace RallysportGame
             GL.UniformMatrix4(GL.GetUniformLocation(program, "modelViewProjectionMatrix"), false, ref modelViewProjectionMatrix);  
         }
 
-        public void setUp3DSModel()
+        public void setUp3DSModel(float scale)
         {
-            modelMatrix = modelMatrix + Matrix4.CreateScale(0.1f); //TODO magic numbers go away! // NO!
+            modelMatrix = modelMatrix + Matrix4.CreateScale(scale); //TODO magic numbers go away! // NO!
         }
 
         public void setUpBlenderModel()
@@ -259,6 +265,8 @@ namespace RallysportGame
                 }
             }
         }
+
+
 
         public void loadTexture()
         {
