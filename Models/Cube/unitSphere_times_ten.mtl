@@ -1,0 +1,13 @@
+# Blender MTL File: ''
+# Material Count: 1
+newmtl Material
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.152963 0.147208 0.141071
+Ks 0.343373 0.343373 0.343373
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd C:\\Users\\Knarkapan\\Source\\Repos\\rallysport\\Models\\map\\blue.jpg
+
+

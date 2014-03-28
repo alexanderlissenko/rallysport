@@ -1,0 +1,8 @@
+#version 420
+uniform float time;
+
+in vec4 position;
+ 
+void main() {
+     gl_Position = position;
+}
