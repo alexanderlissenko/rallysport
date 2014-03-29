@@ -18,14 +18,17 @@ namespace RallysportGame.GUI
     public class MenuState : IState
     {
         private String shaderDir = @"..\..\..\..\Shaders\";
-        //private QFont font;
         private int texture;
         private Window window;
         private TextRowMenu textMenu;
         private int shader;
         private Entity plane;
 
-        //: base(resolution[0], resolution[1], GraphicsMode.Default, "Hoard of Upgrades")
+        private const int MAX_WIDTH = 500; //determines the max allowed width for the textRowMenu
+        private const int TEXT_SIZE = 80;
+        private const float LINE_SPACE = 1.3f;
+        private const int VERTICAL_OFFSET = 100;
+
         public MenuState(Window window)
         {
             this.window = window;
@@ -66,10 +69,11 @@ namespace RallysportGame.GUI
 
             texture = LoadTexture(@"..\\..\\..\\..\\Models\\2d\\temp.jpg");//vegitatio,n_bana_berg.jpg");//
 
-            textMenu = new TextRowMenu(0, 0, 0, 50, 400);
-            textMenu.AddTextButton("Start", test);
+            textMenu = new TextRowMenu((SettingsParser.GetInt(Settings.WINDOW_WIDTH) / 2), VERTICAL_OFFSET, TEXT_SIZE, MAX_WIDTH, LINE_SPACE); //needs to be rerun in case of resize call not sure what'll happen
+            textMenu.AddTextButton("Singleplayer", test);
+            textMenu.AddTextButton("Multiplayer", test);
             textMenu.AddTextButton("Options", test);
-            //font = new QFont(@"..\\..\\Fonts\\Calibri.ttf", 72, new QFontBuilderConfiguration(false));
+            textMenu.AddTextButton("Exit", test);
         }
         public void test()
         {
@@ -94,11 +98,9 @@ namespace RallysportGame.GUI
             GL.DrawArrays(PrimitiveType.Triangles, 0, plane.numOfTri * 3);
             GL.UseProgram(0);
 
-            //QFont.Begin();
-            //font.Print("hi everyone");
-            //QFont.End();
-            textMenu.Render();
             GL.End();
+
+            textMenu.Render();
 
             gameWindow.SwapBuffers();
             GL.UseProgram(0);
