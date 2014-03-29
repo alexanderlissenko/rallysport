@@ -6,8 +6,9 @@ using OpenTK.Graphics.OpenGL;
 using System.Drawing;
 using System.Drawing.Imaging;
 using QuickFont;
+using RallysportGame.GUI;
 
-namespace RallysportGame
+namespace RallysportGame.GUI
 {
     /// <summary>
     /// Class representing the menu. This class is responisble for graphics and logic for the menu
@@ -17,10 +18,10 @@ namespace RallysportGame
     public class MenuState : IState
     {
         private String shaderDir = @"..\..\..\..\Shaders\";
-        private QFont font;
+        //private QFont font;
         private int texture;
         private Window window;
-
+        private TextRowMenu textMenu;
         private int shader;
         private Entity plane;
 
@@ -56,14 +57,23 @@ namespace RallysportGame
 
         public void Load(GameWindow gameWindow)
         {
+
             plane = new Entity("plane");
             shader = GameState.loadShaderProgram(shaderDir + "Menu_VS.glsl", shaderDir + "Menu_FS.glsl");
             GL.BindAttribLocation(shader, 0, "positionIn");
             GL.BindFragDataLocation(shader, 0, "diffuseOutput");
             GL.LinkProgram(shader);
 
-            texture = LoadTexture(@"..\\..\\..\\..\\Models\\2d\\temp.jpg");//vegitation_bana_berg.jpg");//
-            font = new QFont(@"..\\..\\Fonts\\Calibri.ttf", 72, new QFontBuilderConfiguration(true));
+            texture = LoadTexture(@"..\\..\\..\\..\\Models\\2d\\temp.jpg");//vegitatio,n_bana_berg.jpg");//
+
+            textMenu = new TextRowMenu(0, 0, 0, 50, 400);
+            textMenu.AddTextButton("Start", test);
+            textMenu.AddTextButton("Options", test);
+            //font = new QFont(@"..\\..\\Fonts\\Calibri.ttf", 72, new QFontBuilderConfiguration(false));
+        }
+        public void test()
+        {
+            System.Console.WriteLine("Click!");
         }
 
         public void Render(GameWindow gameWindow)
@@ -84,10 +94,10 @@ namespace RallysportGame
             GL.DrawArrays(PrimitiveType.Triangles, 0, plane.numOfTri * 3);
             GL.UseProgram(0);
 
-            QFont.Begin();
-            font.Print("hi everyone");
-            QFont.End();
-
+            //QFont.Begin();
+            //font.Print("hi everyone");
+            //QFont.End();
+            textMenu.Render();
             GL.End();
 
             gameWindow.SwapBuffers();

@@ -81,9 +81,11 @@
     <Compile Include="CollisionHandler.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="GameState.cs" />
+    <Compile Include="GUI\TextButton.cs" />
+    <Compile Include="GUI\TextRowMenu.cs" />
     <Compile Include="InputHandler.cs" />
     <Compile Include="IState.cs" />
-    <Compile Include="MenuState.cs" />
+    <Compile Include="GUI\MenuState.cs" />
     <Compile Include="ParticleSystem.cs" />
     <Compile Include="DynamicEntity.cs" />
     <Compile Include="GenericVector3.cs" />

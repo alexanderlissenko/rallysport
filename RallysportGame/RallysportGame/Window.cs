@@ -12,6 +12,7 @@ using System.Drawing;
 using OpenTK.Input;
 using BEPUphysics.Vehicle;
 using System.Threading;
+using RallysportGame.GUI;
 
 
 
@@ -40,10 +41,11 @@ namespace RallysportGame
             gameState = new GameState(this);
             menuState = new MenuState(this);
             this.enterMenu();
+            //this.enterGame();
 
+            SettingsParser.Init(@"..\\..\\..\\..\\RallysportGame\\RallysportGame\\ini\\default.ini");
 
-            //using (var game = new GameWindow(SettingsParser.GetInt(Settings.WINDOW_WIDTH), SettingsParser.GetInt(Settings.WINDOW_HEIGHT),GraphicsMode.Default, "Speed Junkies"))
-            using (var game = new GameWindow(800, 600, GraphicsMode.Default, "Speed Junkies"))
+            using (var game = new GameWindow(SettingsParser.GetInt(Settings.WINDOW_WIDTH), SettingsParser.GetInt(Settings.WINDOW_HEIGHT),GraphicsMode.Default, "Speed Junkies"))
             {
                 InputHandler.Initialize(game);
 
