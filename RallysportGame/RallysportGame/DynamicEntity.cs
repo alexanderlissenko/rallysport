@@ -55,6 +55,7 @@ namespace RallysportGame
             body.Orientation = new Quaternion(Utilities.ConvertToBepu(direction), 1);
             Matrix4 modelRotation = Matrix4.CreateRotationY(MathHelper.Pi / 2);
             worldMatrix = Matrix4.Identity;
+            Console.WriteLine(worldMatrix);
         }
         #endregion
 
@@ -64,18 +65,18 @@ namespace RallysportGame
         /// </summary>
         public virtual void Update()
         {
-            
-            worldMatrix += Utilities.ConvertToTK(body.WorldTransform);
-            Console.WriteLine(body.LinearVelocity.ToString());
+            // Try doing this stuff with events instead! i.e. PositionChanged
+            //worldMatrix += Utilities.ConvertToTK(body.WorldTransform);
+            /*
             body.LinearVelocity += Utilities.ConvertToBepu(acceleration);
-            
+            acceleration *= 0;
             position = Utilities.ConvertToTK(body.Position);
-            
+            Console.WriteLine(body.Position.ToString());
             Matrix4 directionRotation = Utilities.ConvertToTK(BEPUutilities.Matrix.CreateFromQuaternion(body.Orientation));
             Matrix4 translation = Matrix4.CreateTranslation(position);
             Matrix4.Mult(ref worldMatrix, ref directionRotation, out worldMatrix);
             Matrix4.Mult(ref worldMatrix, ref translation, out worldMatrix);
-
+            */
             //for all emitters do emitters.tick() 
         }
 

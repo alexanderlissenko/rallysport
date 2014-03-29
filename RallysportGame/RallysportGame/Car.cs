@@ -105,15 +105,6 @@ namespace RallysportGame
             }
         }
 
-        public override void secondPass(int program, Matrix4 viewMatrix, Vector3 lightPosition, Vector3 cameraPosition)
-        {
-            base.secondPass(program, viewMatrix, lightPosition, cameraPosition);
-            foreach (CarWheel w in wheels)
-            {
-                secondPass(program, viewMatrix, lightPosition, cameraPosition);
-            }
-        }
-
         public override void Update()
         {
             
@@ -129,7 +120,9 @@ namespace RallysportGame
         public void accelerate(float rate)
         {
             acceleration = direction;
-            acceleration *= rate; 
+            acceleration *= rate;
+            worldMatrix = Matrix4.CreateTranslation(new Vector3(0, 50, 0));
+            Console.WriteLine(worldMatrix);
         }
         // Angle in radians
         public void Turn(float angle)
