@@ -193,7 +193,7 @@ namespace RallysportGame
             previous = current;
         }
 
-        public void Load(GameWindow gameWindow)
+        public override void Load(GameWindow gameWindow)
         {
 
             SettingsParser.Init(iniDir + "default.ini");
@@ -378,7 +378,7 @@ namespace RallysportGame
             collisionHandler.setupEnvironment(environment, environmentLocation);
         }
 
-        public void Render(GameWindow gameWindow)
+        public override void Render(GameWindow gameWindow)
         {
 
             GL.ClearColor(0.2f, 0.2f, 0.8f, 1.0f);
@@ -550,12 +550,12 @@ namespace RallysportGame
         /// <param name="sender"></param>
         /// <param name="e"></param>
 
-        public void HandleKeyDown(object sender, KeyboardKeyEventArgs e)
+        public new void HandleKeyDown(object sender, KeyboardKeyEventArgs e)
         {
             if (!keyList.Contains(e.Key)) /// FULHACK tydligen så kan den annars generera 30+ keydown events om man håller inne
                 keyList.Add(e.Key);
         }
-        public void HandleKeyUp(object sender, KeyboardKeyEventArgs e)
+        public new void HandleKeyUp(object sender, KeyboardKeyEventArgs e)
         {
             keyHandled = false;
             for (int i = 0; i < keyList.Count; i++)
@@ -566,7 +566,7 @@ namespace RallysportGame
                 }
             }
         }
-        public void Update(GameWindow gameWindow)
+        public override void Update(GameWindow gameWindow)
         {
             camera_rotation_matrix = Matrix4.Identity;
             // add game logic, input handling

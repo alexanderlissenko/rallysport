@@ -40,8 +40,8 @@ namespace RallysportGame
         {
             gameState = new GameState(this);
             menuState = new MenuState(this);
-            //this.enterMenu();
-            this.enterGame();
+            this.enterMenu();
+            //this.enterGame();
 
             SettingsParser.Init(@"..\\..\\..\\..\\RallysportGame\\RallysportGame\\ini\\default.ini");
 
@@ -53,7 +53,7 @@ namespace RallysportGame
                 {
                     menuState.Load(game);
 
-                    gameState.Load(game);
+                    //gameState.Load(game);
                 };
 
                 game.Resize += (sender, e) =>
@@ -72,7 +72,8 @@ namespace RallysportGame
                 };
                 game.KeyDown += currentState.HandleKeyDown;
                 game.KeyUp += currentState.HandleKeyUp;
-
+                game.Mouse.ButtonDown += currentState.MouseButtonDown;
+                game.Mouse.ButtonUp += currentState.MouseButtonUp;
                 // Run the game at 60 updates per second
                 game.Run(60.0);
             }

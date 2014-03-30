@@ -20,7 +20,7 @@ namespace RallysportGame.GUI
     {
         private String shaderDir = @"..\..\..\..\Shaders\";
         private int texture;
-        private StateHandler window;
+        private StateHandler stateHandler;
         private TextRowMenu textMenu;
         private int shader;
         private Entity plane;
@@ -29,10 +29,11 @@ namespace RallysportGame.GUI
         private const int TEXT_SIZE = 80;
         private const float LINE_SPACE = 1.3f;
         private const int VERTICAL_OFFSET = 0;
+        private KeyboardDevice keyBoard;
 
-        public MenuState(StateHandler window)
+        public MenuState(StateHandler stateHandler)
         {
-            this.window = window;
+            this.stateHandler = stateHandler;
         }
 
         public int LoadTexture(string file)
@@ -59,15 +60,15 @@ namespace RallysportGame.GUI
             return texture;
         }
 
-        public void Load(GameWindow gameWindow)
+        public override void Load(GameWindow gameWindow)
         {
-
+            keyBoard = gameWindow.Keyboard;
             plane = new Entity("plane");
             shader = GameState.loadShaderProgram(shaderDir + "Menu_VS.glsl", shaderDir + "Menu_FS.glsl");
             GL.BindAttribLocation(shader, 0, "positionIn");
             GL.BindFragDataLocation(shader, 0, "diffuseOutput");
             GL.LinkProgram(shader);
-
+            
             texture = LoadTexture(@"..\\..\\..\\..\\Models\\2d\\temp.jpg");//vegitatio,n_bana_berg.jpg");//
 
             textMenu = new TextRowMenu((SettingsParser.GetInt(Settings.WINDOW_WIDTH) / 11), VERTICAL_OFFSET, TEXT_SIZE, MAX_WIDTH, LINE_SPACE, gameWindow.Mouse); //needs to be rerun in case of resize call not sure what'll happen
@@ -81,7 +82,7 @@ namespace RallysportGame.GUI
             System.Console.WriteLine("Click!");
         }
 
-        public void Render(GameWindow gameWindow)
+        public override void Render(GameWindow gameWindow)
         {
             
             GL.ClearColor(1.0f, 0f, 0f, 0f);
@@ -107,21 +108,44 @@ namespace RallysportGame.GUI
             GL.UseProgram(0);
         }
 
-        public void Update(GameWindow gameWindow)
+        public override void Update(GameWindow gameWindow)
         {
             textMenu.Update();
             //
         }
 
-
-        public void HandleKeyDown(object sender, KeyboardKeyEventArgs e)
+        bool awaitingDownKey = true;
+        public override void HandleKeyDown(object sender, KeyboardKeyEventArgs e)
         {
-            throw new NotImplementedException();
+            if (e.Key.Equals(Key.Down) && awaitingDownKey)
+            {
+                textMenu.SelectDown();
+                awaitingDownKey=false;
+            }
+            else if (e.Key.Equals(Key.Up) && awaitingDownKey)
+            {
+                textMenu.SelectUp();
+                awaitingDownKey = false;
+            }
+            else if (e.Key.Equals(Key.Enter) && awaitingDownKey) {
+                textMenu.ClickSelected();
+                awaitingDownKey = false;
+            }
+        }
+        public override void MouseButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.Button.Equals(MouseButton.Left))
+            {
+                textMenu.ClickSelected();
+            }
         }
 
-        public void HandleKeyUp(object sender, KeyboardKeyEventArgs e)
+        public override void HandleKeyUp(object sender, KeyboardKeyEventArgs e)
         {
-            throw new NotImplementedException();
+            //if (e.Key.Equals(Key.Down) || e.Key.Equals(Key.Up))
+            //{
+                awaitingDownKey = true;
+            //}
         }
     }
 }

@@ -77,7 +77,15 @@ namespace RallysportGame.GUI
 
         public void SelectUp()
         {
-            selected = (selected - 1) % buttonList.Count;
+
+            int select = (selected - 1);
+            if (select < 0)
+            {
+                select = buttonList.Count-1;
+            }
+
+            selected = select % buttonList.Count;
+
         }
 
         public void SelectDown()
