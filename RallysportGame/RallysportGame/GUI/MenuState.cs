@@ -20,7 +20,7 @@ namespace RallysportGame.GUI
     {
         private String shaderDir = @"..\..\..\..\Shaders\";
         private int texture;
-        private Window window;
+        private StateHandler window;
         private TextRowMenu textMenu;
         private int shader;
         private Entity plane;
@@ -30,7 +30,7 @@ namespace RallysportGame.GUI
         private const float LINE_SPACE = 1.3f;
         private const int VERTICAL_OFFSET = 0;
 
-        public MenuState(Window window)
+        public MenuState(StateHandler window)
         {
             this.window = window;
         }
@@ -110,12 +110,18 @@ namespace RallysportGame.GUI
         public void Update(GameWindow gameWindow)
         {
             textMenu.Update();
+            //
+        }
 
-            //InputHandler input = InputHandler.Instance;
-            //if (input.isKeyPressed(Key.Up))
-            //{
-            //    textMenu.SelectUp();
-            //}
+
+        public void HandleKeyDown(object sender, KeyboardKeyEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void HandleKeyUp(object sender, KeyboardKeyEventArgs e)
+        {
+            throw new NotImplementedException();
         }
     }
 }

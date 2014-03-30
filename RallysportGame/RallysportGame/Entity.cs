@@ -23,7 +23,7 @@ using System.Drawing.Imaging;
 
 namespace RallysportGame
 {
-    class Entity
+    public class Entity
     {
         private OpenTK.Vector3 ambient, emisive;
         public OpenTK.Vector3 diffuse, specular; // test so return to private when possible

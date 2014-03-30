@@ -20,7 +20,7 @@ namespace RallysportGame
     /// <summary>
     /// Class responsible for the logic and graphics when the the game is being played (used to be known as 'program.cs').
     /// </summary>
-    class GameState : IState
+    public class GameState : IState
     {
 
 
@@ -71,16 +71,19 @@ namespace RallysportGame
         static Wheel w;
 
 
+        static ArrayList keyList = new ArrayList();
 
 
         static int source = 0;
         static bool musicPaused;
         static MouseState current;
         static MouseState previous;
-        private static CollisionHandler collisionHandler;
-        private Window window;
+        static bool keyHandled = false;
 
-        public GameState(Window window)
+        private static CollisionHandler collisionHandler;
+        private StateHandler window;
+
+        public GameState(StateHandler window)
         {
             this.window = window;
         }
@@ -122,55 +125,7 @@ namespace RallysportGame
 
         static void updateCamera()
         {
-            foreach (var pair in InputHandler.Instance.inputDictionary())
-            {
-                if (pair.Value)
-                {
-                    switch (pair.Key)
-                    {
-                        case Key.A:
-                            playerCar.Turn(pi / 32);
-                            break;
-                        case Key.D:
-                            playerCar.Turn(-pi / 32);
-                            break;
-                        case Key.W:
-                            playerCar.accelerate(0.1f);
-                            break;
-                        case Key.S:
-                            playerCar.accelerate(-0.1f);
-                            break;
-                        case Key.Left:
-                            camera_theta += camera_horizontal_delta;
-                            break;
-                        case Key.Right:
-                            camera_theta -= camera_horizontal_delta;
-                            break;
-                        case Key.Up:
-                            camera_r -= camera_vertical_delta;
-                            break;
-                        case Key.Down:
-                            camera_r += camera_vertical_delta;
-                            break;
-                        case Key.Z:
-                            camera_phi -= camera_horizontal_delta * 0.5f;
-                            break;
-                        case Key.X:
-                            camera_phi += camera_horizontal_delta * 0.5f;
-                            break;
-                        case Key.L:
-                            testPartSys.stopEmit();
-                            break;
-                        case Key.K:
-                            testPartSys.startEmit();
-                            break;
-
-                        default:
-                            break;
-                    }
-                }
-            }
-            /*
+            
             foreach (Key key in keyList)
             {
                 switch (key)
@@ -216,7 +171,7 @@ namespace RallysportGame
                         break;
                 }
             }
-            */
+            
         }
 
         // Move camera with mouse
@@ -587,11 +542,35 @@ namespace RallysportGame
             GL.UseProgram(0);
         }
 
+        /// <summary>
+        /// Will handle key events so multiple keys can be triggered at once
+        /// 
+        /// alla loopar kan säkert optimeras och borde kanske ses över detta e mest som ett snabb test 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+
+        public void HandleKeyDown(object sender, KeyboardKeyEventArgs e)
+        {
+            if (!keyList.Contains(e.Key)) /// FULHACK tydligen så kan den annars generera 30+ keydown events om man håller inne
+                keyList.Add(e.Key);
+        }
+        public void HandleKeyUp(object sender, KeyboardKeyEventArgs e)
+        {
+            keyHandled = false;
+            for (int i = 0; i < keyList.Count; i++)
+            {
+                if (keyList[i].Equals(e.Key))
+                {
+                    keyList.RemoveAt(i);
+                }
+            }
+        }
         public void Update(GameWindow gameWindow)
         {
             camera_rotation_matrix = Matrix4.Identity;
             // add game logic, input handling
-            /*
+            
             if (gameWindow.Keyboard[Key.Escape])
             {
                 GL.DeleteTextures(1, ref shadowMapTexture);
@@ -641,7 +620,7 @@ namespace RallysportGame
                     keyHandled = !keyHandled;
                 }
             }
-            */
+            
             collisionHandler.Update();
 
             updateCamera();

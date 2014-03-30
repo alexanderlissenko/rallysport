@@ -25,14 +25,14 @@ namespace RallysportGame
     /// Class representing the window containing the menu and the game.
     /// This class is responsible for creating, swapping and exiting these states.
     /// </summary>
-    public class Window
+    public class StateHandler
     {
         private IState gameState;
         private IState menuState;
         private IState currentState;
 
 
-        public Window()
+        public StateHandler()
         {
             startGame();
         }
@@ -40,20 +40,20 @@ namespace RallysportGame
         {
             gameState = new GameState(this);
             menuState = new MenuState(this);
-            this.enterMenu();
-            //this.enterGame();
+            //this.enterMenu();
+            this.enterGame();
 
             SettingsParser.Init(@"..\\..\\..\\..\\RallysportGame\\RallysportGame\\ini\\default.ini");
 
             using (var game = new GameWindow(SettingsParser.GetInt(Settings.WINDOW_WIDTH), SettingsParser.GetInt(Settings.WINDOW_HEIGHT),GraphicsMode.Default, "Speed Junkies"))
             {
-                InputHandler.Initialize(game);
-
+                //gameWindow.KeyDown += handleKeyDown;
+                //gameWindow.KeyUp += handleKeyUp;
                 game.Load += (sender, e) =>
                 {
                     menuState.Load(game);
 
-                    //gameState.Load(game);
+                    gameState.Load(game);
                 };
 
                 game.Resize += (sender, e) =>
@@ -70,6 +70,8 @@ namespace RallysportGame
                 {
                     currentState.Render(game);
                 };
+                game.KeyDown += currentState.HandleKeyDown;
+                game.KeyUp += currentState.HandleKeyUp;
 
                 // Run the game at 60 updates per second
                 game.Run(60.0);
