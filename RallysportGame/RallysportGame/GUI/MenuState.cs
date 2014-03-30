@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using QuickFont;
 using RallysportGame.GUI;
+using OpenTK.Input;
 
 namespace RallysportGame.GUI
 {
@@ -27,7 +28,7 @@ namespace RallysportGame.GUI
         private const int MAX_WIDTH = 500; //determines the max allowed width for the textRowMenu
         private const int TEXT_SIZE = 80;
         private const float LINE_SPACE = 1.3f;
-        private const int VERTICAL_OFFSET = 100;
+        private const int VERTICAL_OFFSET = 0;
 
         public MenuState(Window window)
         {
@@ -35,7 +36,7 @@ namespace RallysportGame.GUI
         }
 
         public int LoadTexture(string file)
-        {           
+        {
             TextureTarget Target = TextureTarget.Texture2D;
             int texture = GL.GenTexture();
             GL.BindTexture(Target, texture);
@@ -69,7 +70,7 @@ namespace RallysportGame.GUI
 
             texture = LoadTexture(@"..\\..\\..\\..\\Models\\2d\\temp.jpg");//vegitatio,n_bana_berg.jpg");//
 
-            textMenu = new TextRowMenu((SettingsParser.GetInt(Settings.WINDOW_WIDTH) / 2), VERTICAL_OFFSET, TEXT_SIZE, MAX_WIDTH, LINE_SPACE); //needs to be rerun in case of resize call not sure what'll happen
+            textMenu = new TextRowMenu((SettingsParser.GetInt(Settings.WINDOW_WIDTH) / 11), VERTICAL_OFFSET, TEXT_SIZE, MAX_WIDTH, LINE_SPACE, gameWindow.Mouse); //needs to be rerun in case of resize call not sure what'll happen
             textMenu.AddTextButton("Singleplayer", test);
             textMenu.AddTextButton("Multiplayer", test);
             textMenu.AddTextButton("Options", test);
@@ -108,7 +109,13 @@ namespace RallysportGame.GUI
 
         public void Update(GameWindow gameWindow)
         {
-           
+            textMenu.Update();
+
+            //InputHandler input = InputHandler.Instance;
+            //if (input.isKeyPressed(Key.Up))
+            //{
+            //    textMenu.SelectUp();
+            //}
         }
     }
 }
