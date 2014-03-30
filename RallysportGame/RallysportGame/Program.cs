@@ -655,7 +655,7 @@ namespace RallysportGame
 
 
                     #region secondPass
-                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, postFBO);
                     GL.UseProgram(secondPassShader);
 
                     GL.DepthMask(false);
@@ -725,7 +725,7 @@ namespace RallysportGame
                     //gaussBlurr.gaussianBlurr(postTex, game.Width, game.Height, projectionMatrix, viewMatrix);
                    
                     #region PostProcessing pass
-                    /*
+                    
                     GL.UseProgram(postShader);
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
                     GL.DepthMask(false);
@@ -739,9 +739,11 @@ namespace RallysportGame
                     GL.BindTexture(TextureTarget.Texture2D, postTex);
                     GL.ActiveTexture(TextureUnit.Texture1);
                     GL.BindTexture(TextureTarget.Texture2D, deferredVel);
+                    GL.ActiveTexture(TextureUnit.Texture1);
+                    GL.BindTexture(TextureTarget.Texture2D, deferredVel);
                     GL.Uniform1(GL.GetUniformLocation(postShader, "postTex"), 0);
                     GL.Uniform1(GL.GetUniformLocation(postShader, "postVel"), 1);
-
+                    GL.Uniform1(GL.GetUniformLocation(postShader, "postDepth"), 1);
                     GL.Uniform1(GL.GetUniformLocation(postShader, "velScale"), (float)game.RenderFrequency/30.0f);
 
                     GL.BindVertexArray(plane.vertexArrayObject);
@@ -749,7 +751,7 @@ namespace RallysportGame
                     
                     GL.Enable(EnableCap.DepthTest);
                     GL.DepthMask(true);
-                    */
+                    
                     #endregion
                     
                     
