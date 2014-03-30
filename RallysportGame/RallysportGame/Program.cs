@@ -233,7 +233,8 @@ namespace RallysportGame
                     plane = new Entity("plane");
                     environment = new Entity("map\\uggly_test_track_Triangulate");//"TeapotCar\\Teapot car\\Teapot-no-materials-tri");//"Cube\\3ds-cube");//
                     //myCar2 = new Entity("Cube\\testCube");//"Cube\\megu_koob");//"TeapotCar\\Teapot car\\Teapot-no-materials-tri");//
-                    playerCar = new Car(@"Mustang\mustang-no-wheels", @"Mustang\one-wheel");
+                    //playerCar = new Car(@"Mustang\mustang-no-wheels", @"Mustang\one-wheel");
+                    playerCar = new Car(@"Cube\testCube", @"Mustang\one-wheel");
                     playerCar.position = new Vector3(0, 30, 0);
                     skybox = new Entity("Cube\\inside_koob");
                     unitSphere = new Entity("Cube\\unitSphere");

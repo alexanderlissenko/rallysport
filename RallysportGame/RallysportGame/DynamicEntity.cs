@@ -51,12 +51,14 @@ namespace RallysportGame
             direction = up;
             velocity = acceleration = Vector3.Zero;
             body = new Box(Utilities.ConvertToBepu(pos), 5f, 5f, 5f, 5f);
-            body.CollisionInformation.Events.ContactCreated += new ContactCreatedEventHandler<EntityCollidable>(eventTest);
+            //body.CollisionInformation.Events.InitialCollisionDetected += new ContactCreatedEventHandler<Entity>();
             body.Orientation = new Quaternion(Utilities.ConvertToBepu(direction), 1);
             Matrix4 modelRotation = Matrix4.CreateRotationY(MathHelper.Pi / 2);
             worldMatrix = Matrix4.Identity;
-            Console.WriteLine(worldMatrix);
+            body.PositionUpdated += new Action<BEPUphysics.Entities.Entity>(PositionUpdated);
         }
+
+        
         #endregion
 
         #region Public Methods
@@ -65,18 +67,14 @@ namespace RallysportGame
         /// </summary>
         public virtual void Update()
         {
-            // Try doing this stuff with events instead! i.e. PositionChanged
-            //worldMatrix += Utilities.ConvertToTK(body.WorldTransform);
-            /*
-            body.LinearVelocity += Utilities.ConvertToBepu(acceleration);
-            acceleration *= 0;
-            position = Utilities.ConvertToTK(body.Position);
-            Console.WriteLine(body.Position.ToString());
-            Matrix4 directionRotation = Utilities.ConvertToTK(BEPUutilities.Matrix.CreateFromQuaternion(body.Orientation));
+            //modelMatrix = Matrix4.Identity;
+            Matrix4 modelRotation = Matrix4.CreateRotationY(MathHelper.Pi / 2);
             Matrix4 translation = Matrix4.CreateTranslation(position);
-            Matrix4.Mult(ref worldMatrix, ref directionRotation, out worldMatrix);
-            Matrix4.Mult(ref worldMatrix, ref translation, out worldMatrix);
-            */
+
+            modelMatrix *= Matrix4.CreateTranslation(body.LinearVelocity);
+            //direction rotation
+            //Matrix4.Mult(ref modelMatrix, ref modelRotation, out modelMatrix);
+            //Matrix4.Mult(ref modelMatrix, ref translation, out modelMatrix);
             //for all emitters do emitters.tick() 
         }
 
@@ -107,6 +105,10 @@ namespace RallysportGame
         #endregion
 
         #region Protected Methods
+        protected virtual void PositionUpdated(BEPUphysics.Entities.Entity obj)
+        {
+            position = Utilities.ConvertToTK(body.Position);
+        }
         #endregion
     }
 }

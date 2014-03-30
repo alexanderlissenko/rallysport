@@ -58,8 +58,11 @@ namespace RallysportGame
         public Car(String bodyPath, String wheelPath)
             : base(bodyPath)
         {
-            ConvexHull carHull = new ConvexHull(new List<BEPUutilities.Vector3>(Utilities.meshToVectorArray(mesh))/*,10*/); //Use with wrapped body?
-            vehicle = new Vehicle(carHull);
+            ConvexHull carHull = new ConvexHull(new List<BEPUutilities.Vector3>(Utilities.meshToVectorArray(mesh)),10); //Use with wrapped body?
+            //Box box = new Box(Utilities.ConvertToBepu(position), 10f, 10f, 10f, 1f);
+            Box box = new Box(Utilities.ConvertToBepu(position), 1f, 1f, 1f, 1f);
+            modelMatrix *= Matrix4.CreateScale(10f);
+            vehicle = new Vehicle(box);
             // Add wheels
             /*
             vänster fram: xyz = -19.5, 61, 12.5.
@@ -77,8 +80,10 @@ namespace RallysportGame
             {
                 w.setUp3DSModel();
                 vehicle.AddWheel(w.wheel);
+                w.car = this;
                 CollisionRules.AddRule(w.wheel.Shape, vehicle.Body, CollisionRule.NoBroadPhase);
                 CollisionRules.AddRule(vehicle.Body, w.wheel.Shape, CollisionRule.NoBroadPhase);
+
             }
             
             body = vehicle.Body;
@@ -107,8 +112,12 @@ namespace RallysportGame
 
         public override void Update()
         {
-            
+            //Console.WriteLine(body.Position);
             base.Update();
+            foreach (CarWheel w in wheels)
+            {
+                w.Update();
+            }
         }
 
         public override void eventTest(BEPUphysics.BroadPhaseEntries.MobileCollidables.EntityCollidable sender, BEPUphysics.BroadPhaseEntries.Collidable other, BEPUphysics.NarrowPhaseSystems.Pairs.CollidablePairHandler pair, BEPUphysics.CollisionTests.ContactData contact)
@@ -119,10 +128,17 @@ namespace RallysportGame
 
         public void accelerate(float rate)
         {
+            acceleration = Vector3.Zero;
             acceleration = direction;
             acceleration *= rate;
-            worldMatrix = Matrix4.CreateTranslation(new Vector3(0, 50, 0));
-            Console.WriteLine(worldMatrix);
+            body.LinearVelocity += Utilities.ConvertToBepu(acceleration);
+            foreach (CarWheel w in wheels)
+            {
+                //Matrix4 translation = Matrix4.CreateTranslation(this.position) * Matrix4.CreateTranslation(w.position);
+                
+
+                
+            }
         }
         // Angle in radians
         public void Turn(float angle)
@@ -135,10 +151,23 @@ namespace RallysportGame
         public override ISpaceObject GetBody(){
             return vehicle.Body;
         }
+
+        public void AddToSpace(Space s)
+        {
+            s.Add(vehicle);
+        }
         
         #endregion
-
         #region Private Methods
+
+        protected override void PositionUpdated(BEPUphysics.Entities.Entity obj)
+        {
+            base.PositionUpdated(obj);
+            Console.WriteLine("PositionUpdated changed: " + position);
+        }
+
+
+
         /// <summary>
         /// Calulates an approximate size of the drag force
         /// </summary>
