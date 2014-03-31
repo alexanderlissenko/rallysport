@@ -176,6 +176,9 @@ void main(void)
 			vec3 lightVector = lightPos - worldPos.xyz;
 			if(length(lightVector) < lightRadius)
 			{
+				vec4 shadowMapCoord = lightMatrix *modelViewMatrix* vec4( worldPos,1);
+				float visibility = textureProj(shadowMapTex, shadowMapCoord);
+				
 				float cutoff = 0.0005;
 				float denom = (length(lightVector)/lightRadius)+1;
 				float atten_factor = 1/(denom*denom);
@@ -183,18 +186,18 @@ void main(void)
 				atten_factor = max(atten_factor, 0);
 			 
 				shading = (ambient*lightColor 	
-						+ calculateSpecular(lightColor*scene_light, fresnelSpecular,material_shininess*4,normal.xyz,directionToLight,directionFromEye)
-						+ calculateDiffuse(lightColor*scene_light,diffuse.xyz,normal.xyz,directionToLight))*atten_factor;
+						+ (calculateSpecular(lightColor*scene_light, fresnelSpecular,material_shininess*4,normal.xyz,directionToLight,directionFromEye)
+						+ calculateDiffuse(lightColor*scene_light,diffuse.xyz,normal.xyz,directionToLight))*visibility)*atten_factor;
 					 
 			}
 			else
 			{
-				shading = vec3(0.0);
+				shading = vec3(0);
 			}
 		}
 		else
 		{
-			shading = vec3(0.0);
+			shading = vec3(0);
 		}
    }
    

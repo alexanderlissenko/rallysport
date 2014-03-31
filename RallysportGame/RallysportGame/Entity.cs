@@ -133,15 +133,14 @@ namespace RallysportGame
             GL.DrawArrays(PrimitiveType.Triangles, 0, numOfTri * 3);
         }
 
-        public void spotLight(int program, OpenTK.Vector3 lightPosition, OpenTK.Vector3 lightDirection,  OpenTK.Vector3 lightColor,float lightRadius, float lightWidht)
+        public void spotLight(int program, OpenTK.Vector3 lightPosition, OpenTK.Vector3 lightDirection,  OpenTK.Vector3 lightColor,float lightRadius, float lightWidht,OpenTK.Vector3 cameraPosition,Matrix4 projectionMatrix,Matrix4 viewMatrix)
         {
-        /*
-            GL.Uniform3(GL.GetUniformLocation(program, "lightColor"), lightColor);
-            GL.Uniform3(GL.GetUniformLocation(program, "lightPos"), lightPosition);
-            GL.Uniform3(GL.GetUniformLocation(program, "lightDirection"), lightDirection);
-            GL.Uniform1(GL.GetUniformLocation(program, "lightRadius"), lightRadius);
-            GL.Uniform1(GL.GetUniformLocation(program, "lightWidht"), lightWidht);
-            */
+            Matrix4 modelViewMatrix;
+            Matrix4.Mult(ref modelMatrix, ref viewMatrix, out modelViewMatrix);
+
+            GL.UniformMatrix4(GL.GetUniformLocation(program, "modelViewMatrix"), false, ref modelViewMatrix);
+            GL.UniformMatrix4(GL.GetUniformLocation(program, "projectionMatrix"),false ,ref projectionMatrix);
+            GL.Uniform3(GL.GetUniformLocation(program, "camera"), cameraPosition);
             GL.Uniform3(uniformLoc["lightColor"], lightColor);
             GL.Uniform3(uniformLoc["lightPos"], lightPosition);
             GL.Uniform3(uniformLoc["lightDirection"], lightDirection);

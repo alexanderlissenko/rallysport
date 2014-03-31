@@ -14,7 +14,7 @@ out vec4 fragColor;
 void main() 
 {
 	vec2 texelSize = 1.0/vec2(textureSize(postTex,0));
-	float depth = texture(postDepth,pos).xyz;
+	float depth = texture(postDepth,pos).x;
 	vec2 velocity = texture(postVel, pos).xy;//texture(postVel, screenTexCoords).xy;
 	velocity = pow(velocity, vec2(1.0/3.0));
 	velocity = velocity * 2.0 - 1.0; 
@@ -30,8 +30,8 @@ void main()
 	for(int i = 1; i < nSamples; i++)
 	{
 		vec2 offset = velocity *(float(i)/float(nSamples-1)-0.5);
-		//offsetDepth = texture(postDepth,pos+offset).x;
-		//float weight = 1-(offsetDepth-depth);
+		offsetDepth = texture(postDepth,pos+offset).x;
+		float weight = 1-(offsetDepth-depth);
 		result += texture(postTex,pos+offset);//*weight;
 	}
 	

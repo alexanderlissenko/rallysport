@@ -217,7 +217,56 @@ namespace RallysportGame
             }
             previous = current;
         }
+        /// <summary>
+        /// Renders a shadowmap for a given light
+        /// </summary>
+        /// <param name="program"> Current Shader program</param>
+        /// <param name="lightViewMatrix">viewmatrix of the light</param>
+        /// <param name="lightProjectionMatrix">Projectionmatrix of the light</param>
+        static Matrix4 renderSM(int program,Matrix4 viewMatrix,Matrix4 lightViewMatrix, Matrix4 lightProjectionMatrix)
+        {
+            
+            //ändra till 300f
+            GL.UseProgram(shadowShaderProgram);
+            //SHADOW MAP FBO RENDERING
+            GL.PushAttrib(AttribMask.EnableBit);
+            {
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, shadowMapFBO);
 
+                GL.Viewport(0, 0, shadowMapRes, shadowMapRes);
+                //GL.CullFace(CullFaceMode.Front);
+                GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
+                GL.Enable(EnableCap.PolygonOffsetFill);
+                GL.PolygonOffset(1.0f, 1.0f);
+
+                //GL.BindTexture(TextureTarget.Texture2D, shadowMapTexture);
+
+                myCar2.renderShadowMap(shadowShaderProgram, lightProjectionMatrix, lightViewMatrix);
+                environment.renderShadowMap(shadowShaderProgram, lightProjectionMatrix, lightViewMatrix);
+
+            }
+            GL.PopAttrib();
+            //GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+            GL.CullFace(CullFaceMode.Back);
+            //GL.Disable(EnableCap.PolygonOffsetFill);
+
+            GL.UseProgram(program);
+
+            Matrix4 lightMatrix;
+            Matrix4 invView = Matrix4.Invert(viewMatrix);
+
+            Matrix4 lightModelView;
+
+            //invView = Matrix4.Mult(invProj, invView);
+            Matrix4.Mult(ref invView, ref lightViewMatrix, out lightModelView);
+            //lightViewMatrix.Transpose();
+            Matrix4.Mult(ref lightModelView, ref  lightProjectionMatrix, out lightMatrix);
+            Matrix4 test = Matrix4.Mult(viewMatrix, lightMatrix);
+
+            lightMatrix = lightMatrix * Matrix4.CreateScale(0.5f) * Matrix4.CreateTranslation(new OpenTK.Vector3(0.5f, 0.5f, 0.5f));
+            return lightMatrix;
+        }
 
         static void Main(string[] args)
         { 
@@ -307,7 +356,7 @@ namespace RallysportGame
 
                     skybox.setUp3DSModel();// setUpBlenderModel();
 
-                    myCar2.modelMatrix = Matrix4.CreateTranslation(new Vector3(10, 0, 0));
+                    //myCar2.modelMatrix = Matrix4.CreateTranslation(new Vector3(10, 0, 0));
 
                     GL.UseProgram(0);
                     
@@ -541,7 +590,7 @@ namespace RallysportGame
                     //move light
 
                     light_theta += camera_horizontal_delta*0.1f;
-                    myCar2.modelMatrix *= Matrix4.CreateRotationY(0.1f);
+                    //myCar2.modelMatrix *= Matrix4.CreateRotationY(0.1f);
                 };
                 #endregion
 
@@ -558,40 +607,7 @@ namespace RallysportGame
 
                     #endregion
 
-                    //Render Shadowmap
-                   
-                    #region shadowMapRender
-                    Matrix4 lightViewMatrix = Matrix4.LookAt(lightPosition, new Vector3(0.0f, 0.0f, 0.0f), up);
-                    Matrix4 lightProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(pi / 4, 1.0f, 180f, 1180f);
                     
-                    
-                    //ändra till 300f
-                    GL.UseProgram(shadowShaderProgram);
-                    //SHADOW MAP FBO RENDERING
-                    GL.PushAttrib(AttribMask.EnableBit);
-                    {
-                    GL.BindFramebuffer(FramebufferTarget.Framebuffer,shadowMapFBO);
-                        
-                    GL.Viewport(0, 0, shadowMapRes, shadowMapRes);
-                    //GL.CullFace(CullFaceMode.Front);
-                    GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
-                    GL.Enable(EnableCap.PolygonOffsetFill);
-                    GL.PolygonOffset(1.0f, 1.0f);
-
-                    //GL.BindTexture(TextureTarget.Texture2D, shadowMapTexture);
-
-                    myCar2.renderShadowMap(shadowShaderProgram, lightProjectionMatrix, lightViewMatrix);
-                    environment.renderShadowMap(shadowShaderProgram, lightProjectionMatrix, lightViewMatrix);
-                    
-                    }
-                    GL.PopAttrib(); 
-                    //GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-                    GL.CullFace(CullFaceMode.Back);
-                    //GL.Disable(EnableCap.PolygonOffsetFill);
-                    #endregion
-                    
-                    ///END OF SHADOWMAP FBO RENDERING
 
                     
                     
@@ -608,20 +624,18 @@ namespace RallysportGame
                     
                     //Matrix4 bias = new Matrix4(0.9f, 0.0f, 0.0f, 0.0f, 0.0f, 0.9f, 0.0f, 0.0f, 0.0f, 0.0f, 0.9f, 0.0f, 0.9f, 0.9f, 0.9f, 1.0f);
                     
-                    Matrix4 lightMatrix;
-                    Matrix4 invProj = Matrix4.Invert(projectionMatrix);
-                    Matrix4 invView = Matrix4.Invert(viewMatrix);
+                    
+                    //Render Shadowmap
+                   
+                    #region shadowMapRender
+                    Matrix4 lightViewMatrix = Matrix4.LookAt(lightPosition, new Vector3(0.0f, 0.0f, 0.0f), up);
+                    Matrix4 lightProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(pi / 4, 1.0f, 180f, 1180f);
 
-                    Matrix4 lightModelView;
-
-                    //invView = Matrix4.Mult(invProj, invView);
-                    Matrix4.Mult(ref invView, ref lightViewMatrix, out lightModelView);
-                    //lightViewMatrix.Transpose();
-                    Matrix4.Mult(ref lightModelView, ref  lightProjectionMatrix, out lightMatrix);
-                    Matrix4 test = Matrix4.Mult(viewMatrix, lightMatrix);
-
-                    lightMatrix = lightMatrix * Matrix4.CreateScale(0.5f) * Matrix4.CreateTranslation(new OpenTK.Vector3(0.5f, 0.5f, 0.5f));
-
+                    Matrix4 lightMatrix = renderSM(shadowShaderProgram,viewMatrix, lightViewMatrix, lightProjectionMatrix);
+                   
+                    #endregion
+                    
+                    ///END OF SHADOWMAP FBO RENDERING
                     
                     
                     
@@ -658,6 +672,7 @@ namespace RallysportGame
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
                     #endregion
 
+                    Matrix4 invProj = Matrix4.Invert(projectionMatrix);
 
                     #region secondPass
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer, postFBO);
@@ -695,6 +710,7 @@ namespace RallysportGame
                     
                     Vector2 size = new Vector2(game.Width,game.Height);
                     GL.Uniform2(GL.GetUniformLocation(secondPassShader, "screenSize"), ref size);
+                    
 
                     GL.UniformMatrix4(GL.GetUniformLocation(secondPassShader, "lightMatrix"),false, ref lightMatrix);
                     int lTUniform = GL.GetUniformLocation(secondPassShader, "lightType");
@@ -712,8 +728,31 @@ namespace RallysportGame
                         //plane.pointLight(secondPassShader, new Vector3(0,10.0f,-10.0f), new Vector3(1, 1, 0), 10.0f);
 
                         //Spot Light
+
+
+                    lightViewMatrix = Matrix4.LookAt(new Vector3(0, 10, 0), new Vector3(0.0f, -40.0f, 0.0f), up);
+                    lightProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(pi / 4, 1.0f, 1f, 1000f);
+                    lightMatrix = renderSM(secondPassShader, viewMatrix, lightViewMatrix, lightProjectionMatrix);
+                    
+                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, postFBO);
+                    GL.Viewport(0, 0, w, h);
+                    
+                    GL.UseProgram(secondPassShader);
                     GL.Uniform1(lTUniform, 2.0f);
-                    //plane.spotLight(secondPassShader, new Vector3(0, 3, 0), new Vector3(-1, -1, 0), new Vector3(1, 0, 0), 20.0f, (float)Math.Cos(pi/4));
+
+                    GL.Uniform1(GL.GetUniformLocation(secondPassShader, "diffuseTex"), 0);
+                    GL.Uniform1(GL.GetUniformLocation(secondPassShader, "normalTex"), 1);
+                    GL.Uniform1(GL.GetUniformLocation(secondPassShader, "depthTex"), 2);
+                    GL.Uniform1(GL.GetUniformLocation(secondPassShader, "velTex"), 3);
+                    GL.Uniform1(GL.GetUniformLocation(secondPassShader, "shadowMapTex"), 4);
+
+                    GL.Uniform2(GL.GetUniformLocation(secondPassShader, "screenSize"), ref size);
+
+
+                    GL.UniformMatrix4(GL.GetUniformLocation(secondPassShader, "lightMatrix"), false, ref lightMatrix);
+                    GL.Uniform1(lTUniform, 2.0f);
+
+                    plane.spotLight(secondPassShader, new Vector3(0, 10, 0), new Vector3(0, -1, 0), new Vector3(1, 0, 0), 20.0f, (float)Math.Cos(pi / 4), camera_position, invProj,viewMatrix);
                     //plane.spotLight(secondPassShader, new Vector3(0, 3, 0), new Vector3(1, -1, 0), new Vector3(1, 0, 0), 15.0f, (float)Math.Cos(pi / 4));
                     //plane.spotLight(secondPassShader, new Vector3(0, 3, 0), new Vector3(0, -1, -1), new Vector3(0, 1, 0), 15.0f, (float)Math.Cos(pi / 4));
                     //plane.spotLight(secondPassShader, new Vector3(0, 3, 0), new Vector3(0, -1, 1), new Vector3(0, 1, 0), 15.0f, (float)Math.Cos(pi / 4));
