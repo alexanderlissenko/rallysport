@@ -25,8 +25,8 @@ namespace RallysportGame
         //*****************************************************************************
         //	Useful constants
         //*****************************************************************************
-        const int PERLIN_REZ_X=32;
-        const int PERLIN_REZ_Y=32;
+        const int PERLIN_REZ_X=200;
+        const int PERLIN_REZ_Y=200;
         const int PERLIN_REZ_Z=32;
         const float pi = MathHelper.Pi;
         static int texture_counter=0;
@@ -238,6 +238,10 @@ namespace RallysportGame
             perlinFBO = GL.GenFramebuffer();
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, perlinFBO);
 
+            GL.Enable(EnableCap.Blend);
+
+            GL.BlendEquation(BlendEquationMode.FuncAdd);
+            GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.One);
 
             for(int i=0; i<PERLIN_REZ_Z; i++ ){
                 perlinNoise[i] = GL.GenTexture();
@@ -250,12 +254,14 @@ namespace RallysportGame
 
                 GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, perlinFBO);
                 GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, perlinNoise[i], 0);
-
-                GL.Uniform1(GL.GetUniformLocation(perlinShader, "time"), (float)System.DateTime.Now.Millisecond);
-                plane.secondPass(perlinShader, Matrix4.Identity, new Vector3(0,0,0), new Vector3(0, 0, 0));
-
+                for (int f=0; f < 2; f++)
+                {
+                    GL.Uniform1(GL.GetUniformLocation(perlinShader, "time"), (float)((f+1)*System.DateTime.Now.Millisecond));
+                    plane.secondPass(perlinShader, Matrix4.Identity, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
+                }
 
             }
+            GL.Disable(EnableCap.Blend);
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
             GL.UseProgram(0);
         }
@@ -288,10 +294,10 @@ namespace RallysportGame
                     myCar2 = new Entity("Cube\\testCube");//"Cube\\megu_koob");//"TeapotCar\\Teapot car\\Teapot-no-materials-tri");//
                     playerCar = new Car("TeapotCar\\Teapot car\\Teapot-no-materials-tri", new Vector3(0,20f,0));
                     skybox = new Entity("Cube\\inside_koob");
-                    unitSphere = new Entity("Cube\\unitSphere_times_ten");
+                    unitSphere = new Entity("isoSphere_15");//new Entity("Cube\\unitSphere_times_ten");
                     //unitSphere.setUp3DSModel(0.0001f);
                     //Particle System
-                    megaParticles = new ParticleSystem(unitSphere, new Vector3(0, 0, 0), new Vector3(0, -1, 0), 20.0f * 3.14f / 90.0f, 1,0.2f, new Vector3(0, 0, 0),new TimeSpan(0,0,30));
+                    megaParticles = new ParticleSystem(unitSphere, new Vector3(0, 0, 0), new Vector3(0, -1, 0), 20.0f * 3.14f / 90.0f, 2, 1.0f, new Vector3(0, 0, 0),new TimeSpan(0,0,30));
                     
                     //Set up shaders
 
@@ -347,6 +353,8 @@ namespace RallysportGame
                     GL.UseProgram(firstPassShader);
                     environment.setUpMtl();
                     environment.loadTexture();
+                    unitSphere.setUpMtl();
+                    unitSphere.loadTexture();
                     //environment.setUpBlenderModel();
                     //myCar2.setUpBlenderModel();
                     playerCar.setUp3DSModel(0.1f);
@@ -694,18 +702,18 @@ namespace RallysportGame
                     GL.DrawBuffers(3,draw_buffs);
 
                     GL.ActiveTexture(TextureUnit.Texture0);
-                    GL.BindTexture(TextureTarget.Texture2D, environment.getTextureId());
+                    GL.BindTexture(TextureTarget.Texture2D,unitSphere.getTextureId());
                     GL.Uniform1(GL.GetUniformLocation(firstPassShader, "firstTexture"), 0);
 
                     //unitSphere.firstPass(firstPassShader, projectionMatrix, viewMatrix);
                     megaParticles.firstPass(firstPassShader, projectionMatrix, viewMatrix);
-                    environment.firstPass(firstPassShader,  projectionMatrix,  viewMatrix);
+                    //environment.firstPass(firstPassShader,  projectionMatrix,  viewMatrix);
                     
 
                     GL.BindTexture(TextureTarget.Texture2D, 0);
                     //myCar2.firstPass(firstPassShader, projectionMatrix, viewMatrix);
 
-                    skybox.firstPass(firstPassShader, projectionMatrix, viewMatrix);
+                    //skybox.firstPass(firstPassShader, projectionMatrix, viewMatrix);
                     
                     GL.DepthMask(false);
                     GL.Disable(EnableCap.DepthTest);
@@ -736,12 +744,12 @@ namespace RallysportGame
                     GL.BlendEquation(BlendEquationMode.FuncAdd);
                     GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.One);
 
-                    texture_counter2++;
-                    if (texture_counter2 >= 5)
-                    {
+                    //texture_counter2++;
+                    //if (texture_counter2 >= 5)
+                    //{
                         texture_counter++;
                         texture_counter2 = 0;
-                    }
+                    //}
                         
                     GL.ActiveTexture(TextureUnit.Texture0);
                     GL.BindTexture(TextureTarget.Texture2D, perlinNoise[texture_counter%(PERLIN_REZ_Z-1)]);

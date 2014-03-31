@@ -149,13 +149,15 @@ float pattern2( in vec2 p, out vec2 q, out vec2 r , in float time)
  
 void main() {
      
-    vec2 q = gl_FragCoord.xy / vec2(640.0,480.0);
+    vec2 q = gl_FragCoord.xy / vec2(200.0,200.0);
     vec2 p = -1.0 + 2.0 * q;
     vec2 qq;
     vec2 r;
-    float color = pattern2(p,qq,r,time);
+    float color = pattern2(p,qq,r,time*3);
+    
+    float color2= pattern2(p,qq,r,time*7);
      
-    vec4 c = vec4(color,color,color,color);
+    vec4 c = vec4(color,color2,color,color);
     c *= 3.5;
      
     FragColor = c;
