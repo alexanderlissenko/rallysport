@@ -51,7 +51,8 @@ namespace RallysportGame
             direction = up;
             velocity = acceleration = Vector3.Zero;
             body = new Box(Utilities.ConvertToBepu(pos), 5f, 5f, 5f, 5f);
-            //body.CollisionInformation.Events.InitialCollisionDetected += new ContactCreatedEventHandler<Entity>();
+            CollisionHandler.plane.Events.ContactCreated += new ContactCreatedEventHandler<StaticMesh>(eventTest);
+            
             body.Orientation = new Quaternion(Utilities.ConvertToBepu(direction), 1);
             Matrix4 modelRotation = Matrix4.CreateRotationY(MathHelper.Pi / 2);
             worldMatrix = Matrix4.Identity;
@@ -78,12 +79,9 @@ namespace RallysportGame
             //for all emitters do emitters.tick() 
         }
 
-        public virtual void eventTest(EntityCollidable sender, Collidable other, CollidablePairHandler pair, ContactData contact)
+        public virtual void eventTest(StaticMesh sender, Collidable other, CollidablePairHandler pair, ContactData contact)
         {
             Console.WriteLine("Contact detected");
-            Console.WriteLine("sender: " + sender.ToString());
-            Console.WriteLine("contact: " + sender.ToString());
-            //sender.Entity.LinearVelocity = Vector3.Zero;
             
         }
 

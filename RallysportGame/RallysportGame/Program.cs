@@ -228,14 +228,19 @@ namespace RallysportGame
                     Console.WriteLine(GL.GetString(StringName.ShadingLanguageVersion));
                     // setup settings, load textures, sounds
                     game.VSync = VSyncMode.On;
-                    //myCar = new Entity("Cube\\koobe");//"Cube\\koobe");//"TeapotCar\\Teapot car\\Teapot-no-materials-tri");//"map\\uggly_test_track_Triangulate");//
-                    
+
+
+                    collisionHandler = new CollisionHandler();
                     plane = new Entity("plane");
+                    plane.SetUpPlane();
+                    collisionHandler.setupPlane(plane, plane.position);
+                    
                     environment = new Entity("map\\uggly_test_track_Triangulate");//"TeapotCar\\Teapot car\\Teapot-no-materials-tri");//"Cube\\3ds-cube");//
+                    
                     //myCar2 = new Entity("Cube\\testCube");//"Cube\\megu_koob");//"TeapotCar\\Teapot car\\Teapot-no-materials-tri");//
-                    //playerCar = new Car(@"Mustang\mustang-no-wheels", @"Mustang\one-wheel");
-                    playerCar = new Car(@"Cube\testCube", @"Mustang\one-wheel");
-                    playerCar.position = new Vector3(0, 30, 0);
+                    playerCar = new Car(@"Mustang\mustang-no-wheels", @"Mustang\one-wheel");
+                    //playerCar = new Car(@"Cube\testCube", @"Mustang\one-wheel");
+                    playerCar.position = new Vector3(0, 100, 0);
                     skybox = new Entity("Cube\\inside_koob");
                     unitSphere = new Entity("Cube\\unitSphere");
                     
@@ -397,7 +402,7 @@ namespace RallysportGame
                     //GL.DepthMask(true);
                     //GL.DepthFunc(DepthFunction.Lequal);
                     //GL.DepthRange(0.0f, 5.0f);
-                    collisionHandler = new CollisionHandler();
+                    
                     collisionHandler.addObject(playerCar);
                     Vector3 environmentLocation = new Vector3(0, 0, 0);
                     collisionHandler.setupEnvironment(environment, environmentLocation);
@@ -583,9 +588,9 @@ namespace RallysportGame
                     GL.ActiveTexture(TextureUnit.Texture0);
                     GL.BindTexture(TextureTarget.Texture2D, environment.getTextureId());
                     GL.Uniform1(GL.GetUniformLocation(basicShaderProgram, "firstTexture"), 0);
-                    
 
-                    environment.firstPass(firstPassShader,  projectionMatrix,  viewMatrix);
+                    plane.firstPass(firstPassShader, projectionMatrix, viewMatrix);
+                    //environment.firstPass(firstPassShader,  projectionMatrix,  viewMatrix);
                     
                     GL.BindTexture(TextureTarget.Texture2D, 0);
                     //myCar2.firstPass(firstPassShader, projectionMatrix, viewMatrix);

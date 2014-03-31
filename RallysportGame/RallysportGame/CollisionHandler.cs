@@ -16,16 +16,18 @@ namespace RallysportGame
     {
         private Space space;
         private List<DynamicEntity> objects;
+        // For derpy testing
+        public static StaticMesh plane;
         public CollisionHandler()
         {
             objects = new List<DynamicEntity>();
-            space = new Space(new ParallelLooper()); 
+            space = new Space(new ParallelLooper());
             space.ForceUpdater.Gravity = new BEPUutilities.Vector3(0, SettingsParser.GetFloat(Settings.GRAVITY), 0);
         }
         public void Update()
         {
             space.Update();
-            foreach(DynamicEntity e in objects)
+            foreach (DynamicEntity e in objects)
             {
                 e.Update();
             }
@@ -34,7 +36,7 @@ namespace RallysportGame
         public void addObject(DynamicEntity e)
         {
             objects.Add(e);
-            
+
             Car c = e as Car;
             if (c != null)
             {
@@ -48,17 +50,37 @@ namespace RallysportGame
 
         }
 
-        
 
-        public void setupEnvironment(Entity environment, OpenTK.Vector3 position) {
+
+        public void setupEnvironment(Entity environment, OpenTK.Vector3 position)
+        {
             int[] indices = environment.vertIndices.ToArray();
             Meshomatic.MeshData mesh = environment.mesh;
 
             BEPUutilities.Vector3[] vertices = Utilities.meshToVectorArray(mesh);
 
             var environmentMesh = new StaticMesh(vertices, indices, new AffineTransform(Utilities.ConvertToBepu(position)));
-            space.Add(environmentMesh);
+            //space.Add(environmentMesh);
+        }
+
+        public void setupPlane(Entity plane, OpenTK.Vector3 position)
+        {
+            int[] indices = plane.vertIndices.ToArray();
+            Meshomatic.MeshData mesh = plane.mesh;
+
+            BEPUutilities.Vector3[] vertices = Utilities.meshToVectorArray(mesh);
+            
+            foreach(OpenTK.Vector3 v in vertices){
+                Console.WriteLine(v + position);
+            }
+            
+
+
+
+            var planeMesh = new StaticMesh(vertices, indices, new AffineTransform(Utilities.ConvertToBepu(position)));
+            CollisionHandler.plane = planeMesh;
+            space.Add(planeMesh);
+
         }
     }
-
 }

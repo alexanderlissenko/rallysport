@@ -178,6 +178,13 @@ namespace RallysportGame
         {
             modelMatrix = modelMatrix + Matrix4.CreateScale(20f);
         }
+
+        public void SetUpPlane()
+        {
+            modelMatrix *= Matrix4.CreateScale(100f);
+            modelMatrix *= Matrix4.CreateRotationX(-MathHelper.Pi / 2);
+            OpenTK.Vector3.TransformPosition(position, modelMatrix);
+        }
         public void render(int program, OpenTK.Vector3 position)
         {
 

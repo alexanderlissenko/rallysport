@@ -58,11 +58,10 @@ namespace RallysportGame
         public Car(String bodyPath, String wheelPath)
             : base(bodyPath)
         {
-            ConvexHull carHull = new ConvexHull(new List<BEPUutilities.Vector3>(Utilities.meshToVectorArray(mesh)),10); //Use with wrapped body?
-            //Box box = new Box(Utilities.ConvertToBepu(position), 10f, 10f, 10f, 1f);
-            Box box = new Box(Utilities.ConvertToBepu(position), 1f, 1f, 1f, 1f);
-            modelMatrix *= Matrix4.CreateScale(10f);
-            vehicle = new Vehicle(box);
+            Console.WriteLine("Car position: " + position);
+            ConvexHull carHull = new ConvexHull(new List<BEPUutilities.Vector3>(Utilities.meshToVectorArray(mesh)),100); //Use with wrapped body?
+            //modelMatrix *= Matrix4.CreateScale(10f);
+            vehicle = new Vehicle(carHull);
             // Add wheels
             /*
             vänster fram: xyz = -19.5, 61, 12.5.
@@ -70,6 +69,7 @@ namespace RallysportGame
             vänster bak: xyz = -19.5, -34.5, 12.5
             höger bak: xyz = 35.5, -34.5, 12.5
              */
+
             wheels = new List<CarWheel>();
             wheels.Add(new CarWheel(wheelPath, new Vector3(-19.5f, 61f, 12.5f)));
             wheels.Add(new CarWheel(wheelPath, new Vector3(35.5f, 61f, 12.5f)));
@@ -81,8 +81,8 @@ namespace RallysportGame
                 w.setUp3DSModel();
                 vehicle.AddWheel(w.wheel);
                 w.car = this;
-                CollisionRules.AddRule(w.wheel.Shape, vehicle.Body, CollisionRule.NoBroadPhase);
-                CollisionRules.AddRule(vehicle.Body, w.wheel.Shape, CollisionRule.NoBroadPhase);
+                CollisionRules.AddRule(w.wheel.Shape, vehicle.Body, CollisionRule.NoNarrowPhasePair);
+                CollisionRules.AddRule(vehicle.Body, w.wheel.Shape, CollisionRule.NoNarrowPhasePair);
 
             }
             
@@ -112,6 +112,8 @@ namespace RallysportGame
 
         public override void Update()
         {
+            position = Utilities.ConvertToTK(body.Position);
+            //Console.WriteLine("Car position: " + position);
             //Console.WriteLine(body.Position);
             base.Update();
             foreach (CarWheel w in wheels)
@@ -120,11 +122,7 @@ namespace RallysportGame
             }
         }
 
-        public override void eventTest(BEPUphysics.BroadPhaseEntries.MobileCollidables.EntityCollidable sender, BEPUphysics.BroadPhaseEntries.Collidable other, BEPUphysics.NarrowPhaseSystems.Pairs.CollidablePairHandler pair, BEPUphysics.CollisionTests.ContactData contact)
-        {
-            Console.WriteLine("Sent by car");
-            base.eventTest(sender, other, pair, contact);
-        }
+       
 
         public void accelerate(float rate)
         {
