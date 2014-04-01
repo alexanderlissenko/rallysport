@@ -14,6 +14,9 @@ namespace RallysportGame
     /// </summary>
     class CarWheel : DynamicEntity
     {
+        private float scaling_factor = 0.5f;
+
+
         public Wheel wheel;
         public Car car;
 
@@ -26,7 +29,7 @@ namespace RallysportGame
         public CarWheel(String path, OpenTK.Vector3 pos)
             : base(path, pos)
         {
-            Console.WriteLine("Wheel position: " + position);
+            
             // All of these values will have to be tweaked later
             modelMatrix = Matrix4.Identity;
             Matrix4 translation = Matrix4.Identity;
@@ -34,10 +37,10 @@ namespace RallysportGame
             translation *= Matrix4.CreateTranslation(new OpenTK.Vector3(-5f, -12.5f, 0f)); //Magic nuuumbeeers!
             Matrix4 rotation = Matrix4.CreateRotationX(-OpenTK.MathHelper.Pi / 2);
             modelMatrix *= translation;
+            modelMatrix *= Matrix4.CreateScale(scaling_factor);
             modelMatrix *= rotation;
-            OpenTK.Vector3.TransformPosition(position, translation);
-            OpenTK.Vector3.TransformPosition(position, rotation);
-
+            OpenTK.Vector3.TransformPosition(position, modelMatrix);
+            
             WheelShape shape = new CylinderCastWheelShape(1, 1, BEPUutilities.Quaternion.Identity, Utilities.ConvertToBEPU(modelMatrix), false);
             WheelSuspension suspension = new WheelSuspension(1, 1, new BEPUutilities.Vector3(0, -1, 0), 1, position);
             WheelDrivingMotor motor = new WheelDrivingMotor(0.5f, 50f, 20f);

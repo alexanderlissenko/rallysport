@@ -18,6 +18,7 @@ namespace RallysportGame
         private List<DynamicEntity> objects;
         // For derpy testing
         public static StaticMesh plane;
+        public static StaticMesh environment;
         public CollisionHandler()
         {
             objects = new List<DynamicEntity>();
@@ -45,6 +46,7 @@ namespace RallysportGame
             else
             {
                 space.Add(e.GetBody());
+                Console.WriteLine("Added " + e + " to space!");
             }
 
 
@@ -60,7 +62,8 @@ namespace RallysportGame
             BEPUutilities.Vector3[] vertices = Utilities.meshToVectorArray(mesh);
 
             var environmentMesh = new StaticMesh(vertices, indices, new AffineTransform(Utilities.ConvertToBepu(position)));
-            //space.Add(environmentMesh);
+            CollisionHandler.environment = environmentMesh;
+            space.Add(environmentMesh);
         }
 
         public void setupPlane(Entity plane, OpenTK.Vector3 position)
@@ -79,7 +82,7 @@ namespace RallysportGame
 
             var planeMesh = new StaticMesh(vertices, indices, new AffineTransform(Utilities.ConvertToBepu(position)));
             CollisionHandler.plane = planeMesh;
-            space.Add(planeMesh);
+            //space.Add(planeMesh);
 
         }
     }

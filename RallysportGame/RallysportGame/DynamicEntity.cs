@@ -51,12 +51,11 @@ namespace RallysportGame
             direction = up;
             velocity = acceleration = Vector3.Zero;
             body = new Box(Utilities.ConvertToBepu(pos), 5f, 5f, 5f, 5f);
-            CollisionHandler.plane.Events.ContactCreated += new ContactCreatedEventHandler<StaticMesh>(eventTest);
+            //CollisionHandler.environment.Events.ContactCreated += new ContactCreatedEventHandler<StaticMesh>(eventTest);
             
-            body.Orientation = new Quaternion(Utilities.ConvertToBepu(direction), 1);
-            Matrix4 modelRotation = Matrix4.CreateRotationY(MathHelper.Pi / 2);
+            
             worldMatrix = Matrix4.Identity;
-            body.PositionUpdated += new Action<BEPUphysics.Entities.Entity>(PositionUpdated);
+            
         }
 
         
@@ -68,20 +67,12 @@ namespace RallysportGame
         /// </summary>
         public virtual void Update()
         {
-            //modelMatrix = Matrix4.Identity;
-            Matrix4 modelRotation = Matrix4.CreateRotationY(MathHelper.Pi / 2);
-            Matrix4 translation = Matrix4.CreateTranslation(position);
-
             modelMatrix *= Matrix4.CreateTranslation(body.LinearVelocity);
-            //direction rotation
-            //Matrix4.Mult(ref modelMatrix, ref modelRotation, out modelMatrix);
-            //Matrix4.Mult(ref modelMatrix, ref translation, out modelMatrix);
-            //for all emitters do emitters.tick() 
         }
 
         public virtual void eventTest(StaticMesh sender, Collidable other, CollidablePairHandler pair, ContactData contact)
         {
-            Console.WriteLine("Contact detected");
+            Console.WriteLine("Contact detected between "+sender + " and " + other);
             
         }
 

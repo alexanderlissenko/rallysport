@@ -64,9 +64,10 @@ namespace RallysportGame
 
         //test particles
         static ParticleSystem testPartSys;// = new ParticleSystem(new OpenTK.Vector3(0, 0, 0), 60f, 5, new TimeSpan(0, 0, 0, 4), new Entity());
-        static Entity environment,myCar2,skybox,unitSphere;
+        static Entity myCar2,skybox,unitSphere;
         static Entity plane;
 
+        static Environment environment;
         static Car playerCar;
         static Wheel w;
 
@@ -229,21 +230,22 @@ namespace RallysportGame
                     // setup settings, load textures, sounds
                     game.VSync = VSyncMode.On;
 
-
+                    // Dynamic objects
                     collisionHandler = new CollisionHandler();
-                    plane = new Entity("plane");
-                    plane.SetUpPlane();
-                    collisionHandler.setupPlane(plane, plane.position);
-                    
-                    environment = new Entity("map\\uggly_test_track_Triangulate");//"TeapotCar\\Teapot car\\Teapot-no-materials-tri");//"Cube\\3ds-cube");//
-                    
-                    //myCar2 = new Entity("Cube\\testCube");//"Cube\\megu_koob");//"TeapotCar\\Teapot car\\Teapot-no-materials-tri");//
-                    playerCar = new Car(@"Mustang\mustang-no-wheels", @"Mustang\one-wheel");
-                    //playerCar = new Car(@"Cube\testCube", @"Mustang\one-wheel");
-                    playerCar.position = new Vector3(0, 100, 0);
+                    environment = new Environment("map\\uggly_test_track_Triangulate");
+                    environment.setUpMtl();
+                    environment.loadTexture();
+                    //environment.setUpBlenderModel(); //Handled in constructor
+
+                    playerCar = new Car(@"Mustang\mustang-no-wheels", @"Mustang\one-wheel", new Vector3(0, 200, 0));
                     skybox = new Entity("Cube\\inside_koob");
                     unitSphere = new Entity("Cube\\unitSphere");
-                    
+
+                    collisionHandler.addObject(playerCar);
+                    collisionHandler.addObject(environment);
+
+                    plane = new Entity("plane");
+
                     //Particle System
                     testPartSys = new ParticleSystem(new OpenTK.Vector3(0, 0, 0), 60f, 1, new TimeSpan(0, 0, 0, 2), playerCar);
 
@@ -276,12 +278,10 @@ namespace RallysportGame
                     
                     //Load uniforms and texture
                     GL.UseProgram(firstPassShader);
-                    environment.setUpMtl();
-                    environment.loadTexture();
-                    environment.setUpBlenderModel();
+                    
                     //myCar2.setUpBlenderModel();
                     playerCar.setUpMtl();
-                    playerCar.setUp3DSModel();
+                    //playerCar.setUp3DSModel(); Don't do this here! Scaling is done in Car class
 
                     skybox.setUp3DSModel();// setUpBlenderModel();
                     GL.UseProgram(0);
@@ -403,9 +403,8 @@ namespace RallysportGame
                     //GL.DepthFunc(DepthFunction.Lequal);
                     //GL.DepthRange(0.0f, 5.0f);
                     
-                    collisionHandler.addObject(playerCar);
-                    Vector3 environmentLocation = new Vector3(0, 0, 0);
-                    collisionHandler.setupEnvironment(environment, environmentLocation);
+                    
+                    
                 };
                 #endregion
 
@@ -589,8 +588,8 @@ namespace RallysportGame
                     GL.BindTexture(TextureTarget.Texture2D, environment.getTextureId());
                     GL.Uniform1(GL.GetUniformLocation(basicShaderProgram, "firstTexture"), 0);
 
-                    plane.firstPass(firstPassShader, projectionMatrix, viewMatrix);
-                    //environment.firstPass(firstPassShader,  projectionMatrix,  viewMatrix);
+                    //plane.firstPass(firstPassShader, projectionMatrix, viewMatrix);
+                    environment.firstPass(firstPassShader,  projectionMatrix,  viewMatrix);
                     
                     GL.BindTexture(TextureTarget.Texture2D, 0);
                     //myCar2.firstPass(firstPassShader, projectionMatrix, viewMatrix);

@@ -11,6 +11,11 @@ using OpenTK;
 using BEPUphysics.Vehicle;
 using BEPUphysics.CollisionShapes.ConvexShapes;
 using BEPUphysics.CollisionRuleManagement;
+using BEPUphysics.BroadPhaseEntries.Events;
+using BEPUphysics.BroadPhaseEntries.MobileCollidables;
+using BEPUphysics.BroadPhaseEntries;
+using BEPUphysics.NarrowPhaseSystems.Pairs;
+using BEPUphysics.CollisionTests;
 
 namespace RallysportGame
 {
@@ -23,6 +28,7 @@ namespace RallysportGame
         
         // Drag coefficient (we use a simplified version of drag: D = 1/2 * V^2 * C where C is the coefficient)
         private const float drag_coefficient = 0.7f;
+        private float scaling_factor = 0.5f;
         #endregion
 
         #region Instance Variables
@@ -55,13 +61,30 @@ namespace RallysportGame
                 Console.WriteLine(v.ToString());
             }
         }
-        public Car(String bodyPath, String wheelPath)
+        
+        public Car(String bodyPath, String wheelPath, Vector3 pos) //Defacto  constructor!
             : base(bodyPath)
         {
-            Console.WriteLine("Car position: " + position);
+            //position = pos;
+            
             ConvexHull carHull = new ConvexHull(new List<BEPUutilities.Vector3>(Utilities.meshToVectorArray(mesh)),100); //Use with wrapped body?
-            //modelMatrix *= Matrix4.CreateScale(10f);
+            
             vehicle = new Vehicle(carHull);
+            body = vehicle.Body;
+            // Make sure we use the same transforms for both physics geometry and graphics!
+
+            modelMatrix = Matrix4.Identity;
+            // Scaling
+            modelMatrix *= Matrix4.CreateScale(scaling_factor);
+            body.WorldTransform *= BEPUutilities.Matrix.CreateScale(scaling_factor, scaling_factor, scaling_factor);
+            // Rotation
+            Matrix4.LookAt(Vector3.Zero, direction, up);
+            body.Orientation = new Quaternion(Utilities.ConvertToBepu(direction), 1);
+            // Translation
+            modelMatrix *= Matrix4.CreateTranslation(position);
+            body.WorldTransform *= BEPUutilities.Matrix.CreateTranslation(Utilities.ConvertToBepu(position));
+            
+
             // Add wheels
             /*
             vänster fram: xyz = -19.5, 61, 12.5.
@@ -78,15 +101,15 @@ namespace RallysportGame
             // ...
             foreach (CarWheel w in wheels)
             {
-                w.setUp3DSModel();
+                //w.setUp3DSModel();
                 vehicle.AddWheel(w.wheel);
                 w.car = this;
                 CollisionRules.AddRule(w.wheel.Shape, vehicle.Body, CollisionRule.NoNarrowPhasePair);
                 CollisionRules.AddRule(vehicle.Body, w.wheel.Shape, CollisionRule.NoNarrowPhasePair);
 
             }
-            
-            body = vehicle.Body;
+            body.PositionUpdated += new Action<BEPUphysics.Entities.Entity>(PositionUpdated);
+            body.CollisionInformation.Events.ContactCreated += new ContactCreatedEventHandler<EntityCollidable>(ContactCreated);
         }
 
         #endregion
@@ -112,9 +135,7 @@ namespace RallysportGame
 
         public override void Update()
         {
-            position = Utilities.ConvertToTK(body.Position);
-            //Console.WriteLine("Car position: " + position);
-            //Console.WriteLine(body.Position);
+            //position = Utilities.ConvertToTK(body.Position);
             base.Update();
             foreach (CarWheel w in wheels)
             {
@@ -158,10 +179,16 @@ namespace RallysportGame
         #endregion
         #region Private Methods
 
+        protected void ContactCreated(EntityCollidable sender, Collidable other, CollidablePairHandler pair, ContactData contact)
+        {
+            Console.WriteLine("Contact! " + sender + " and " + other);
+        }
+
+
         protected override void PositionUpdated(BEPUphysics.Entities.Entity obj)
         {
             base.PositionUpdated(obj);
-            Console.WriteLine("PositionUpdated changed: " + position);
+            //Console.WriteLine("Car position: " + position);
         }
 
 

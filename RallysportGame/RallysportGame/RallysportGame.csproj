@@ -75,6 +75,7 @@
     <Compile Include="CarWheel.cs" />
     <Compile Include="CollisionHandler.cs" />
     <Compile Include="Entity.cs" />
+    <Compile Include="Environment.cs" />
     <Compile Include="InputHandler.cs" />
     <Compile Include="ParticleSystem.cs" />
     <Compile Include="DynamicEntity.cs" />
