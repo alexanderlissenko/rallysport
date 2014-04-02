@@ -46,7 +46,8 @@ namespace RallysportGame
         public OpenTK.Vector3 position;
         public List<int> vertIndices;
         //TODO rotation variable and stoff
-        
+         
+
         public MeshData mesh;
         /// <summary>
         /// Constructor for Entity
@@ -70,6 +71,7 @@ namespace RallysportGame
         public Entity(String name, OpenTK.Vector3 position): this(name)
         {
             this.position = position;
+            modelMatrix *= Matrix4.Translation(position);
         }
 
 
@@ -188,7 +190,7 @@ namespace RallysportGame
         public void render(int program, OpenTK.Vector3 position)
         {
 
-
+            
 
         }
 

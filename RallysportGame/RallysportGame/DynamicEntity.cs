@@ -67,7 +67,7 @@ namespace RallysportGame
         /// </summary>
         public virtual void Update()
         {
-            modelMatrix *= Matrix4.CreateTranslation(body.LinearVelocity);
+            //modelMatrix *= Matrix4.CreateTranslation(body.LinearVelocity);
         }
 
         public virtual void eventTest(StaticMesh sender, Collidable other, CollidablePairHandler pair, ContactData contact)

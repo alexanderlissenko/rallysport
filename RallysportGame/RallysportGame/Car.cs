@@ -42,6 +42,7 @@ namespace RallysportGame
         private float friction_coefficient = 0.8f;
         // Do the wheels have contact with the ground?
         private bool ground_contact = true;
+        int counter = 0;
         #endregion
 
         #region Constructors
@@ -66,25 +67,27 @@ namespace RallysportGame
             : base(bodyPath)
         {
             //position = pos;
-            
+            BEPUutilities.Matrix temp = BEPUutilities.Matrix.Identity;
             ConvexHull carHull = new ConvexHull(new List<BEPUutilities.Vector3>(Utilities.meshToVectorArray(mesh)),100); //Use with wrapped body?
-            
+            carHull.WorldTransform *= BEPUutilities.Matrix.CreateScale(scaling_factor, scaling_factor, scaling_factor);
+            carHull.CollisionInformation.LocalPosition = carHull.Position;
             vehicle = new Vehicle(carHull);
             body = vehicle.Body;
             // Make sure we use the same transforms for both physics geometry and graphics!
-
+            
             modelMatrix = Matrix4.Identity;
             // Scaling
-            modelMatrix *= Matrix4.CreateScale(scaling_factor);
-            body.WorldTransform *= BEPUutilities.Matrix.CreateScale(scaling_factor, scaling_factor, scaling_factor);
+            //modelMatrix *= Matrix4.CreateScale(scaling_factor);
+            //body.WorldTransform = BEPUutilities.Matrix.Identity;
+            temp = Utilities.ConvertToBEPU(modelMatrix);// BEPUutilities.Matrix.CreateScale(scaling_factor, scaling_factor, scaling_factor);
             // Rotation
-            Matrix4.LookAt(Vector3.Zero, direction, up);
-            body.Orientation = new Quaternion(Utilities.ConvertToBepu(direction), 1);
+            //Matrix4.LookAt(Vector3.Zero, direction, up);
+            //body.Orientation = new Quaternion(Utilities.ConvertToBepu(direction), 1);
             // Translation
-            modelMatrix *= Matrix4.CreateTranslation(position);
-            body.WorldTransform *= BEPUutilities.Matrix.CreateTranslation(Utilities.ConvertToBepu(position));
-            
+            modelMatrix *= Matrix4.CreateTranslation(pos);
+            temp *= BEPUutilities.Matrix.CreateTranslation(Utilities.ConvertToBepu(pos));
 
+            vehicle.Body.WorldTransform = temp;
             // Add wheels
             /*
             vänster fram: xyz = -19.5, 61, 12.5.
@@ -94,6 +97,7 @@ namespace RallysportGame
              */
 
             wheels = new List<CarWheel>();
+            /*
             wheels.Add(new CarWheel(wheelPath, new Vector3(-19.5f, 61f, 12.5f)));
             wheels.Add(new CarWheel(wheelPath, new Vector3(35.5f, 61f, 12.5f)));
             wheels.Add(new CarWheel(wheelPath, new Vector3(-19.5f, -34.5f, 12.5f)));
@@ -107,9 +111,13 @@ namespace RallysportGame
                 CollisionRules.AddRule(w.wheel.Shape, vehicle.Body, CollisionRule.NoNarrowPhasePair);
                 CollisionRules.AddRule(vehicle.Body, w.wheel.Shape, CollisionRule.NoNarrowPhasePair);
 
-            }
-            body.PositionUpdated += new Action<BEPUphysics.Entities.Entity>(PositionUpdated);
-            body.CollisionInformation.Events.ContactCreated += new ContactCreatedEventHandler<EntityCollidable>(ContactCreated);
+            }*/
+            vehicle.Body.PositionUpdated += new Action<BEPUphysics.Entities.Entity>(PositionUpdated);
+            vehicle.Body.CollisionInformation.Events.ContactCreated += new ContactCreatedEventHandler<EntityCollidable>(ContactCreated);
+            vehicle.Body.CollisionInformation.Events.PairTouched += new PairTouchedEventHandler<EntityCollidable>(PairTouched);
+            vehicle.Body.CollisionInformation.Events.CollisionEnded += new CollisionEndedEventHandler<EntityCollidable>(CollisionEnded);
+
+            Console.WriteLine("car has id " + vehicle.Body.InstanceId);
         }
 
         #endregion
@@ -126,7 +134,9 @@ namespace RallysportGame
 
         public override void firstPass(int program, Matrix4 projectionMatrix, Matrix4 viewMatrix)
         {
+            base.modelMatrix = body.WorldTransform;
             base.firstPass(program, projectionMatrix, viewMatrix);
+            
             foreach (CarWheel w in wheels)
             {
                 w.firstPass(program, projectionMatrix, viewMatrix);
@@ -165,6 +175,7 @@ namespace RallysportGame
             direction = Vector3.Transform(direction, Matrix4.CreateRotationY(angle));
             velocity = Vector3.Transform(velocity, Matrix4.CreateRotationY(angle));
             turning_angle += angle;
+            body.WorldTransform *= BEPUutilities.Matrix.CreateFromQuaternion(new BEPUutilities.Quaternion(angle,0,0,0));
         }
 
         public override ISpaceObject GetBody(){
@@ -173,15 +184,17 @@ namespace RallysportGame
 
         public void AddToSpace(Space s)
         {
-            s.Add(vehicle);
+            s.Add(vehicle.Body);
         }
-        
+
+       
+
         #endregion
         #region Private Methods
 
         protected void ContactCreated(EntityCollidable sender, Collidable other, CollidablePairHandler pair, ContactData contact)
         {
-            Console.WriteLine("Contact! " + sender + " and " + other);
+            Console.WriteLine("Contact! " + sender.Entity.InstanceId + " and " + other);
         }
 
 
@@ -189,6 +202,17 @@ namespace RallysportGame
         {
             base.PositionUpdated(obj);
             //Console.WriteLine("Car position: " + position);
+        }
+
+        protected void PairTouched(EntityCollidable sender, Collidable other, CollidablePairHandler pair)
+        {
+            //Console.WriteLine("touch! " + sender + " and " + other);
+            //Console.WriteLine("pair Touched"+counter++);
+        }
+
+        protected void CollisionEnded(EntityCollidable sender, Collidable other, CollidablePairHandler pair)
+        {
+            Console.WriteLine("Collision Ended");
         }
 
 

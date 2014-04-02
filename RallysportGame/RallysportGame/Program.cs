@@ -42,7 +42,7 @@ namespace RallysportGame
         //*****************************************************************************
         static float camera_theta = pi / 6.0f;
         static float camera_phi = pi / 4.0f;
-        static float camera_r = 200.0f;
+        static float camera_r = 50.0f;
         static float camera_target_altitude = 5.2f;
         static float camera_horizontal_delta = 0.1f;
         static float camera_vertical_delta = 1.0f;
@@ -232,14 +232,15 @@ namespace RallysportGame
 
                     // Dynamic objects
                     collisionHandler = new CollisionHandler();
-                    environment = new Environment("map\\uggly_test_track_Triangulate");
-                    environment.setUpMtl();
-                    environment.loadTexture();
+                    environment = new Environment("Cube\\koobe");//"map\\uggly_test_track_Triangulate");//"plane");//
+                    //environment.setUpMtl();
+                    //environment.loadTexture();
                     //environment.setUpBlenderModel(); //Handled in constructor
 
-                    playerCar = new Car(@"Mustang\mustang-no-wheels", @"Mustang\one-wheel", new Vector3(0, 200, 0));
+                    playerCar = new Car("Cube\\koobe", @"Mustang\one-wheel", new Vector3(0, 200, 0));//@"Mustang\mustang-no-wheels", @"Mustang\one-wheel", new Vector3(0, 200, 0));
                     skybox = new Entity("Cube\\inside_koob");
                     unitSphere = new Entity("Cube\\unitSphere");
+                    myCar2 = new Entity("Cube\\inside_koob");
 
                     collisionHandler.addObject(playerCar);
                     collisionHandler.addObject(environment);
@@ -247,7 +248,7 @@ namespace RallysportGame
                     plane = new Entity("plane");
 
                     //Particle System
-                    testPartSys = new ParticleSystem(new OpenTK.Vector3(0, 0, 0), 60f, 1, new TimeSpan(0, 0, 0, 2), playerCar);
+                    testPartSys = new ParticleSystem(new OpenTK.Vector3(0, 0, 0), 60f, 1, new TimeSpan(0, 0, 0, 2), unitSphere);
 
 
                     //Set up shaders
@@ -592,7 +593,7 @@ namespace RallysportGame
                     environment.firstPass(firstPassShader,  projectionMatrix,  viewMatrix);
                     
                     GL.BindTexture(TextureTarget.Texture2D, 0);
-                    //myCar2.firstPass(firstPassShader, projectionMatrix, viewMatrix);
+                    myCar2.firstPass(firstPassShader, projectionMatrix, viewMatrix);
                     playerCar.firstPass(firstPassShader, projectionMatrix, viewMatrix);
                     skybox.firstPass(firstPassShader, projectionMatrix, viewMatrix);
                     

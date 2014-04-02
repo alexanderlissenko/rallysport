@@ -28,6 +28,7 @@ namespace RallysportGame
         public void Update()
         {
             space.Update();
+            
             foreach (DynamicEntity e in objects)
             {
                 e.Update();
@@ -36,20 +37,19 @@ namespace RallysportGame
 
         public void addObject(DynamicEntity e)
         {
+            
             objects.Add(e);
-
             Car c = e as Car;
             if (c != null)
             {
                 c.AddToSpace(space);
+                Console.WriteLine("Car " + e + " added to space! as ID " + space.Entities[space.Entities.Count - 1].InstanceId);
             }
             else
             {
                 space.Add(e.GetBody());
-                Console.WriteLine("Added " + e + " to space!");
+                Console.WriteLine("Added " + e + " to space! as ID " + space.Entities[space.Entities.Count - 1].InstanceId);
             }
-
-
         }
 
 
