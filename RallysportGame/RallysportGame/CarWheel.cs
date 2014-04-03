@@ -14,7 +14,7 @@ namespace RallysportGame
     /// </summary>
     class CarWheel : DynamicEntity
     {
-        private float scaling_factor = 0.5f;
+        private float scaling_factor = 1f;
 
 
         public Wheel wheel;
@@ -34,26 +34,29 @@ namespace RallysportGame
             modelMatrix = Matrix4.Identity;
             Matrix4 translation = Matrix4.Identity;
             translation *= Matrix4.CreateTranslation(this.position);
-            translation *= Matrix4.CreateTranslation(new OpenTK.Vector3(-5f, -12.5f, 0f)); //Magic nuuumbeeers!
-            Matrix4 rotation = Matrix4.CreateRotationX(-OpenTK.MathHelper.Pi / 2);
-            modelMatrix *= translation;
-            modelMatrix *= Matrix4.CreateScale(scaling_factor);
-            modelMatrix *= rotation;
+            //translation *= Matrix4.CreateTranslation(new OpenTK.Vector3(-5f, -12.5f, 0f)); //Magic nuuumbeeers!
+            //Matrix4 rotation = Matrix4.CreateRotationX(-OpenTK.MathHelper.Pi / 2);
+            //modelMatrix *= translation;
+            //modelMatrix *= Matrix4.CreateScale(scaling_factor);
+            //modelMatrix *= rotation;
             OpenTK.Vector3.TransformPosition(position, modelMatrix);
             
             WheelShape shape = new CylinderCastWheelShape(1, 1, BEPUutilities.Quaternion.Identity, Utilities.ConvertToBEPU(modelMatrix), false);
+            
             WheelSuspension suspension = new WheelSuspension(1, 1, new BEPUutilities.Vector3(0, -1, 0), 1, position);
             WheelDrivingMotor motor = new WheelDrivingMotor(0.5f, 50f, 20f);
             WheelBrake rollingFriction = new WheelBrake(0.5f, 0.5f, 0.5f);
             WheelSlidingFriction slidingFriction = new WheelSlidingFriction(0.8f, 0.8f);
             wheel = new Wheel(shape, suspension, motor, rollingFriction, slidingFriction);
             
+            modelMatrix = shape.LocalGraphicTransform;
         }
 
         public override void Update()
         {
-            modelMatrix *= Matrix4.CreateTranslation(car.vehicle.Body.LinearVelocity);
-            base.Update();
+            modelMatrix = wheel.Shape.WorldTransform;
+            //modelMatrix *= Matrix4.CreateTranslation(car.vehicle.Body.LinearVelocity);
+            //base.Update();
         }
 
     }

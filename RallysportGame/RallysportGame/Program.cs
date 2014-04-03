@@ -237,7 +237,7 @@ namespace RallysportGame
                     environment.loadTexture();
                     //environment.setUpBlenderModel(); //Handled in constructor
 
-                    playerCar = new Car(@"Mustang\mustang-no-wheels", @"Mustang\one-wheel", new Vector3(0, 200, 0));
+                    playerCar = new Car(@"Mustang\mustang-no-wheels", @"Mustang\one-wheel", new Vector3(0, 50, 200));
                     skybox = new Entity("Cube\\inside_koob");
                     unitSphere = new Entity("Cube\\unitSphere");
                     myCar2 = new Entity("Cube\\inside_koob");
@@ -284,7 +284,7 @@ namespace RallysportGame
                     playerCar.setUpMtl();
                     //playerCar.setUp3DSModel(); Don't do this here! Scaling is done in Car class
 
-                    skybox.setUp3DSModel();// setUpBlenderModel();
+                    //skybox.setUp3DSModel();// setUpBlenderModel();
                     GL.UseProgram(0);
                     
                     //Set up Uniforms

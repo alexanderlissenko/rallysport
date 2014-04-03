@@ -75,19 +75,16 @@ namespace RallysportGame
             body = vehicle.Body;
             // Make sure we use the same transforms for both physics geometry and graphics!
             
-            modelMatrix = Matrix4.Identity;
             // Scaling
             //modelMatrix *= Matrix4.CreateScale(scaling_factor);
-            //body.WorldTransform = BEPUutilities.Matrix.Identity;
-            temp = Utilities.ConvertToBEPU(modelMatrix);// BEPUutilities.Matrix.CreateScale(scaling_factor, scaling_factor, scaling_factor);
             // Rotation
             //Matrix4.LookAt(Vector3.Zero, direction, up);
             //body.Orientation = new Quaternion(Utilities.ConvertToBepu(direction), 1);
+            vehicle.Body.WorldTransform *= BEPUutilities.Matrix.CreateScale(scaling_factor, scaling_factor, scaling_factor);
             // Translation
-            modelMatrix *= Matrix4.CreateTranslation(pos);
-            temp *= BEPUutilities.Matrix.CreateTranslation(Utilities.ConvertToBepu(pos));
-
-            vehicle.Body.WorldTransform = temp;
+            
+            vehicle.Body.WorldTransform *= BEPUutilities.Matrix.CreateTranslation(Utilities.ConvertToBepu(pos));
+            modelMatrix = vehicle.Body.WorldTransform;
             // Add wheels
             /*
             vänster fram: xyz = -19.5, 61, 12.5.
@@ -97,11 +94,11 @@ namespace RallysportGame
              */
 
             wheels = new List<CarWheel>();
-            /*
-            wheels.Add(new CarWheel(wheelPath, new Vector3(-19.5f, 61f, 12.5f)));
-            wheels.Add(new CarWheel(wheelPath, new Vector3(35.5f, 61f, 12.5f)));
-            wheels.Add(new CarWheel(wheelPath, new Vector3(-19.5f, -34.5f, 12.5f)));
-            wheels.Add(new CarWheel(wheelPath, new Vector3(35.5f, -34.5f, 12.5f)));
+            Vector3 wheelPos = new Vector3(vehicle.Body.Position.X + -19.5f, vehicle.Body.Position.X + 61f, vehicle.Body.Position.X + 12.5f);
+            wheels.Add(new CarWheel(wheelPath, new Vector3(-30.5f,-10.5f,38f)));//new Vector3(-19.5f, 61f, 12.5f)));
+            wheels.Add(new CarWheel(wheelPath, new Vector3(-30.5f, -10.5f, -57f)));//new Vector3(35.5f, 61f, 12.5f)));
+            wheels.Add(new CarWheel(wheelPath, new Vector3(28.5f, -10.5f, 38f)));//new Vector3(-19.5f, -34.5f, 12.5f)));
+            wheels.Add(new CarWheel(wheelPath, new Vector3(28.5f, -10.5f, -57f)));//new Vector3(35.5f, -34.5f, 12.5f)));
             // ...
             foreach (CarWheel w in wheels)
             {
@@ -111,7 +108,7 @@ namespace RallysportGame
                 CollisionRules.AddRule(w.wheel.Shape, vehicle.Body, CollisionRule.NoNarrowPhasePair);
                 CollisionRules.AddRule(vehicle.Body, w.wheel.Shape, CollisionRule.NoNarrowPhasePair);
 
-            }*/
+            }
             vehicle.Body.PositionUpdated += new Action<BEPUphysics.Entities.Entity>(PositionUpdated);
             vehicle.Body.CollisionInformation.Events.ContactCreated += new ContactCreatedEventHandler<EntityCollidable>(ContactCreated);
             vehicle.Body.CollisionInformation.Events.PairTouched += new PairTouchedEventHandler<EntityCollidable>(PairTouched);
@@ -161,13 +158,6 @@ namespace RallysportGame
             acceleration = direction;
             acceleration *= rate;
             body.LinearVelocity += Utilities.ConvertToBepu(acceleration);
-            foreach (CarWheel w in wheels)
-            {
-                //Matrix4 translation = Matrix4.CreateTranslation(this.position) * Matrix4.CreateTranslation(w.position);
-                
-
-                
-            }
         }
         // Angle in radians
         public void Turn(float angle)
@@ -184,7 +174,7 @@ namespace RallysportGame
 
         public void AddToSpace(Space s)
         {
-            s.Add(vehicle.Body);
+            s.Add(vehicle);
         }
 
        
