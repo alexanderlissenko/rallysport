@@ -42,7 +42,7 @@ namespace RallysportGame
         //*****************************************************************************
         static float camera_theta = pi / 6.0f;
         static float camera_phi = pi / 4.0f;
-        static float camera_r = 50.0f;
+        static float camera_r = 300.0f;
         static float camera_target_altitude = 5.2f;
         static float camera_horizontal_delta = 0.1f;
         static float camera_vertical_delta = 1.0f;
@@ -232,12 +232,12 @@ namespace RallysportGame
 
                     // Dynamic objects
                     collisionHandler = new CollisionHandler();
-                    environment = new Environment("Cube\\koobe");//"map\\uggly_test_track_Triangulate");//"plane");//
-                    //environment.setUpMtl();
-                    //environment.loadTexture();
+                    environment = new Environment("map\\uggly_test_track_Triangulate");//"plane");//
+                    environment.setUpMtl();
+                    environment.loadTexture();
                     //environment.setUpBlenderModel(); //Handled in constructor
 
-                    playerCar = new Car("Cube\\koobe", @"Mustang\one-wheel", new Vector3(0, 200, 0));//@"Mustang\mustang-no-wheels", @"Mustang\one-wheel", new Vector3(0, 200, 0));
+                    playerCar = new Car(@"Mustang\mustang-no-wheels", @"Mustang\one-wheel", new Vector3(0, 200, 0));
                     skybox = new Entity("Cube\\inside_koob");
                     unitSphere = new Entity("Cube\\unitSphere");
                     myCar2 = new Entity("Cube\\inside_koob");

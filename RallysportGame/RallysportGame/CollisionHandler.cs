@@ -40,10 +40,16 @@ namespace RallysportGame
             
             objects.Add(e);
             Car c = e as Car;
+            Environment en = e as Environment;
             if (c != null)
             {
                 c.AddToSpace(space);
                 Console.WriteLine("Car " + e + " added to space! as ID " + space.Entities[space.Entities.Count - 1].InstanceId);
+            }
+            else if (en != null)
+            {
+                en.addToSpace(space);
+                Console.WriteLine("Environment added to space");
             }
             else
             {
