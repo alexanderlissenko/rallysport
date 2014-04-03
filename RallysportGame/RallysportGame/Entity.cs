@@ -40,7 +40,7 @@ namespace RallysportGame
         public uint textureBuffer;
         public int numOfTri;
 
-        protected Matrix4 modelMatrix;
+        public Matrix4 modelMatrix;
         protected Matrix4 worldMatrix;
         // 3D position in world space
         public OpenTK.Vector3 position;

@@ -14,7 +14,7 @@ namespace RallysportGame
 {
     class CollisionHandler
     {
-        private Space space;
+        public Space space;
         private List<DynamicEntity> objects;
         // For derpy testing
         public static StaticMesh plane;

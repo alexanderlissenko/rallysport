@@ -12,7 +12,7 @@ namespace RallysportGame
 {
     class Environment : DynamicEntity
     {
-        private float scaling_factor = 20f;
+        private float scaling_factor = 300f;
 
         public readonly StaticMesh bepu_mesh;
 
@@ -27,7 +27,7 @@ namespace RallysportGame
             int[] indices = vertIndices.ToArray();
             BEPUutilities.Vector3[] vertices = Utilities.meshToVectorArray(mesh);
             BEPUutilities.Quaternion tempRot = BEPUutilities.Quaternion.Identity; //BEPUutilities.Quaternion.CreateFromRotationMatrix(Matrix4.CreateRotationX(-3.14f / 2));
-            AffineTransform test = new AffineTransform(new BEPUutilities.Vector3(scaling_factor, scaling_factor, scaling_factor), tempRot, new BEPUutilities.Vector3(0,5f, 0));//new AffineTransform(Matrix3x3.CreateFromAxisAngle(BEPUutilities.Vector3.Up,BEPUutilities.MathHelper.Pi),new BEPUutilities.Vector3(0, -20, 4));
+            AffineTransform test = new AffineTransform(new BEPUutilities.Vector3(scaling_factor, scaling_factor, scaling_factor), tempRot, new BEPUutilities.Vector3(0,-300f, 0));//new AffineTransform(Matrix3x3.CreateFromAxisAngle(BEPUutilities.Vector3.Up,BEPUutilities.MathHelper.Pi),new BEPUutilities.Vector3(0, -20, 4));
             //bepu_mesh = new InstancedMesh(new BEPUphysics.CollisionShapes.InstancedMeshShape(vertices, indices),test);
             bepu_mesh = new StaticMesh(vertices, indices,test);
             base.modelMatrix = bepu_mesh.WorldTransform.Matrix;

@@ -48,7 +48,7 @@ namespace RallysportGame
         public DynamicEntity(String name, Vector3 pos)
             : base(name, pos)
         {
-            direction = up;
+            direction = new Vector3(0,0,-1);
             velocity = acceleration = Vector3.Zero;
             body = new Box(Utilities.ConvertToBepu(pos), 5f, 5f, 5f, 5f);
             //CollisionHandler.environment.Events.ContactCreated += new ContactCreatedEventHandler<StaticMesh>(eventTest);

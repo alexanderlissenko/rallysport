@@ -138,6 +138,14 @@ namespace RallysportGame
             {
                 if(keyList[i].Equals(e.Key))
                 {
+                    if(e.Key.Equals(Key.A)||e.Key.Equals(Key.D))
+                    {
+                        playerCar.Turn(0);
+                    }
+                    if (e.Key.Equals(Key.W) || e.Key.Equals(Key.S))
+                    {
+                        playerCar.accelerate(0);
+                    }
                     keyList.RemoveAt(i);
                 }
             }
@@ -185,7 +193,6 @@ namespace RallysportGame
                     case Key.K:
                         testPartSys.startEmit();
                         break;
-
                     default:
                         break;
                 }
@@ -232,17 +239,17 @@ namespace RallysportGame
 
                     // Dynamic objects
                     collisionHandler = new CollisionHandler();
-                    environment = new Environment("map\\uggly_test_track_Triangulate");//"plane");//
-                    environment.setUpMtl();
-                    environment.loadTexture();
+                    environment = new Environment("Cube\\koobe");//"map\\uggly_test_track_Triangulate");//"plane");//
+                    //environment.setUpMtl();
+                    //environment.loadTexture();
                     //environment.setUpBlenderModel(); //Handled in constructor
 
-                    playerCar = new Car(@"Mustang\mustang-no-wheels", @"Mustang\one-wheel", new Vector3(0, 50, 200));
+                    playerCar = new Car(@"Mustang\mustang-no-wheels", @"Mustang\one-wheel", new Vector3(0, 100, 0),collisionHandler.space);
                     skybox = new Entity("Cube\\inside_koob");
                     unitSphere = new Entity("Cube\\unitSphere");
                     myCar2 = new Entity("Cube\\inside_koob");
 
-                    collisionHandler.addObject(playerCar);
+                    //collisionHandler.addObject(playerCar);
                     collisionHandler.addObject(environment);
 
                     plane = new Entity("plane");

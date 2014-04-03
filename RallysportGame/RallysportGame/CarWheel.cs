@@ -1,4 +1,5 @@
 ﻿using BEPUphysics.Vehicle;
+using BEPUphysics.Constraints.TwoEntity.Motors;
 using BEPUutilities;
 using OpenTK;
 using System;
@@ -19,6 +20,7 @@ namespace RallysportGame
 
         public Wheel wheel;
         public Car car;
+
 
         public CarWheel(String path)
             : this(path, OpenTK.Vector3.Zero)
@@ -41,19 +43,19 @@ namespace RallysportGame
             //modelMatrix *= rotation;
             OpenTK.Vector3.TransformPosition(position, modelMatrix);
             
-            WheelShape shape = new CylinderCastWheelShape(1, 1, BEPUutilities.Quaternion.Identity, Utilities.ConvertToBEPU(modelMatrix), false);
+            WheelShape shape = new CylinderCastWheelShape(1, 1, BEPUutilities.Quaternion.CreateFromRotationMatrix(Matrix3.CreateRotationZ(OpenTK.MathHelper.Pi/2)), Utilities.ConvertToBEPU(modelMatrix), false);
             
-            WheelSuspension suspension = new WheelSuspension(1, 1, new BEPUutilities.Vector3(0, -1, 0), 1, position);
+            WheelSuspension suspension = new WheelSuspension(1, 1, new BEPUutilities.Vector3(0, 0.1f, 0), 1, position);
             WheelDrivingMotor motor = new WheelDrivingMotor(0.5f, 50f, 20f);
             WheelBrake rollingFriction = new WheelBrake(0.5f, 0.5f, 0.5f);
             WheelSlidingFriction slidingFriction = new WheelSlidingFriction(0.8f, 0.8f);
             wheel = new Wheel(shape, suspension, motor, rollingFriction, slidingFriction);
-            
-            modelMatrix = shape.LocalGraphicTransform;
+            //modelMatrix = shape.LocalGraphicTransform;
         }
 
         public override void Update()
         {
+            
             modelMatrix = wheel.Shape.WorldTransform;
             //modelMatrix *= Matrix4.CreateTranslation(car.vehicle.Body.LinearVelocity);
             //base.Update();
