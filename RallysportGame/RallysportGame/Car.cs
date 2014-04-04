@@ -122,8 +122,8 @@ namespace RallysportGame
             var wheel2ent = new Entity(wheelPath);
             var wheel2 = addDriveWheel(new Vector3(30.5f, 0.5f, -60f), carHull, out drivingMotor2, out steeringMotor2, wheel2ent);//x 28.5
             
-            //var steeringStabilizer = new RevoluteAngularJoint(wheel1, wheel2, BEPUutilities.Vector3.Right);
-            //this.space.Add(steeringStabilizer);
+            var steeringStabilizer = new RevoluteAngularJoint(wheel1, wheel2, BEPUutilities.Vector3.Right);
+            this.space.Add(steeringStabilizer);
             wheels = new List<BEPUphysics.Entities.Entity>();
             wheels.Add(wheel1);
             wheels.Add(wheel2);
@@ -356,7 +356,7 @@ namespace RallysportGame
             wheel.Material.KineticFriction = 20.5f;
             wheel.Material.StaticFriction = 3.5f;
 
-            wheel.Orientation = Quaternion.FromAxisAngle(BEPUutilities.Vector3.Forward, 0);
+            //wheel.Orientation = Quaternion.FromAxisAngle(BEPUutilities.Vector3.Up, 0);
             
             CollisionRules.AddRule(wheel, body, CollisionRule.NoBroadPhase);
 
@@ -383,10 +383,11 @@ namespace RallysportGame
             steeringMotor = new RevoluteMotor(body, wheel, BEPUutilities.Vector3.Up);
             steeringMotor.Settings.Mode = MotorMode.Servomechanism;
 
-            steeringMotor.Basis.SetWorldAxes(BEPUutilities.Vector3.Up, BEPUutilities.Vector3.Forward);
+            steeringMotor.Basis.SetWorldAxes(BEPUutilities.Vector3.Up, BEPUutilities.Vector3.Right);
+            steeringMotor.TestAxis = BEPUutilities.Vector3.Right;
             steeringMotor.Settings.Servo.BaseCorrectiveSpeed = 5;
-            steeringMotor.Settings.VelocityMotor.Softness = 4f;
-            var steeringConstraint = new RevoluteLimit(body, wheel, BEPUutilities.Vector3.Up, BEPUutilities.Vector3.Forward, -maximumTurnAngle, maximumTurnAngle);
+            //steeringMotor.Settings.VelocityMotor.Softness = 4f;
+            var steeringConstraint = new RevoluteLimit(body, wheel, BEPUutilities.Vector3.Up, BEPUutilities.Vector3.Right, -maximumTurnAngle, maximumTurnAngle);
 
             space.Add(wheel);
             space.Add(pointOnLineJoint);
