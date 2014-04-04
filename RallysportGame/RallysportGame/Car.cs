@@ -85,7 +85,7 @@ namespace RallysportGame
             this.space = space;
             //position = pos;
             BEPUutilities.Matrix temp = BEPUutilities.Matrix.Identity;
-            carHull = new ConvexHull(new List<BEPUutilities.Vector3>(Utilities.meshToVectorArray(mesh)),20); //Use with wrapped body?
+            carHull = new ConvexHull(new List<BEPUutilities.Vector3>(Utilities.meshToVectorArray(mesh)),2); //Use with wrapped body?
             carHull.WorldTransform *= BEPUutilities.Matrix.CreateScale(scaling_factor, scaling_factor, scaling_factor);
             carHull.CollisionInformation.LocalPosition = carHull.Position;
             
@@ -113,17 +113,17 @@ namespace RallysportGame
              */
             var backwheel1ent = new Entity(wheelPath);
             var backwheel2ent = new Entity(wheelPath);
-            var backwheel1 = addBackWheel(new Vector3(28.5f, -25.5f, 35f), carHull,backwheel1ent);//y = -15.5
-            var backwheel2 = addBackWheel(new Vector3(-30.5f, -25.5f, 35f), carHull,backwheel2ent);//y = -30 ger 50% hjul
+            var backwheel1 = addBackWheel(new Vector3(30.5f, 0.5f, 35f), carHull,backwheel1ent);//y = -15.5
+            var backwheel2 = addBackWheel(new Vector3(-30.5f, 0.5f, 35f), carHull, backwheel2ent);//y = -30 ger 50% hjul
             
             var wheel1ent = new Entity(wheelPath);
-            wheel1 = addDriveWheel( new Vector3(-30.5f, -25.5f, -60f),carHull,out drivingMotor1,out steeringMotor1,wheel1ent);
+            wheel1 = addDriveWheel( new Vector3(-30.5f, 0.5f, -60f),carHull,out drivingMotor1,out steeringMotor1,wheel1ent);
             
             var wheel2ent = new Entity(wheelPath);
-            var wheel2 = addDriveWheel( new Vector3(28.5f, -25.5f, -60f),carHull,out drivingMotor2,out steeringMotor2,wheel2ent);
+            var wheel2 = addDriveWheel(new Vector3(30.5f, 0.5f, -60f), carHull, out drivingMotor2, out steeringMotor2, wheel2ent);//x 28.5
             
-            var steeringStabilizer = new RevoluteAngularJoint(wheel1, wheel2, BEPUutilities.Vector3.Right);
-            this.space.Add(steeringStabilizer);
+            //var steeringStabilizer = new RevoluteAngularJoint(wheel1, wheel2, BEPUutilities.Vector3.Right);
+            //this.space.Add(steeringStabilizer);
             wheels = new List<BEPUphysics.Entities.Entity>();
             wheels.Add(wheel1);
             wheels.Add(wheel2);
@@ -202,16 +202,16 @@ namespace RallysportGame
         {
             if (rate > 0)
             {
-                drivingMotor1.Settings.VelocityMotor.GoalVelocity = rate * 10;
-                drivingMotor2.Settings.VelocityMotor.GoalVelocity = rate * 10;
+                drivingMotor1.Settings.VelocityMotor.GoalVelocity = 800;
+                drivingMotor2.Settings.VelocityMotor.GoalVelocity = 800;
 
                 drivingMotor1.IsActive = true;
                 drivingMotor2.IsActive = true;
             }
             else if (rate < 0)
             {
-                drivingMotor1.Settings.VelocityMotor.GoalVelocity = -rate * 10;
-                drivingMotor2.Settings.VelocityMotor.GoalVelocity = -rate * 10;
+                drivingMotor1.Settings.VelocityMotor.GoalVelocity = -800;
+                drivingMotor2.Settings.VelocityMotor.GoalVelocity = -800;
 
                 drivingMotor1.IsActive = true;
                 drivingMotor2.IsActive = true;
@@ -273,7 +273,7 @@ namespace RallysportGame
 
         protected void ContactCreated(EntityCollidable sender, Collidable other, CollidablePairHandler pair, ContactData contact)
         {
-            Console.WriteLine("Contact! " + sender.Entity.InstanceId + " and " + other);
+            //Console.WriteLine("Contact! " + sender.Entity.InstanceId + " and " + other);
         }
 
 
@@ -313,7 +313,7 @@ namespace RallysportGame
 
         BEPUphysics.Entities.Entity addBackWheel(BEPUutilities.Vector3 wheelOffSet, BEPUphysics.Entities.Entity body,Entity model)
         {
-            var wheel = new ConvexHull(Utilities.meshToVectorArray(model.mesh), 5f);
+            var wheel = new ConvexHull(Utilities.meshToVectorArray(model.mesh), 50f);
             wheel.WorldTransform *= BEPUutilities.Matrix.CreateTranslation(Utilities.ConvertToBepu(wheelOffSet + body.Position));
             //wheel.CollisionInformation.LocalPosition = wheel.Position;
             model.modelMatrix = wheel.WorldTransform;
@@ -326,15 +326,15 @@ namespace RallysportGame
             CollisionRules.AddRule(wheel, body, CollisionRule.NoBroadPhase);
 
             var pointOnLineJoint = new PointOnLineJoint(body, wheel, wheel.Position,BEPUutilities.Vector3.Up, wheel.Position);
-            var suspensionLimit = new LinearAxisLimit(body, wheel, wheel.Position, wheel.Position, BEPUutilities.Vector3.Down, -1, 0);
-            var suspensionSpring = new LinearAxisMotor(body, wheel, wheel.Position, wheel.Position, BEPUutilities.Vector3.Down);
+            var suspensionLimit = new LinearAxisLimit(body, wheel, wheel.Position, wheel.Position, BEPUutilities.Vector3.Up, -0.5f, 0f);
+            var suspensionSpring = new LinearAxisMotor(body, wheel, wheel.Position, wheel.Position, BEPUutilities.Vector3.Up);
 
             suspensionSpring.Settings.Mode = MotorMode.Servomechanism;
             suspensionSpring.Settings.Servo.Goal = 0;
             suspensionSpring.Settings.Servo.SpringSettings.Stiffness = 300;
             suspensionSpring.Settings.Servo.SpringSettings.Damping = 70;
-            suspensionSpring.IsActive = true;
-            var revoluteAngularJoint = new RevoluteAngularJoint(body, wheel, BEPUutilities.Vector3.Right);
+            //suspensionSpring.IsActive = true;
+            var revoluteAngularJoint = new RevoluteAngularJoint(body, wheel, BEPUutilities.Vector3.Left);
 
             space.Add(wheel);
             space.Add(pointOnLineJoint);
@@ -347,35 +347,36 @@ namespace RallysportGame
         }
         BEPUphysics.Entities.Entity addDriveWheel(BEPUutilities.Vector3 wheelOffSet, BEPUphysics.Entities.Entity body,out RevoluteMotor drivingMotor, out RevoluteMotor steeringMotor,Entity model)
         {
-            var wheel = new ConvexHull(Utilities.meshToVectorArray(model.mesh), 20f);
+            var wheel = new ConvexHull(Utilities.meshToVectorArray(model.mesh), 50f);
             
             wheel.WorldTransform *= BEPUutilities.Matrix.CreateTranslation(Utilities.ConvertToBepu(wheelOffSet+ body.Position));
             //wheel.CollisionInformation.LocalPosition = wheel.Position;
             model.modelMatrix = wheel.WorldTransform;
             //var wheel = new Cylinder(body.Position + wheelOffSet, 0.4f, 5f, 5f);
             wheel.Material.KineticFriction = 20.5f;
-            wheel.Material.StaticFriction = 30.5f;
+            wheel.Material.StaticFriction = 3.5f;
 
             wheel.Orientation = Quaternion.FromAxisAngle(BEPUutilities.Vector3.Forward, 0);
             
             CollisionRules.AddRule(wheel, body, CollisionRule.NoBroadPhase);
 
-            var pointOnLineJoint = new PointOnLineJoint(body, wheel, wheel.Position, BEPUutilities.Vector3.Down, wheel.Position);
-            var suspensionLimit = new LinearAxisLimit(body, wheel, wheel.Position, wheel.Position, BEPUutilities.Vector3.Up, -1, 0);
+            var pointOnLineJoint = new PointOnLineJoint(body, wheel, wheel.Position, BEPUutilities.Vector3.Up, wheel.Position);
+            var suspensionLimit = new LinearAxisLimit(body, wheel, wheel.Position, wheel.Position, BEPUutilities.Vector3.Up, -0.5f, 0f);
             var suspensionSpring = new LinearAxisMotor(body, wheel, wheel.Position, wheel.Position, BEPUutilities.Vector3.Up);
 
             suspensionSpring.Settings.Mode = MotorMode.Servomechanism;
-            suspensionSpring.IsActive = true;
+            //suspensionSpring.IsActive = true;
             suspensionSpring.Settings.Servo.Goal = 0;
             suspensionSpring.Settings.Servo.SpringSettings.Stiffness = 300;
             suspensionSpring.Settings.Servo.SpringSettings.Damping = 70;
 
-            var swivelHingeAngularJoing = new SwivelHingeAngularJoint(body, wheel, BEPUutilities.Vector3.Up, BEPUutilities.Vector3.Right);
+            var swivelHingeAngularJoing = new SwivelHingeAngularJoint(body, wheel, BEPUutilities.Vector3.Up, BEPUutilities.Vector3.Left);
 
             drivingMotor = new RevoluteMotor(body, wheel, BEPUutilities.Vector3.Left);
+            
             //drivingMotor.TestAxis = BEPUutilities.Vector3.Forward;
             drivingMotor.Settings.VelocityMotor.Softness = 0.3f;
-            drivingMotor.Settings.MaximumForce = 100;
+            //drivingMotor.Settings.MaximumForce = 1000;
 
             drivingMotor.IsActive = false;
 
@@ -384,6 +385,7 @@ namespace RallysportGame
 
             steeringMotor.Basis.SetWorldAxes(BEPUutilities.Vector3.Up, BEPUutilities.Vector3.Forward);
             steeringMotor.Settings.Servo.BaseCorrectiveSpeed = 5;
+            steeringMotor.Settings.VelocityMotor.Softness = 4f;
             var steeringConstraint = new RevoluteLimit(body, wheel, BEPUutilities.Vector3.Up, BEPUutilities.Vector3.Forward, -maximumTurnAngle, maximumTurnAngle);
 
             space.Add(wheel);

@@ -164,10 +164,10 @@ namespace RallysportGame
                         playerCar.Turn(-pi / 32);
                         break;
                     case Key.W:
-                        playerCar.accelerate(0.1f);
+                        playerCar.accelerate(1f);
                         break;
                     case Key.S:
-                        playerCar.accelerate(-0.1f);
+                        playerCar.accelerate(-1f);
                         break;
                     case Key.Left:
                         camera_theta += camera_horizontal_delta;
@@ -244,7 +244,7 @@ namespace RallysportGame
                     //environment.loadTexture();
                     //environment.setUpBlenderModel(); //Handled in constructor
 
-                    playerCar = new Car(@"Mustang\mustang-no-wheels", @"Mustang\one-wheel", new Vector3(0, 100, 0),collisionHandler.space);
+                    playerCar = new Car(@"Mustang\mustang-no-wheels", @"Mustang\one-wheel-center", new Vector3(0, 100, 0),collisionHandler.space);
                     skybox = new Entity("Cube\\inside_koob");
                     unitSphere = new Entity("Cube\\unitSphere");
                     myCar2 = new Entity("Cube\\inside_koob");
@@ -592,9 +592,9 @@ namespace RallysportGame
                     DrawBuffersEnum[] draw_buffs2 = { DrawBuffersEnum.ColorAttachment0, DrawBuffersEnum.ColorAttachment1, DrawBuffersEnum.ColorAttachment2, DrawBuffersEnum.None };
                     GL.DrawBuffers(4, draw_buffs2);
 
-                    GL.ActiveTexture(TextureUnit.Texture0);
-                    GL.BindTexture(TextureTarget.Texture2D, environment.getTextureId());
-                    GL.Uniform1(GL.GetUniformLocation(basicShaderProgram, "firstTexture"), 0);
+                    //GL.ActiveTexture(TextureUnit.Texture0);
+                    //GL.BindTexture(TextureTarget.Texture2D, environment.getTextureId());
+                    //GL.Uniform1(GL.GetUniformLocation(basicShaderProgram, "firstTexture"), 0);
 
                     //plane.firstPass(firstPassShader, projectionMatrix, viewMatrix);
                     environment.firstPass(firstPassShader,  projectionMatrix,  viewMatrix);
