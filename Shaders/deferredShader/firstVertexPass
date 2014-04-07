@@ -4,7 +4,8 @@ precision mediump float;
 uniform mat4 projectionMatrix;
 uniform mat4 modelMatrix;
 uniform mat4 viewMatrix;
-
+uniform mat4 prevMVP;
+uniform mat4 modelViewProjectionMatrix;
 in vec3 normalIn;
 in vec2 texCoordIn;
 in vec3 positionIn;
@@ -16,12 +17,14 @@ out vec2 fragmentTexCoord;
 out float extIntensity;
 out float extAmbientLight;
 out vec4 positionOut;
+out vec4 prevPositionOut;
 
 void main(void)
 {
    fragmentTexCoord = texCoordIn;
    fragmentNormal = normalize((modelMatrix*vec4(normalIn, 0.0)).xyz);
-   gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(positionIn,1);
-   positionOut = modelMatrix * vec4(positionIn,1); // Copy position to the fragmentshader
-  
+   positionOut = modelViewProjectionMatrix*vec4(positionIn,1);
+   prevPositionOut = prevMVP * vec4(positionIn,1);
+   gl_Position = positionOut;
+
 }

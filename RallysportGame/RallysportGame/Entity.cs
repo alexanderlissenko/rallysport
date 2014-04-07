@@ -13,6 +13,8 @@ using System.Globalization;
 using System.Drawing;
 using System.Drawing.Imaging;
 
+using System.Collections;
+
 
 
 /*
@@ -33,6 +35,8 @@ namespace RallysportGame
         private int textureId;
         private float shininess;
 
+        private Dictionary<string, int> uniformLoc = new Dictionary<string,int>();
+
         public uint vertexArrayObject;  // make private later, made public for testing
         private uint positionBuffer;
         public uint indexBuffer;
@@ -42,11 +46,12 @@ namespace RallysportGame
 
         public Matrix4 modelMatrix;
         protected Matrix4 worldMatrix;
+        protected Matrix4 prevMVP, modelViewProjectionMatrix;
         // 3D position in world space
         public OpenTK.Vector3 position;
         public List<int> vertIndices;
         //TODO rotation variable and stoff
-         
+        
 
         public MeshData mesh;
         /// <summary>
@@ -88,22 +93,63 @@ namespace RallysportGame
             GL.DrawArrays(PrimitiveType.Triangles, 0, numOfTri * 3);
 
         }
-        public virtual void secondPass(int program, Matrix4 viewMatrix, OpenTK.Vector3 lightPosition, OpenTK.Vector3 cameraPosition)
+        public void directionalLight(int program, Matrix4 projectionMatrix, Matrix4 viewMatrix, OpenTK.Vector3 lightPosition, OpenTK.Vector3 cameraPosition)
         {
 
-            Matrix4 modelWorldMatrix;
-            // Transform from model to world
-            Matrix4.Mult(ref modelMatrix, ref worldMatrix, out modelWorldMatrix);
             Matrix4 modelViewMatrix;
-            Matrix4.Mult(ref modelWorldMatrix, ref viewMatrix, out modelViewMatrix);
+            Matrix4.Mult(ref modelMatrix, ref viewMatrix, out modelViewMatrix);
 
+
+            Matrix4 normalMatrix;
+            Matrix4.Mult(ref modelMatrix, ref viewMatrix, out normalMatrix);
+            normalMatrix.Transpose();
+            normalMatrix.Invert();
+
+            GL.UniformMatrix4(GL.GetUniformLocation(program, "normalMatrix"), false, ref normalMatrix);
+
+            Vector4 projectParam = new Vector4(projectionMatrix.M11, projectionMatrix.M22, projectionMatrix.M33, projectionMatrix.M34);
+
+            GL.Uniform4(GL.GetUniformLocation(program, "projectParam"), projectParam);
+            GL.UniformMatrix4(GL.GetUniformLocation(program, "projectionMatrix"), false, ref projectionMatrix);
             GL.UniformMatrix4(GL.GetUniformLocation(program, "modelViewMatrix"), false, ref modelViewMatrix);
+
             GL.Uniform3(GL.GetUniformLocation(program, "lightPos"), lightPosition);
             GL.Uniform3(GL.GetUniformLocation(program, "camera"), cameraPosition);
 
             GL.BindVertexArray(vertexArrayObject);
             GL.DrawArrays(PrimitiveType.Triangles, 0, numOfTri * 3);
 
+        }
+
+        public void pointLight(int program, OpenTK.Vector3 lightPosition, OpenTK.Vector3 lightColor,float lightRadius)
+        {
+        /*
+            GL.Uniform3(GL.GetUniformLocation(program, "lightColor"), lightColor);
+            GL.Uniform3(GL.GetUniformLocation(program, "lightPos"), lightPosition);
+            GL.Uniform1(GL.GetUniformLocation(program, "lightRadius"), lightRadius);
+            */
+            GL.Uniform3(uniformLoc["lightColor"], lightColor);
+            GL.Uniform3(uniformLoc["lightPos"], lightPosition);
+            GL.Uniform1(uniformLoc["lightRadius"], lightRadius);
+            GL.BindVertexArray(vertexArrayObject);
+            GL.DrawArrays(PrimitiveType.Triangles, 0, numOfTri * 3);
+        }
+
+        public void spotLight(int program, OpenTK.Vector3 lightPosition, OpenTK.Vector3 lightDirection,  OpenTK.Vector3 lightColor,float lightRadius, float lightWidht,OpenTK.Vector3 cameraPosition,Matrix4 projectionMatrix,Matrix4 viewMatrix)
+        {
+            Matrix4 modelViewMatrix;
+            Matrix4.Mult(ref modelMatrix, ref viewMatrix, out modelViewMatrix);
+
+            GL.UniformMatrix4(GL.GetUniformLocation(program, "modelViewMatrix"), false, ref modelViewMatrix);
+            GL.UniformMatrix4(GL.GetUniformLocation(program, "projectionMatrix"),false ,ref projectionMatrix);
+            GL.Uniform3(GL.GetUniformLocation(program, "camera"), cameraPosition);
+            GL.Uniform3(uniformLoc["lightColor"], lightColor);
+            GL.Uniform3(uniformLoc["lightPos"], lightPosition);
+            GL.Uniform3(uniformLoc["lightDirection"], lightDirection);
+            GL.Uniform1(uniformLoc["lightRadius"], lightRadius);
+            GL.Uniform1(uniformLoc["lightWidht"], lightWidht);
+            GL.BindVertexArray(vertexArrayObject);
+            GL.DrawArrays(PrimitiveType.Triangles, 0, numOfTri * 3);
         }
 
         /*
@@ -143,13 +189,13 @@ namespace RallysportGame
         public void renderShadowMap(int program, Matrix4 lightProjectionMatrix, Matrix4 lightViewMatrix)
         {
 
-            setMatrices(program, lightProjectionMatrix, lightViewMatrix);
+            setSMMatrices(program, lightProjectionMatrix, lightViewMatrix);
 
             GL.BindVertexArray(vertexArrayObject);
             GL.DrawArrays(PrimitiveType.Triangles, 0, numOfTri * 3);
         }
 
-        private void setMatrices(int program, Matrix4 projectionMatrix, Matrix4 viewMatrix)
+        private void setSMMatrices(int program, Matrix4 projectionMatrix, Matrix4 viewMatrix)
         {
             Matrix4 modelWorldMatrix;
             // Transform from model to world
@@ -157,7 +203,21 @@ namespace RallysportGame
             Matrix4 modelViewMatrix;
             Matrix4.Mult(ref modelWorldMatrix, ref viewMatrix, out modelViewMatrix);
 
-            Matrix4 modelViewProjectionMatrix;
+            Matrix4 lmodelViewProjectionMatrix;
+            
+            Matrix4.Mult(ref modelViewMatrix, ref projectionMatrix, out lmodelViewProjectionMatrix);
+
+            GL.UniformMatrix4(GL.GetUniformLocation(program, "modelViewProjectionMatrix"), false, ref lmodelViewProjectionMatrix);
+
+        }
+
+        private void setMatrices(int program, Matrix4 projectionMatrix, Matrix4 viewMatrix)
+        {
+
+            Matrix4 modelViewMatrix;
+            Matrix4.Mult(ref modelMatrix, ref viewMatrix, out modelViewMatrix);
+
+            prevMVP = modelViewProjectionMatrix;
             Matrix4.Mult(ref modelViewMatrix, ref projectionMatrix, out modelViewProjectionMatrix);
 
             Matrix4 normalMatrix;
@@ -165,10 +225,10 @@ namespace RallysportGame
             normalMatrix.Transpose();
             normalMatrix.Invert();
 
-            GL.UniformMatrix4(GL.GetUniformLocation(program, "worldMatrix"), false, ref modelWorldMatrix);
-            GL.UniformMatrix4(GL.GetUniformLocation(program, "normalMatrix"), false, ref normalMatrix);
             GL.UniformMatrix4(GL.GetUniformLocation(program, "modelViewMatrix"), false, ref modelViewMatrix);
             GL.UniformMatrix4(GL.GetUniformLocation(program, "modelViewProjectionMatrix"), false, ref modelViewProjectionMatrix);  
+            GL.UniformMatrix4(GL.GetUniformLocation(program, "normalMatrix"), false, ref normalMatrix);
+            GL.UniformMatrix4(GL.GetUniformLocation(program, "prevMVP"), false, ref prevMVP);  
         }
 
         public void setUp3DSModel()
@@ -187,10 +247,31 @@ namespace RallysportGame
             modelMatrix *= Matrix4.CreateRotationX(-MathHelper.Pi / 2);
             OpenTK.Vector3.TransformPosition(position, modelMatrix);
         }
+        public void loadUniformLocations(int program)
+        {
+            uniformLoc.Add("lightColor", GL.GetUniformLocation(program, "lightColor"));
+            uniformLoc.Add("lightPos", GL.GetUniformLocation(program, "lightPos"));
+            uniformLoc.Add("lightDirection", GL.GetUniformLocation(program, "lightDirection"));
+            uniformLoc.Add("lightRadius", GL.GetUniformLocation(program, "lightRadius"));
+            uniformLoc.Add("lightWidht", GL.GetUniformLocation(program, "lightWidht"));
+            uniformLoc.Add("modelViewMatrix", GL.GetUniformLocation(program, "modelViewMatrix"));
+            uniformLoc.Add("camera", GL.GetUniformLocation(program, "camera"));
+
+        }
+
+
+        public void setCoordiants(float world_x,float world_y,float world_z)
+        {
+            modelMatrix =Matrix4.Translation(world_x,world_y,world_z);
+        }
+
+
+
+
         public void render(int program, OpenTK.Vector3 position)
         {
 
-            
+
 
         }
 
