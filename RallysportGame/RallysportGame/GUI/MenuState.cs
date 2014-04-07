@@ -8,6 +8,7 @@ using System.Drawing.Imaging;
 using QuickFont;
 using RallysportGame.GUI;
 using OpenTK.Input;
+using System.Collections.Generic;
 
 namespace RallysportGame.GUI
 {
@@ -21,7 +22,10 @@ namespace RallysportGame.GUI
         private String shaderDir = @"..\..\..\..\Shaders\";
         private int texture;
         private StateHandler stateHandler;
-        private TextRowMenu textMenu;
+        private TextRowMenu currentTextMenu;
+        private TextRowMenu mainMenu;
+        private TextRowMenu settingsMenu;
+
         private int shader;
         private Entity plane;
 
@@ -70,14 +74,38 @@ namespace RallysportGame.GUI
             GL.LinkProgram(shader);
             
             texture = LoadTexture(@"..\\..\\..\\..\\Models\\2d\\temp.jpg");//vegitatio,n_bana_berg.jpg");//
+            #region mainMenu
+            mainMenu = new TextRowMenu((SettingsParser.GetInt(Settings.WINDOW_WIDTH) / 11), VERTICAL_OFFSET, TEXT_SIZE, MAX_WIDTH, LINE_SPACE, gameWindow.Mouse); //needs to be rerun in case of resize call not sure what'll happen
 
-            textMenu = new TextRowMenu((SettingsParser.GetInt(Settings.WINDOW_WIDTH) / 11), VERTICAL_OFFSET, TEXT_SIZE, MAX_WIDTH, LINE_SPACE, gameWindow.Mouse); //needs to be rerun in case of resize call not sure what'll happen
-            textMenu.AddTextButton("Singleplayer", test);
-            textMenu.AddTextButton("Multiplayer", test);
-            textMenu.AddTextButton("Options", test);
-            textMenu.AddTextButton("Exit", test);
+            Action startGame = delegate { stateHandler.enterGame(); };
+            mainMenu.AddTextButton("Singleplayer", startGame);
+
+            mainMenu.AddTextButton("Multiplayer", test);
+
+            mainMenu.AddTextButton("Options", swapToSettings);
+
+            Action exitAction = delegate { gameWindow.Exit(); };
+            mainMenu.AddTextButton("Exit", exitAction);
+
+            currentTextMenu = mainMenu;
+            #endregion
+            settingsMenu = new SettingsMenu(gameWindow, saveChangesAndReturn).toTextMenu();
         }
-        public void test()
+        private void saveChangesAndReturn()
+        {
+            //TODO
+            swapToMainMenu();
+        }
+        private void swapToMainMenu()
+        {
+            currentTextMenu = mainMenu;
+        }
+        private void swapToSettings()
+        {
+            currentTextMenu = settingsMenu;
+        }
+
+        private void test()
         {
             System.Console.WriteLine("Click!");
         }
@@ -102,7 +130,7 @@ namespace RallysportGame.GUI
 
             GL.End();
 
-            textMenu.Render();
+            currentTextMenu.Render();
 
             gameWindow.SwapBuffers();
             GL.UseProgram(0);
@@ -110,7 +138,7 @@ namespace RallysportGame.GUI
 
         public override void Update(GameWindow gameWindow)
         {
-            textMenu.Update();
+            currentTextMenu.Update();
             //
         }
 
@@ -119,16 +147,16 @@ namespace RallysportGame.GUI
         {
             if (e.Key.Equals(Key.Down) && awaitingDownKey)
             {
-                textMenu.SelectDown();
+                currentTextMenu.SelectDown();
                 awaitingDownKey=false;
             }
             else if (e.Key.Equals(Key.Up) && awaitingDownKey)
             {
-                textMenu.SelectUp();
+                currentTextMenu.SelectUp();
                 awaitingDownKey = false;
             }
             else if (e.Key.Equals(Key.Enter) && awaitingDownKey) {
-                textMenu.ClickSelected();
+                currentTextMenu.ClickSelected();
                 awaitingDownKey = false;
             }
         }
@@ -136,7 +164,7 @@ namespace RallysportGame.GUI
         {
             if (e.Button.Equals(MouseButton.Left))
             {
-                textMenu.ClickSelected();
+                currentTextMenu.ClickSelected();
             }
         }
 

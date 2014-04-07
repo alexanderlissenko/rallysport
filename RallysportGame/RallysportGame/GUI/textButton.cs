@@ -10,7 +10,7 @@ namespace RallysportGame.GUI
     class TextButton
     {
         private Action f;
-        private String text;
+        protected String text;
         private Vector2 position;
 
         public TextButton(String text, Action f,Vector2 position)
@@ -25,7 +25,8 @@ namespace RallysportGame.GUI
         {
             return text;
         }
-        public void click()
+
+        public virtual void Click()
         {
             f();
         }

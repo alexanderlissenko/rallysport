@@ -81,6 +81,8 @@
     <Compile Include="CollisionHandler.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="GameState.cs" />
+    <Compile Include="GUI\AlternativesButton.cs" />
+    <Compile Include="GUI\SettingsMenu.cs" />
     <Compile Include="GUI\TextButton.cs" />
     <Compile Include="GUI\TextRowMenu.cs" />
     <Compile Include="IState.cs" />

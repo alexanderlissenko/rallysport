@@ -50,6 +50,23 @@ namespace RallysportGame.GUI
             buttonList.Add(newTextButton);
             newHitBox(newTextButton);
         }
+
+        public AlternativesButton AddAlternativesButton(List<String> alternatives)
+        {
+            OpenTK.Vector2 newPosition = new OpenTK.Vector2(previousPosition.X, previousPosition.Y + lineSpaceHeight);
+            previousPosition = newPosition;
+            AlternativesButton newButton = new AlternativesButton(alternatives[0],newPosition);
+
+            foreach (String s in alternatives)
+            {
+                newButton.AddAlternative(s);
+            }
+
+            buttonList.Add(newButton);
+            newHitBox(newButton); // causes a bug collision bug since text can change in a alternatices button
+            return newButton;
+        }
+
         private void newHitBox(TextButton buttonText)
         {
             SizeF size = font.Measure(buttonText.getText(), maxWidth, ALIGNMENT);
@@ -63,7 +80,7 @@ namespace RallysportGame.GUI
 
         public void ClickSelected()
         {
-            buttonList[selected].click();
+            buttonList[selected].Click();
         }
 
         public void Select(int index)

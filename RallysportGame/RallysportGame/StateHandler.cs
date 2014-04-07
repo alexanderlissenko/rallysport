@@ -88,9 +88,13 @@ namespace RallysportGame
             //TODO
             currentState = gameState;
         }
+
         public bool isInMenu()
         {
             return currentState == menuState;
+        }
+        public static void restartGame() {
+
         }
     }
 }
