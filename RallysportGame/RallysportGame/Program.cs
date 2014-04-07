@@ -83,11 +83,11 @@ namespace RallysportGame
         private static CollisionHandler collisionHandler;
 
         // Helper function to turn spherical coordinates into cartesian (x,y,z)
-        static Vector3 sphericalToCartesian(float theta, float phi, float r)
+        static Vector3 sphericalToCartesian(float theta, float phi, float r, Vector3 pos)
         {
-            return new Vector3( (float)(r * Math.Sin(theta) * Math.Sin(phi)),
+            return (pos + new Vector3( (float)(r * Math.Sin(theta) * Math.Sin(phi)),
                                 (float)(r * Math.Cos(phi)),
-                                (float)(r * Math.Cos(theta) * Math.Sin(phi)));
+                                (float)(r * Math.Cos(theta) * Math.Sin(phi))));
         }
 
         static int loadShaderProgram(String vShaderPath, String fShaderPath)
@@ -239,12 +239,12 @@ namespace RallysportGame
 
                     // Dynamic objects
                     collisionHandler = new CollisionHandler();
-                    environment = new Environment("Cube\\koobe");//"map\\uggly_test_track_Triangulate");//"plane");//
-                    //environment.setUpMtl();
-                    //environment.loadTexture();
+                    environment = new Environment("map\\uggly_test_track_Triangulate");//"plane");//
+                    environment.setUpMtl();
+                    environment.loadTexture();
                     //environment.setUpBlenderModel(); //Handled in constructor
 
-                    playerCar = new Car(@"Mustang\mustang-no-wheels", @"Mustang\one-wheel-center", new Vector3(0, 100, 0),collisionHandler.space);
+                    playerCar = new Car(@"Mustang\mustang-no-wheels", @"Mustang\one-wheel-center", new Vector3(300, 40, 0),collisionHandler.space);
                     skybox = new Entity("Cube\\inside_koob");
                     unitSphere = new Entity("Cube\\unitSphere");
                     myCar2 = new Entity("Cube\\inside_koob");
@@ -288,7 +288,7 @@ namespace RallysportGame
                     GL.UseProgram(firstPassShader);
                     
                     //myCar2.setUpBlenderModel();
-                    playerCar.setUpMtl();
+                    //playerCar.setUpMtl();
                     //playerCar.setUp3DSModel(); Don't do this here! Scaling is done in Car class
 
                     //skybox.setUp3DSModel();// setUpBlenderModel();
@@ -502,7 +502,7 @@ namespace RallysportGame
                     GL.ClearDepth(1.0f);
 
                     #region Let there be light
-                    Vector3 lightPosition = sphericalToCartesian(light_theta, light_phi, light_r);
+                    Vector3 lightPosition = sphericalToCartesian(light_theta, light_phi, light_r,new Vector3(0,0,0));
                     Vector3 scaleVector = new Vector3(10, 10, 10);
                     //Vector3 scaleVector = new Vector3(1000, 1000, 1000);
                     
@@ -548,9 +548,9 @@ namespace RallysportGame
                     int h = game.Height;
 
 
-                    Vector3 camera_position = sphericalToCartesian(camera_theta, camera_phi,camera_r);
+                    Vector3 camera_position = sphericalToCartesian(camera_theta, camera_phi,camera_r,playerCar.getCarPos());
                     //camera_lookAt = new Vector3(0.0f, camera_target_altitude, 0.0f);
-                    Vector3 camera_lookAt = new Vector3(0.0f, 0.0f, 0.0f);//Vector4.Transform(camera_lookAt, camera_rotation_matrix);
+                    Vector3 camera_lookAt = playerCar.getCarPos();//new Vector3(0.0f, 0.0f, 0.0f);//Vector4.Transform(camera_lookAt, camera_rotation_matrix);
                     Matrix4 viewMatrix = Matrix4.LookAt(camera_position, camera_lookAt,up);
                     Matrix4 projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(pi / 4, (float)w / (float)h, 0.1f, 1000f);
                     // Here we start getting into the lighting model
@@ -592,17 +592,17 @@ namespace RallysportGame
                     DrawBuffersEnum[] draw_buffs2 = { DrawBuffersEnum.ColorAttachment0, DrawBuffersEnum.ColorAttachment1, DrawBuffersEnum.ColorAttachment2, DrawBuffersEnum.None };
                     GL.DrawBuffers(4, draw_buffs2);
 
-                    //GL.ActiveTexture(TextureUnit.Texture0);
-                    //GL.BindTexture(TextureTarget.Texture2D, environment.getTextureId());
-                    //GL.Uniform1(GL.GetUniformLocation(basicShaderProgram, "firstTexture"), 0);
+                    GL.ActiveTexture(TextureUnit.Texture0);
+                    GL.BindTexture(TextureTarget.Texture2D, environment.getTextureId());
+                    GL.Uniform1(GL.GetUniformLocation(basicShaderProgram, "firstTexture"), 0);
 
                     //plane.firstPass(firstPassShader, projectionMatrix, viewMatrix);
                     environment.firstPass(firstPassShader,  projectionMatrix,  viewMatrix);
                     
                     GL.BindTexture(TextureTarget.Texture2D, 0);
-                    myCar2.firstPass(firstPassShader, projectionMatrix, viewMatrix);
+                    //myCar2.firstPass(firstPassShader, projectionMatrix, viewMatrix);
                     playerCar.firstPass(firstPassShader, projectionMatrix, viewMatrix);
-                    skybox.firstPass(firstPassShader, projectionMatrix, viewMatrix);
+                    //skybox.firstPass(firstPassShader, projectionMatrix, viewMatrix);
                     
                     GL.DepthMask(false);
                     GL.Disable(EnableCap.DepthTest);
