@@ -64,7 +64,7 @@ namespace RallysportGame
 
         static float light_theta = pi / 6.0f;
         static float light_phi = pi / 4.0f;
-        static float light_r = 200.0f;
+        static float light_r = 3000.0f;
 
         //test particles
         static ParticleSystem testPartSys;// = new ParticleSystem(new OpenTK.Vector3(0, 0, 0), 60f, 5, new TimeSpan(0, 0, 0, 4), new Entity());
@@ -198,10 +198,10 @@ namespace RallysportGame
                         camera_phi += camera_horizontal_delta*0.5f;
                         break;
                     case Key.L:
-                        megaParticles.stopEmit();
+                        //megaParticles.stopEmit();
                         break;
                     case Key.K:
-                        megaParticles.startEmit();
+                        //megaParticles.startEmit();
                         break;
                     default:
                         break;
@@ -251,8 +251,8 @@ namespace RallysportGame
                 GL.PolygonOffset(1.0f, 1.0f);
 
                 //GL.BindTexture(TextureTarget.Texture2D, shadowMapTexture);
-
-                myCar2.renderShadowMap(shadowShaderProgram, lightProjectionMatrix, lightViewMatrix);
+                playerCar.renderShadowMap(shadowShaderProgram, lightProjectionMatrix, lightViewMatrix);
+                //myCar2.renderShadowMap(shadowShaderProgram, lightProjectionMatrix, lightViewMatrix);
                 environment.renderShadowMap(shadowShaderProgram, lightProjectionMatrix, lightViewMatrix);
 
             }
@@ -314,7 +314,7 @@ namespace RallysportGame
                     plane = new Entity("plane");
 
                     //Particle System
-                    testPartSys = new ParticleSystem(new OpenTK.Vector3(0, 0, 0), 60f, 1, new TimeSpan(0, 0, 0, 2), unitSphere);
+                    //testPartSys = new ParticleSystem(new OpenTK.Vector3(0, 0, 0), 60f, 1, new TimeSpan(0, 0, 0, 2), unitSphere);
 
                     //Set up shaders
 
@@ -381,7 +381,7 @@ namespace RallysportGame
 
                     //Shadowmaps
                     #region ShadowMap
-                    shadowMapRes = 2048;
+                    shadowMapRes = 1080;
                     shadowMapTexture = GL.GenTexture();
                     GL.BindTexture(TextureTarget.Texture2D, shadowMapTexture);
                     GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent32, shadowMapRes, shadowMapRes, 0, PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
@@ -639,7 +639,7 @@ namespace RallysportGame
 
                     #region shadowMapRender
                     Matrix4 lightViewMatrix = Matrix4.LookAt(lightPosition, new Vector3(0.0f, 0.0f, 0.0f), up);
-                    Matrix4 lightProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(pi / 4, 1.0f, 180f, 1180f);
+                    Matrix4 lightProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(pi / 4, 1.0f, 2180f,3580f);
 
                     Matrix4 lightMatrix = renderSM(shadowShaderProgram,viewMatrix, lightViewMatrix, lightProjectionMatrix);
 
@@ -731,6 +731,12 @@ namespace RallysportGame
                     
                     //Point Lights
                     GL.Uniform1(lTUniform, 1.0f);
+
+
+                    //Render Car Lights
+                    playerCar.renderBackLight(secondPassShader, plane);
+
+
                     //for (int i = 0; i < 100; i++ )
                         //plane.pointLight(secondPassShader, new Vector3(0.0f, 1.0f, 0.0f), new Vector3(1, 0, 0), 10.0f);
                         //plane.pointLight(secondPassShader, new Vector3(-15.0f, 10.0f, 0), new Vector3(0, 1, 0), 10.0f);
@@ -738,7 +744,7 @@ namespace RallysportGame
                         //plane.pointLight(secondPassShader, new Vector3(0,10.0f,-10.0f), new Vector3(1, 1, 0), 10.0f);
 
                         //Spot Light
-
+                    /*
 
                     lightViewMatrix = Matrix4.LookAt(new Vector3(0, 10, 0), new Vector3(0.0f, -40.0f, 0.0f), up);
                     lightProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(pi / 4, 1.0f, 1f, 1000f);
@@ -761,8 +767,8 @@ namespace RallysportGame
 
                     GL.UniformMatrix4(GL.GetUniformLocation(secondPassShader, "lightMatrix"), false, ref lightMatrix);
                     GL.Uniform1(lTUniform, 2.0f);
-
-                    plane.spotLight(secondPassShader, new Vector3(0, 10, 0), new Vector3(0, -1, 0), new Vector3(1, 0, 0), 20.0f, (float)Math.Cos(pi / 4), camera_position, invProj,viewMatrix);
+                    */
+                    //plane.spotLight(secondPassShader, new Vector3(0, 10, 0), new Vector3(0, -1, 0), new Vector3(1, 0, 0), 400.0f, (float)Math.Cos(pi / 4), camera_position, invProj,viewMatrix);
                     //plane.spotLight(secondPassShader, new Vector3(0, 3, 0), new Vector3(1, -1, 0), new Vector3(1, 0, 0), 15.0f, (float)Math.Cos(pi / 4));
                     //plane.spotLight(secondPassShader, new Vector3(0, 3, 0), new Vector3(0, -1, -1), new Vector3(0, 1, 0), 15.0f, (float)Math.Cos(pi / 4));
                     //plane.spotLight(secondPassShader, new Vector3(0, 3, 0), new Vector3(0, -1, 1), new Vector3(0, 1, 0), 15.0f, (float)Math.Cos(pi / 4));

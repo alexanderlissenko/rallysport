@@ -151,7 +151,17 @@ namespace RallysportGame
             GL.BindVertexArray(vertexArrayObject);
             GL.DrawArrays(PrimitiveType.Triangles, 0, numOfTri * 3);
         }
-
+        public void spotLight(int program, OpenTK.Vector3 lightPosition, OpenTK.Vector3 lightDirection, OpenTK.Vector3 lightColor, float lightRadius, float lightWidht)
+        {
+            GL.Uniform1(GL.GetUniformLocation(program, "lightType"), 2.0f);
+            GL.Uniform3(uniformLoc["lightColor"], lightColor);
+            GL.Uniform3(uniformLoc["lightPos"], lightPosition);
+            GL.Uniform3(uniformLoc["lightDirection"], lightDirection);
+            GL.Uniform1(uniformLoc["lightRadius"], lightRadius);
+            GL.Uniform1(uniformLoc["lightWidht"], lightWidht);
+            GL.BindVertexArray(vertexArrayObject);
+            GL.DrawArrays(PrimitiveType.Triangles, 0, numOfTri * 3);
+        }
         /*
          *  Duh, renders the object using whatever shaders you've set up. 
          */

@@ -232,6 +232,13 @@ namespace RallysportGame
                 backMotor1.IsActive = false;
                 backMotor2.IsActive = false;
             }
+            
+            Vector3 leftRot;
+            Quaternion rot2 = carHull.Orientation;
+            Vector3.Transform(ref forward, ref rot2, out leftRot);
+
+            Vector3.Multiply(ref leftRot, 0.5f, out acceleration);
+            carHull.LinearVelocity += Utilities.ConvertToBepu(acceleration);
             /*
             acceleration = direction;
             acceleration += direction* rate;
@@ -274,9 +281,9 @@ namespace RallysportGame
             return carHull.WorldTransform.Translation;
         }
 
-        public Matrix3 getCarAngle()
+        public OpenTK.Quaternion getCarAngle()
         {
-            return carHull.OrientationMatrix;
+            return carHull.Orientation;
         }
 
         public override ISpaceObject GetBody(){
@@ -288,8 +295,38 @@ namespace RallysportGame
             s.Add(carHull);
         }
 
-       
+       public void renderBackLight(int program, Entity renderTarget)
+        {
+           Vector3 rightLight = new Vector3(32, 25, 70);
+           Vector3 leftLight = new Vector3(-20, 25, 70);
+           Vector3 rightFrontLight = new Vector3(32, 25, -80);
+           Vector3 leftFrontLight = new Vector3(-20, 25, -80);
 
+           Vector3 rightRot;
+           Quaternion rot = carHull.Orientation;
+           Vector3.Transform(ref rightLight, ref rot, out rightRot);
+           
+           Vector3 leftRot;
+           Quaternion rot2 = carHull.Orientation;
+           Vector3.Transform(ref leftLight, ref rot2, out leftRot);
+
+           renderTarget.pointLight(program, Utilities.ConvertToTK(carHull.WorldTransform.Translation) + rightRot, new Vector3(1, 0, 0), 25);
+           renderTarget.pointLight(program, Utilities.ConvertToTK(carHull.WorldTransform.Translation) + leftRot, new Vector3(1, 0, 0), 25);
+
+           Quaternion rot3 = carHull.Orientation;
+           Quaternion rot4 = carHull.Orientation;
+           Vector3.Transform(ref rightFrontLight, ref rot3, out rightRot);
+           Vector3.Transform(ref leftFrontLight, ref rot4, out leftRot);
+
+           Vector3 front = new Vector3(0, 0, -1);
+           Vector3 test;
+           Vector3.Transform(ref front, ref rot, out test);
+           test.Normalize();
+           renderTarget.spotLight(program, Utilities.ConvertToTK(carHull.WorldTransform.Translation) + rightRot, test, new Vector3(1, 1, 1), 125, (float)Math.Cos(BEPUutilities.MathHelper.Pi /8));
+           renderTarget.spotLight(program, Utilities.ConvertToTK(carHull.WorldTransform.Translation) + leftRot, test, new Vector3(1, 1, 1), 125, (float)Math.Cos(BEPUutilities.MathHelper.Pi / 8));
+
+
+        }
         #endregion
         #region Private Methods
 
