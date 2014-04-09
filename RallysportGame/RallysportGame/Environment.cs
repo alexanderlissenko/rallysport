@@ -32,6 +32,7 @@ namespace RallysportGame
             bepu_mesh = new StaticMesh(vertices, indices,test);
             base.modelMatrix = bepu_mesh.WorldTransform.Matrix;
             //Console.WriteLine("Env has id " + bepu_mesh);
+            bepu_mesh.Tag = "Environment";
         }
         #endregion
 

@@ -104,6 +104,7 @@ namespace RallysportGame
 
             carHull.WorldTransform = BEPUutilities.Matrix.CreateTranslation(Utilities.ConvertToBepu(pos));
             modelMatrix = carHull.WorldTransform;
+            carHull.Tag = "Player Car";
             this.space.Add(carHull);
             // Add wheels
             /*
@@ -162,6 +163,7 @@ namespace RallysportGame
                 w.PositionUpdated += new Action<BEPUphysics.Entities.Entity>(PositionUpdated);
             }
             Console.WriteLine("car has id " + carHull.InstanceId);
+            
         }
 
         #endregion
@@ -237,7 +239,7 @@ namespace RallysportGame
             Quaternion rot2 = carHull.Orientation;
             Vector3.Transform(ref forward, ref rot2, out leftRot);
 
-            Vector3.Multiply(ref leftRot, 0.5f, out acceleration);
+            Vector3.Multiply(ref leftRot, rate *0.5f, out acceleration);
             carHull.LinearVelocity += Utilities.ConvertToBepu(acceleration);
             /*
             acceleration = direction;
@@ -403,12 +405,13 @@ namespace RallysportGame
 
             drivingMotor.IsActive = false;
 
+            wheel.Tag = "backwheel";
             space.Add(wheel);
             space.Add(pointOnLineJoint);
             space.Add(suspensionLimit);
             space.Add(suspensionSpring);
             space.Add(revoluteAngularJoint);
-
+            
             return wheel;
 
         }
@@ -457,6 +460,8 @@ namespace RallysportGame
             //steeringMotor.Settings.VelocityMotor.Softness = 4f;
             var steeringConstraint = new RevoluteLimit(body, wheel, BEPUutilities.Vector3.Up, BEPUutilities.Vector3.Right, -maximumTurnAngle, maximumTurnAngle);
 
+            wheel.Tag = "frontWheel";
+
             space.Add(wheel);
             space.Add(pointOnLineJoint);
             space.Add(suspensionLimit);
@@ -465,7 +470,7 @@ namespace RallysportGame
             space.Add(drivingMotor);
             space.Add(steeringMotor);
             space.Add(steeringConstraint);
-
+            
             return wheel;
         }
         

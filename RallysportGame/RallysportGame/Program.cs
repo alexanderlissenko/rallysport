@@ -303,14 +303,14 @@ namespace RallysportGame
                     environment.loadTexture();
                     //environment.setUpBlenderModel(); //Handled in constructor
 
-                    playerCar = new Car(@"Mustang\mustang-no-wheels", @"Mustang\one-wheel-center", new Vector3(300, 40, 0),collisionHandler.space);
+                    playerCar = new Car(@"Mustang\mustang-no-wheels", @"Mustang\one-wheel-tex-scale", new Vector3(300, 40, 0), collisionHandler.space);
                     skybox = new Entity("Cube\\inside_koob");
                     unitSphere = new Entity("Cube\\unitSphere");
                     myCar2 = new Entity("Cube\\inside_koob");
 
                     //collisionHandler.addObject(playerCar);
                     collisionHandler.addObject(environment);
-                    
+                    collisionHandler.addTestTrigger();
                     plane = new Entity("plane");
 
                     //Particle System
@@ -617,7 +617,7 @@ namespace RallysportGame
                     
 
                     #endregion
-
+                    
                     
 
                     
