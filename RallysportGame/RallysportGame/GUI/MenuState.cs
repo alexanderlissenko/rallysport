@@ -74,6 +74,7 @@ namespace RallysportGame.GUI
             
             texture = LoadTexture(@"..\\..\\..\\..\\Models\\2d\\temp.jpg");//vegitatio,n_bana_berg.jpg");//
             #region mainMenu
+            QFont.ForceViewportRefresh();
             mainMenu = new TextRowMenu((SettingsParser.GetInt(Settings.WINDOW_WIDTH) / 11), VERTICAL_OFFSET, TEXT_SIZE, MAX_WIDTH, LINE_SPACE, gameWindow.Mouse); //needs to be rerun in case of resize call not sure what'll happen
 
             Action startGame = delegate { StateHandler.Instance.changeStateToGame(); };
@@ -108,7 +109,6 @@ namespace RallysportGame.GUI
 
         public override void Render(GameWindow gameWindow)
         {
-            
             GL.ClearColor(1.0f, 0f, 0f, 0f);
             GL.ClearDepth(1.0f);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);

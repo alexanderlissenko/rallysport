@@ -121,9 +121,9 @@ namespace RallysportGame.GUI
                 }
                 else
                 {
-                    //font.Print(buttonText.getText(), maxWidth, ALIGNMENT, buttonText.getPosition());
-                    float yOffset = 0;
-                    PrintWithBounds(font, buttonText.getText(), hitBoxList[i], ALIGNMENT, yOffset);
+                    font.Print(buttonText.getText(), maxWidth, ALIGNMENT, buttonText.getPosition());
+                    //float yOffset = 0;
+                    //PrintWithBounds(font, buttonText.getText(), hitBoxList[i], ALIGNMENT, yOffset);
                 }
             }
             QFont.End();
