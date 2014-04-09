@@ -42,6 +42,7 @@ namespace RallysportGame
         static int megaParticleShader, shadowShaderProgram, firstPassShader, secondPassShader, verticalGaussianFilterShader, horizontalGaussianFilterShader, perlinShader;
         //static Vector3 lightPosition;
         static GaussianFilter gaussBlurr;
+        static MegapParticleFilter megaPartFilter;
         //*****************************************************************************
         //	Camera state variables
         //*****************************************************************************
@@ -94,8 +95,7 @@ namespace RallysportGame
         static MouseState current;
         static MouseState previous;
         private static CollisionHandler collisionHandler;
-        static PerlinNoise perlin; 
-
+      
 
 
         // Helper function to turn spherical coordinates into cartesian (x,y,z)
@@ -488,8 +488,8 @@ namespace RallysportGame
                     collisionHandler.setupEnvironment(environment, environmentLocation);
 
 
-                    gaussBlurr = new GaussianFilter(verticalGaussianFilterShader, horizontalGaussianFilterShader, game.Width, game.Height, deferredTex);
-
+                    gaussBlurr = new GaussianFilter(verticalGaussianFilterShader, horizontalGaussianFilterShader, game.Width, game.Height);
+                    megaPartFilter = new MegapParticleFilter(megaParticleShader, game.Width, game.Height);
 
                     setupPerlinNoise();
                 
@@ -525,7 +525,7 @@ namespace RallysportGame
                         GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, deferredTex, 0);
 
                         
-                        gaussBlurr = new GaussianFilter(verticalGaussianFilterShader, horizontalGaussianFilterShader, w, h, deferredTex);
+                        gaussBlurr = new GaussianFilter(verticalGaussianFilterShader, horizontalGaussianFilterShader, w, h);
 
 
                         hasResize= !hasResize;
@@ -692,7 +692,7 @@ namespace RallysportGame
                     GL.Viewport(0, 0, w, h);
                     DrawBuffersEnum[] draw_buffs = { DrawBuffersEnum.ColorAttachment0, DrawBuffersEnum.ColorAttachment1, DrawBuffersEnum.ColorAttachment2 };
                     GL.DrawBuffers(3,draw_buffs);
-                    GL.ClearColor(1.0f, 0f, 0f, 0.1f);
+                    GL.ClearColor(0.0f, 0f, 0f, 0.1f);
                     GL.ClearDepth(1.0f);
                     GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
                     GL.DepthMask(true);
@@ -707,7 +707,7 @@ namespace RallysportGame
 
                     //unitSphere.firstPass(firstPassShader, projectionMatrix, viewMatrix);
                     megaParticles.firstPass(firstPassShader, projectionMatrix, viewMatrix);
-                    //environment.firstPass(firstPassShader,  projectionMatrix,  viewMatrix);
+                    environment.firstPass(firstPassShader,  projectionMatrix,  viewMatrix);
                     
 
                     GL.BindTexture(TextureTarget.Texture2D, 0);
@@ -722,7 +722,7 @@ namespace RallysportGame
 
 
                     gaussBlurr.gaussianBlurr(deferredTex, w, h, projectionMatrix, viewMatrix);
-
+                    megaPartFilter.displaceBlend(deferredPos, w, h, perlinNoise[0], PERLIN_REZ_X, PERLIN_REZ_Y, deferredTex, projectionMatrix, viewMatrix);
 
                     #region MegaPart
                     
@@ -732,7 +732,7 @@ namespace RallysportGame
 
 
                     #region secondPass
-                    GL.UseProgram(megaParticleShader);
+                    GL.UseProgram(secondPassShader);
 
                     GL.DepthMask(false);
                     GL.Disable(EnableCap.DepthTest);
@@ -743,18 +743,18 @@ namespace RallysportGame
                     
                     GL.BlendEquation(BlendEquationMode.FuncAdd);
                     GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.One);
-
-                    //texture_counter2++;
-                    //if (texture_counter2 >= 5)
-                    //{
+                    /*
+                    texture_counter2++;
+                    if (texture_counter2 >= 5)
+                    {
                         texture_counter++;
                         texture_counter2 = 0;
-                    //}
-                        
+                    }
+                    */  
                     GL.ActiveTexture(TextureUnit.Texture0);
-                    GL.BindTexture(TextureTarget.Texture2D, perlinNoise[texture_counter%(PERLIN_REZ_Z-1)]);
-                    GL.ActiveTexture(TextureUnit.Texture1);
                     GL.BindTexture(TextureTarget.Texture2D, deferredTex);
+                    GL.ActiveTexture(TextureUnit.Texture1);
+                    GL.BindTexture(TextureTarget.Texture2D, deferredPos);
                     GL.ActiveTexture(TextureUnit.Texture2);
                     GL.BindTexture(TextureTarget.Texture2D, deferredNorm);
                     GL.ActiveTexture(TextureUnit.Texture3);
@@ -762,16 +762,16 @@ namespace RallysportGame
                     GL.ActiveTexture(TextureUnit.Texture4);
                     GL.BindTexture(TextureTarget.Texture2D,shadowMapTexture);
 
-                    GL.Uniform1(GL.GetUniformLocation(megaParticleShader, "perlinTexture"), 0);
+                    //GL.Uniform1(GL.GetUniformLocation(megaParticleShader, "perlinTexture"), 0);
 
                     Vector2 screanSizeVec = new Vector2(game.Width, game.Height);
                     Vector2 perlinSizeVec = new Vector2(PERLIN_REZ_X, PERLIN_REZ_Y);
-                    GL.Uniform1(GL.GetUniformLocation(megaParticleShader, "megaTexture"), 1);
-                    //GL.Uniform1(GL.GetUniformLocation(secondPassShader, "normalTex"), 2);
-                    //GL.Uniform1(GL.GetUniformLocation(secondPassShader, "depthTex"), 3);
-                    //GL.Uniform1(GL.GetUniformLocation(secondPassShader, "shadowMapTex"), 4);
-                    GL.Uniform2(GL.GetUniformLocation(megaParticleShader, "screenSize"), ref screanSizeVec);
-                    GL.Uniform2(GL.GetUniformLocation(megaParticleShader, "perlinSize"), ref perlinSizeVec);
+                    //GL.Uniform1(GL.GetUniformLocation(megaParticleShader, "megaTexture"), 1);
+                    GL.Uniform1(GL.GetUniformLocation(secondPassShader, "normalTex"), 2);
+                    GL.Uniform1(GL.GetUniformLocation(secondPassShader, "depthTex"), 3);
+                    GL.Uniform1(GL.GetUniformLocation(secondPassShader, "shadowMapTex"), 4);
+                    //GL.Uniform2(GL.GetUniformLocation(megaParticleShader, "screenSize"), ref screanSizeVec);
+                    //GL.Uniform2(GL.GetUniformLocation(megaParticleShader, "perlinSize"), ref perlinSizeVec);
                    
 
                     GL.UniformMatrix4(GL.GetUniformLocation(verticalGaussianFilterShader, "projectionMatrix"), false, ref projectionMatrix);
