@@ -61,7 +61,7 @@ namespace RallysportGame
                 {
                     menuState.Load(game);
 
-                    //gameState.Load(game);
+                    gameState.Load(game);
                 };
 
                 game.Resize += (sender, e) =>

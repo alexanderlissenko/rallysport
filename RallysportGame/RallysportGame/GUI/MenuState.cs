@@ -23,7 +23,7 @@ namespace RallysportGame.GUI
         private int texture;
         private TextRowMenu currentTextMenu;
         private TextRowMenu mainMenu;
-        private TextRowMenu settingsMenu;
+        private SettingsMenu settingsMenu;
 
         private int shader;
         private Entity plane;
@@ -90,7 +90,7 @@ namespace RallysportGame.GUI
 
             currentTextMenu = mainMenu;
             #endregion
-            settingsMenu = new SettingsMenu(gameWindow, swapToMainMenu).toTextMenu();
+            settingsMenu = new SettingsMenu(gameWindow, swapToMainMenu);
         }
 
         private void swapToMainMenu()
@@ -99,7 +99,8 @@ namespace RallysportGame.GUI
         }
         private void swapToSettings()
         {
-            currentTextMenu = settingsMenu;
+            settingsMenu.prepareEntryToSettings();
+            currentTextMenu = settingsMenu.toTextMenu();
         }
 
         private void test()
@@ -125,8 +126,9 @@ namespace RallysportGame.GUI
             GL.UseProgram(0);
 
             GL.End();
-            
+            GL.Disable(EnableCap.DepthTest);
             currentTextMenu.Render();
+            GL.Enable(EnableCap.DepthTest);
 
             gameWindow.SwapBuffers();
             GL.UseProgram(0);

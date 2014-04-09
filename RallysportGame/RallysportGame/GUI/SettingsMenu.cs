@@ -15,13 +15,17 @@ namespace RallysportGame.GUI
         private const float LINE_SPACE = 1.3f;
         private const int VERTICAL_OFFSET = 0;
         //determines what resolution options are available
-        private int[][] RESOLUTIONS = { new int[] { 1600, 800 }, new int[] { 800, 600 }, new int[] { 800, 200 } };
+        private int[][] RESOLUTIONS = { new int[] {SettingsParser.GetInt(Settings.WINDOW_WIDTH), SettingsParser.GetInt(Settings.WINDOW_HEIGHT) }, new int[] { 800, 600 }, new int[] { 800, 200 } };
 
         private TextRowMenu textMenu;
         private GameWindow gameWindow;
         private AlternativesButton soundButton;
         private AlternativesButton resolutionButton;
         private List<String> resolutionList;
+
+        //saved state from previous entry to settingsMenu
+        private bool previousSound;
+        private int[] previousResolution;
 
         public SettingsMenu(GameWindow gameWindow, Action returnToMainMenu)
         {
@@ -44,9 +48,15 @@ namespace RallysportGame.GUI
             soundButton = textMenu.AddAlternativesButton(enableSoundList);
 
             Action SaveAndReturn = delegate {
-                saveChanges();
-                //returnToMainMenu();
-                StateHandler.Instance.restartGame();
+                if (isStateChanged())
+                {
+                    saveChanges();
+                    StateHandler.Instance.restartGame();
+                }
+                else
+                {
+                    returnToMainMenu();
+                }
             };
 
             textMenu.AddTextButton("Done", SaveAndReturn);
@@ -69,6 +79,15 @@ namespace RallysportGame.GUI
         public int[] getResolution()
         {
             return RESOLUTIONS[resolutionButton.getSelected()];
+        }
+
+        public void prepareEntryToSettings()
+        {
+            previousResolution = getResolution();
+            previousSound = isSoundEnabled();
+        }
+        private bool isStateChanged() {
+            return !(previousResolution.Equals(getResolution()) && (previousSound == isSoundEnabled()));
         }
     }
 }
