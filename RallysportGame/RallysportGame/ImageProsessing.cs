@@ -21,45 +21,32 @@ namespace RallysportGame
      }
     class MegapParticleFilter
     {
-        int filter, FBO, FBO2, tempTex;
+        int filter, FBO;
         Entity plane;
         public MegapParticleFilter(int shader, int width, int height)
         {
             FBO = GL.GenFramebuffer();
-            FBO2 = GL.GenFramebuffer();
             filter = shader;
-            tempTex = GL.GenTexture();
-            plane = new Entity("plane");
-            GL.BindTexture(TextureTarget.Texture2D, tempTex);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb, width, height, 0, PixelFormat.Rgb, PixelType.UnsignedByte, IntPtr.Zero);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
-
-
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, FBO);
-            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, tempTex, 0);
-        
+            plane = new Entity("plane");        
         
         }
 
         public void displaceBlend(int texture, int width, int height,int perlinTexture,int perlinWidth, int perlinHeight,int scene, Matrix4 projectionMatrix, Matrix4 viewMatrix)
         {
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, FBO2);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, FBO);
             GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, scene, 0);
 
             GL.UseProgram(filter);
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, FBO);
 
             GL.DepthMask(false);
             GL.Disable(EnableCap.DepthTest);
             GL.Viewport(0, 0, width, height);
-            GL.ClearColor(0.0f, 0.0f, 0.0f, 1.0f); //ambient light
+            GL.ClearColor(0.0f, 0.0f, 0.0f, 0.0f); //ambient light
             GL.Clear(ClearBufferMask.ColorBufferBit);
+            GL.Enable(EnableCap.Blend);
 
-            GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, texture);
+            GL.BlendEquation(BlendEquationMode.FuncAdd);
+            GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.One);
 
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, perlinTexture);
@@ -68,10 +55,10 @@ namespace RallysportGame
 
 
             GL.Uniform1(GL.GetUniformLocation(filter, "perlinTexture"), 0);
+            GL.Uniform1(GL.GetUniformLocation(filter, "megaTexture"), 1);
 
             Vector2 screanSizeVec = new Vector2(width, height);
             Vector2 perlinSizeVec = new Vector2(perlinWidth, perlinHeight);
-            GL.Uniform1(GL.GetUniformLocation(filter, "megaTexture"), 1);
             GL.Uniform2(GL.GetUniformLocation(filter, "screenSize"), ref screanSizeVec);
             GL.Uniform2(GL.GetUniformLocation(filter, "perlinSize"), ref perlinSizeVec);
 
@@ -80,21 +67,19 @@ namespace RallysportGame
 
             plane.secondPass(filter, viewMatrix, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
 
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
             GL.Enable(EnableCap.DepthTest);
             GL.DepthMask(true);
+            GL.Disable(EnableCap.Blend);
 
-            GL.UseProgram(filter);
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, FBO2);
-            GL.Enable(EnableCap.Blend);
-            plane.secondPass(filter, viewMatrix, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
-
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
         }
 
 
 
 
-    }    
+    }
+    
+
     class GaussianFilter{
         int verticalGaussianFilterShader, horizontalGaussianFilterShader, gaussFBO, gaussFBO2, tempTex;
         Entity plane;
