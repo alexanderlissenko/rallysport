@@ -25,30 +25,38 @@ namespace RallysportGame
     /// Class representing the window containing the menu and the game.
     /// This class is responsible for creating, swapping and exiting these states.
     /// </summary>
-    public class StateHandler
+    public sealed class StateHandler
     {
         private IState gameState;
         private IState menuState;
         private IState currentState;
+        GameWindow game;
 
+        private static readonly StateHandler instance = new StateHandler();
 
-        public StateHandler()
+        private StateHandler()
         {
-            startGame();
+            SettingsParser.Init(@"..\\..\\..\\..\\RallysportGame\\RallysportGame\\ini\\default.ini");
         }
+
+        public static StateHandler Instance
+        {
+            get
+            {
+                return instance;
+            }
+        }
+
         public void startGame()
         {
-            gameState = new GameState(this);
-            menuState = new MenuState(this);
-            this.enterMenu();
+            gameState = new GameState();
+            menuState = new MenuState();
+            this.changeStateToMenu();
             //this.enterGame();
 
-            SettingsParser.Init(@"..\\..\\..\\..\\RallysportGame\\RallysportGame\\ini\\default.ini");
 
-            using (var game = new GameWindow(SettingsParser.GetInt(Settings.WINDOW_WIDTH), SettingsParser.GetInt(Settings.WINDOW_HEIGHT),GraphicsMode.Default, "Speed Junkies"))
+            using (game = new GameWindow(SettingsParser.GetInt(Settings.WINDOW_WIDTH), SettingsParser.GetInt(Settings.WINDOW_HEIGHT),GraphicsMode.Default, "Speed Junkies"))
             {
-                //gameWindow.KeyDown += handleKeyDown;
-                //gameWindow.KeyUp += handleKeyUp;
                 game.Load += (sender, e) =>
                 {
                     menuState.Load(game);
@@ -78,12 +86,18 @@ namespace RallysportGame
                 game.Run(60.0);
             }
         }
-        public void enterMenu()
+
+        public void restartGame()
+        {
+            game.Exit();
+            startGame();
+        }
+        public void changeStateToMenu()
         {
             //TODO
             currentState = menuState;
         }
-        public void enterGame()
+        public void changeStateToGame()
         {
             //TODO
             currentState = gameState;
@@ -93,8 +107,6 @@ namespace RallysportGame
         {
             return currentState == menuState;
         }
-        public static void restartGame() {
 
-        }
     }
 }

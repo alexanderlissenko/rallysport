@@ -63,7 +63,7 @@ namespace RallysportGame.GUI
             }
 
             buttonList.Add(newButton);
-            newHitBox(newButton); // causes a bug collision bug since text can change in a alternatices button
+            newHitBox(newButton); // causes a collision bug since text can change in a alternatives button
             return newButton;
         }
 
@@ -121,9 +121,9 @@ namespace RallysportGame.GUI
                 }
                 else
                 {
-                    font.Print(buttonText.getText(), maxWidth, ALIGNMENT, buttonText.getPosition());
-                    //float yOffset = 0;
-                    //PrintWithBounds(font, buttonText.getText(), hitBoxList[i], ALIGNMENT, yOffset);
+                    //font.Print(buttonText.getText(), maxWidth, ALIGNMENT, buttonText.getPosition());
+                    float yOffset = 0;
+                    PrintWithBounds(font, buttonText.getText(), hitBoxList[i], ALIGNMENT, yOffset);
                 }
             }
             QFont.End();
@@ -133,6 +133,7 @@ namespace RallysportGame.GUI
         private void UpdateMouse() {
 
             Point point = new Point(mouse.X, mouse.Y);
+            System.Console.WriteLine(point.ToString());
             if (!point.Equals(previousMousePoint))
             {
                 for (int i = 0; i < hitBoxList.Count; i++)
@@ -160,8 +161,8 @@ namespace RallysportGame.GUI
 
 
             float maxWidth = bounds.Width;
-
-            float height = font.Measure(text, maxWidth, alignment).Height;
+            float height = bounds.Height;
+            //float height = font.Measure(text, maxWidth, alignment).Height;
 
             GL.Begin(BeginMode.LineLoop);
             GL.Vertex3(bounds.X, bounds.Y, 0f);

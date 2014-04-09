@@ -28,7 +28,7 @@ namespace RallysportGame
             //Thread menuThread = new Thread(new ThreadStart(startMenu));
             //menuThread.Start();
             //startGame();
-            new StateHandler();
+            StateHandler.Instance.startGame();
         }
     }
 }

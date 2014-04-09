@@ -79,5 +79,17 @@ namespace RallysportGame
             return result;
         }
 
+
+        internal static void setAudioEnabled(bool p)
+        {
+            //throw new NotImplementedException();
+        }
+
+        internal static void setResolution(int[] p)
+        {
+            intSettings[Settings.WINDOW_WIDTH] = p[0];
+            intSettings[Settings.WINDOW_HEIGHT] = p[1];
+
+        }
     }
 }

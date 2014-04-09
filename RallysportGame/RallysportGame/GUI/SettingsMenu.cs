@@ -10,11 +10,10 @@ namespace RallysportGame.GUI
 {
     class SettingsMenu
     {
-        private const int MAX_WIDTH = 500; //determines the max allowed width for the textRowMenu
-        private const int TEXT_SIZE = 80;
+        private const int MAX_WIDTH = 600; //determines the max allowed width for the textRowMenu
+        private const int TEXT_SIZE = 70;
         private const float LINE_SPACE = 1.3f;
         private const int VERTICAL_OFFSET = 0;
-
         //determines what resolution options are available
         private int[][] RESOLUTIONS = { new int[] { 1600, 800 }, new int[] { 800, 600 }, new int[] { 800, 200 } };
 
@@ -32,7 +31,6 @@ namespace RallysportGame.GUI
 
             resolutionList = new List<String>();
 
-            String s;
             for(int i = 0; i < RESOLUTIONS.Length ; i++){
 
                 resolutionList.Add("Resolution: " + RESOLUTIONS[i][0] + "x" + RESOLUTIONS[i][1]);
@@ -47,14 +45,16 @@ namespace RallysportGame.GUI
 
             Action SaveAndReturn = delegate {
                 saveChanges();
-                returnToMainMenu();
+                //returnToMainMenu();
+                StateHandler.Instance.restartGame();
             };
 
             textMenu.AddTextButton("Done", SaveAndReturn);
         }
 
         private void saveChanges() {
-
+            SettingsParser.setAudioEnabled(isSoundEnabled());
+            SettingsParser.setResolution(getResolution());
         }
 
         public TextRowMenu toTextMenu() {

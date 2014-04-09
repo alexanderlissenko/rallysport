@@ -81,11 +81,9 @@ namespace RallysportGame
         static bool keyHandled = false;
 
         private static CollisionHandler collisionHandler;
-        private StateHandler window;
 
-        public GameState(StateHandler window)
+        public GameState()
         {
-            this.window = window;
         }
 
         // Helper function to turn spherical coordinates into cartesian (x,y,z)
@@ -576,7 +574,7 @@ namespace RallysportGame
                 GL.DeleteTextures(1, ref shadowMapTexture);
                 Audio.deleteBS(source);
                 //window.Exit();
-                window.enterMenu(); //temp
+                StateHandler.Instance.changeStateToMenu(); //temp
             }
             else if (gameWindow.Keyboard[Key.Number9])
             {

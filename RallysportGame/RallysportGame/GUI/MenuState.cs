@@ -21,7 +21,6 @@ namespace RallysportGame.GUI
     {
         private String shaderDir = @"..\..\..\..\Shaders\";
         private int texture;
-        private StateHandler stateHandler;
         private TextRowMenu currentTextMenu;
         private TextRowMenu mainMenu;
         private TextRowMenu settingsMenu;
@@ -29,15 +28,15 @@ namespace RallysportGame.GUI
         private int shader;
         private Entity plane;
 
-        private const int MAX_WIDTH = 500; //determines the max allowed width for the textRowMenu
-        private const int TEXT_SIZE = 80;
+        private const int MAX_WIDTH = 600; //determines the max allowed width for the textRowMenu
+        private const int TEXT_SIZE = 70; //80
         private const float LINE_SPACE = 1.3f;
         private const int VERTICAL_OFFSET = 0;
         private KeyboardDevice keyBoard;
 
-        public MenuState(StateHandler stateHandler)
+        public MenuState()
         {
-            this.stateHandler = stateHandler;
+
         }
 
         public int LoadTexture(string file)
@@ -77,7 +76,7 @@ namespace RallysportGame.GUI
             #region mainMenu
             mainMenu = new TextRowMenu((SettingsParser.GetInt(Settings.WINDOW_WIDTH) / 11), VERTICAL_OFFSET, TEXT_SIZE, MAX_WIDTH, LINE_SPACE, gameWindow.Mouse); //needs to be rerun in case of resize call not sure what'll happen
 
-            Action startGame = delegate { stateHandler.enterGame(); };
+            Action startGame = delegate { StateHandler.Instance.changeStateToGame(); };
             mainMenu.AddTextButton("Singleplayer", startGame);
 
             mainMenu.AddTextButton("Multiplayer", test);
@@ -85,17 +84,14 @@ namespace RallysportGame.GUI
             mainMenu.AddTextButton("Options", swapToSettings);
 
             Action exitAction = delegate { gameWindow.Exit(); };
+
             mainMenu.AddTextButton("Exit", exitAction);
 
             currentTextMenu = mainMenu;
             #endregion
-            settingsMenu = new SettingsMenu(gameWindow, saveChangesAndReturn).toTextMenu();
+            settingsMenu = new SettingsMenu(gameWindow, swapToMainMenu).toTextMenu();
         }
-        private void saveChangesAndReturn()
-        {
-            //TODO
-            swapToMainMenu();
-        }
+
         private void swapToMainMenu()
         {
             currentTextMenu = mainMenu;
@@ -129,7 +125,7 @@ namespace RallysportGame.GUI
             GL.UseProgram(0);
 
             GL.End();
-
+            
             currentTextMenu.Render();
 
             gameWindow.SwapBuffers();
