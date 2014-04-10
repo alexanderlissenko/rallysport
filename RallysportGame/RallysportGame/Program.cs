@@ -317,7 +317,8 @@ namespace RallysportGame
 
                     TriggerManager.initTriggers(collisionHandler.space, environment);
                     TriggerManager.addPowerUp(new BEPUutilities.Vector3(200, 0, -250));
-                    TriggerManager.addGoal(new BEPUutilities.Vector3(150, 0, 300));
+                    BEPUutilities.Vector3[] checkpoints = {new Vector3(150, 0, 300), new Vector3(150, 0, -300)} ;
+                    TriggerManager.addGoal(checkpoints);
 
 
                     //Particle System

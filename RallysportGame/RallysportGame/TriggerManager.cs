@@ -14,13 +14,16 @@ namespace RallysportGame
     static class TriggerManager
     {
         static ArrayList powerUps;
+        static ArrayList checkpoints;
 
         static Environment world;
 
         static Space space;
 
+
         public static void initTriggers(Space sp, Environment wo)
         {
+            checkpoints = new ArrayList();
             powerUps = new ArrayList();
             space = sp;
             world = wo;
@@ -33,9 +36,19 @@ namespace RallysportGame
             powerUps.Add(powerUp);
         }
 
-        public static void addGoal( BEPUutilities.Vector3 pos)
+        public static void addGoal(BEPUutilities.Vector3[] pos)
         {
-            Trigger goal = new Trigger(pos, "goal", space, world.bepu_mesh);
+            for (int i = 0; i < pos.Length; i++)
+            {
+                if (i == pos.Length - 1)
+                {
+                    Trigger goal = new Trigger(pos[i], "goal", space, world.bepu_mesh);
+                }
+                else
+                {
+                    Trigger goal = new Trigger(pos[i], "checkpoint " + (pos.Length-1), space, world.bepu_mesh);
+                }
+            }
         }
 
         public static void renderPowerUps(int program, Matrix4 projectionMatrix,Matrix4 viewMatrix)
