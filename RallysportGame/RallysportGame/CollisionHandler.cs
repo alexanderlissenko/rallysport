@@ -18,6 +18,8 @@ namespace RallysportGame
         private List<DynamicEntity> objects;
         private Environment world;
 
+        Trigger powerUp;
+
         public CollisionHandler()
         {
             objects = new List<DynamicEntity>();
@@ -62,7 +64,17 @@ namespace RallysportGame
         public void addTestTrigger()
         {
             Trigger goal = new Trigger(new BEPUutilities.Vector3(150, 0, 300),"goal", space,world.bepu_mesh);
-            Trigger powerUp = new Trigger(new BEPUutilities.Vector3(150, 0, -300), "powerUp", space, world.bepu_mesh);
+            powerUp = new Trigger("Cube\\3ds-cube",new BEPUutilities.Vector3(200, 0, -250), "powerUp", space, world.bepu_mesh);
+        }
+
+        public void renderTrigger(int program, Matrix4 projectionMatrix,Matrix4 viewMatrix)
+        {
+            powerUp.firstPass(program, projectionMatrix, viewMatrix);
+        }
+
+        public void updateTrigger()
+        {
+            powerUp.update();
         }
     }
 }

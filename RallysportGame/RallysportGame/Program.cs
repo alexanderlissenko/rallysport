@@ -310,8 +310,15 @@ namespace RallysportGame
 
                     //collisionHandler.addObject(playerCar);
                     collisionHandler.addObject(environment);
-                    collisionHandler.addTestTrigger();
+                    
                     plane = new Entity("plane");
+
+                    //SETUP TRIGGERS
+
+                    TriggerManager.initTriggers(collisionHandler.space, environment);
+                    TriggerManager.addPowerUp(new BEPUutilities.Vector3(200, 0, -250));
+                    TriggerManager.addGoal(new BEPUutilities.Vector3(150, 0, 300));
+
 
                     //Particle System
                     //testPartSys = new ParticleSystem(new OpenTK.Vector3(0, 0, 0), 60f, 1, new TimeSpan(0, 0, 0, 2), unitSphere);
@@ -600,6 +607,7 @@ namespace RallysportGame
 
                     light_theta += camera_horizontal_delta*0.1f;
                     //myCar2.modelMatrix *= Matrix4.CreateRotationY(0.1f);
+                    TriggerManager.updatePowerUps();
                 };
                 #endregion
 
@@ -676,7 +684,7 @@ namespace RallysportGame
                     //myCar2.firstPass(firstPassShader, projectionMatrix, viewMatrix);
                     playerCar.firstPass(firstPassShader, projectionMatrix, viewMatrix);
                     //skybox.firstPass(firstPassShader, projectionMatrix, viewMatrix);
-
+                    TriggerManager.renderPowerUps(firstPassShader, projectionMatrix, viewMatrix);
                     GL.DepthMask(false);
                     GL.Disable(EnableCap.DepthTest);
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);

@@ -86,6 +86,7 @@
     <Compile Include="SettingsParser.cs" />
     <Compile Include="Trigger.cs" />
     <Compile Include="TriggerHandler.cs" />
+    <Compile Include="TriggerManager.cs" />
     <Compile Include="Utilities.cs" />
   </ItemGroup>
   <ItemGroup>

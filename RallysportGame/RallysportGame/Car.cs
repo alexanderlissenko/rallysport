@@ -86,20 +86,9 @@ namespace RallysportGame
             this.space = space;
             //position = pos;
             BEPUutilities.Matrix temp = BEPUutilities.Matrix.Identity;
-            carHull = new ConvexHull(new List<BEPUutilities.Vector3>(Utilities.meshToVectorArray(mesh)),10); //Use with wrapped body?
-            //carHull.WorldTransform *= BEPUutilities.Matrix.CreateScale(scaling_factor, scaling_factor, scaling_factor);
+            carHull = new ConvexHull(new List<BEPUutilities.Vector3>(Utilities.meshToVectorArray(mesh)),10); 
             carHull.CollisionInformation.LocalPosition = carHull.Position;
             
-            //vehicle = new Vehicle(carHull);
-            //body = vehicle.Body;
-            // Make sure we use the same transforms for both physics geometry and graphics!
-            
-            // Scaling
-            //modelMatrix *= Matrix4.CreateScale(scaling_factor);
-            // Rotation
-            //Matrix4.LookAt(Vector3.Zero, direction, up);
-            //body.Orientation = new Quaternion(Utilities.ConvertToBepu(direction), 1);
-            //carHull.WorldTransform *= BEPUutilities.Matrix.CreateScale(scaling_factor, scaling_factor, scaling_factor);
             // Translation
 
             carHull.WorldTransform = BEPUutilities.Matrix.CreateTranslation(Utilities.ConvertToBepu(pos));
@@ -137,21 +126,8 @@ namespace RallysportGame
             wheelents.Add(wheel2ent);
             wheelents.Add(backwheel1ent);
             wheelents.Add(backwheel2ent);
-            /*
-            wheels.Add(new CarWheel(wheelPath, new Vector3(-30.5f,-10.5f,38f)));//new Vector3(-19.5f, 61f, 12.5f)));
-            wheels.Add(new CarWheel(wheelPath, new Vector3(-30.5f, -10.5f, -57f)));//new Vector3(35.5f, 61f, 12.5f)));
-            wheels.Add(new CarWheel(wheelPath, new Vector3(28.5f, -10.5f, 38f)));//new Vector3(-19.5f, -34.5f, 12.5f)));
-            wheels.Add(new CarWheel(wheelPath, new Vector3(28.5f, -10.5f, -57f)));//new Vector3(35.5f, -34.5f, 12.5f)));
-            // ...
-            foreach (CarWheel w in wheels)
-            {
-                //w.setUp3DSModel();
-                vehicle.AddWheel(w.wheel);
-                w.car = this;
-                CollisionRules.AddRule(w.wheel.Shape, vehicle.Body, CollisionRule.NoBroadPhase);//.NoNarrowPhasePair);
-                CollisionRules.AddRule(vehicle.Body, w.wheel.Shape, CollisionRule.NoBroadPhase);//NoNarrowPhasePair);
 
-            }*/
+
             carHull.PositionUpdated += new Action<BEPUphysics.Entities.Entity>(PositionUpdated);
             carHull.CollisionInformation.Events.ContactCreated += new ContactCreatedEventHandler<EntityCollidable>(ContactCreated);
             carHull.CollisionInformation.Events.PairTouched += new PairTouchedEventHandler<EntityCollidable>(PairTouched);
@@ -241,16 +217,7 @@ namespace RallysportGame
 
             Vector3.Multiply(ref leftRot, rate *0.5f, out acceleration);
             carHull.LinearVelocity += Utilities.ConvertToBepu(acceleration);
-            /*
-            acceleration = direction;
-            acceleration += direction* rate;
-            carHull.LinearVelocity += Utilities.ConvertToBepu(acceleration);
-            */
-            //speed += rate;
-            //foreach (CarWheel w in wheels)
-            //{
-            //    w.wheel.DrivingMotor.TargetSpeed = speed;
-            //}
+
             
         }
         // Angle in radians
@@ -271,11 +238,6 @@ namespace RallysportGame
                 steeringMotor1.Settings.Servo.Goal = 0;
                 steeringMotor2.Settings.Servo.Goal = 0;
             }
-            //direction = Vector3.Transform(direction, Matrix4.CreateRotationY(angle));
-            //velocity = Vector3.Transform(velocity, Matrix4.CreateRotationY(angle));
-            //turning_angle += angle;
-            //body.OrientationMatrix = Matrix3.CreateRotationY(angle);
-            //body.WorldTransform *= BEPUutilities.Matrix.CreateFromQuaternion(BEPUutilities.Quaternion.CreateFromRotationMatrix(Matrix4.CreateRotationY(angle)));
         }
 
         public Vector3 getCarPos()
