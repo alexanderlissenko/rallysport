@@ -61,20 +61,5 @@ namespace RallysportGame
                 Console.WriteLine("Added " + e + " to space! as ID " + space.Entities[space.Entities.Count - 1].InstanceId);
             }
         }
-        public void addTestTrigger()
-        {
-            Trigger goal = new Trigger(new BEPUutilities.Vector3(150, 0, 300),"goal", space,world.bepu_mesh);
-            powerUp = new Trigger("Cube\\3ds-cube",new BEPUutilities.Vector3(200, 0, -250), "powerUp", space, world.bepu_mesh);
-        }
-
-        public void renderTrigger(int program, Matrix4 projectionMatrix,Matrix4 viewMatrix)
-        {
-            powerUp.firstPass(program, projectionMatrix, viewMatrix);
-        }
-
-        public void updateTrigger()
-        {
-            powerUp.update();
-        }
     }
 }

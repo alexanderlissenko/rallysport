@@ -76,6 +76,8 @@
     <Compile Include="CollisionHandler.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="Environment.cs" />
+    <Compile Include="GameState.cs" />
+    <Compile Include="GameTimer.cs" />
     <Compile Include="InputHandler.cs" />
     <Compile Include="ImageProsessing.cs" />
     <Compile Include="ParticleSystem.cs" />

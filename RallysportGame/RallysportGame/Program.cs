@@ -80,7 +80,7 @@ namespace RallysportGame
         static ArrayList keyList = new ArrayList();
 
 
-
+        static GameTimer gT;
         
         static int source = 0;
         static bool musicPaused;
@@ -527,7 +527,8 @@ namespace RallysportGame
                     //GL.DepthMask(true);
                     //GL.DepthFunc(DepthFunction.Lequal);
                     //GL.DepthRange(0.0f, 5.0f);
-                    
+                    gT = new GameTimer();
+                    gT.countDown(20);
                     
                     
                 };
@@ -593,7 +594,8 @@ namespace RallysportGame
                         }
                     }
                     collisionHandler.Update();
-
+                    TriggerManager.updatePowerUps();
+                    
                     updateCamera();
                     UpdateMouse();
                     playerCar.Update();
@@ -608,7 +610,7 @@ namespace RallysportGame
 
                     light_theta += camera_horizontal_delta*0.1f;
                     //myCar2.modelMatrix *= Matrix4.CreateRotationY(0.1f);
-                    TriggerManager.updatePowerUps();
+                    gT.tick();
                 };
                 #endregion
 
@@ -626,9 +628,6 @@ namespace RallysportGame
                     
 
                     #endregion
-                    
-                    
-
                     
                     int w = game.Width;
                     int h = game.Height;
