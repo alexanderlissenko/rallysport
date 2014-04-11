@@ -71,14 +71,14 @@ void main(void)
 				+ (calculateSpecular(scene_light, fresnelSpecular,material_shininess,normal.xyz,directionToLight,directionFromEye)
 				+ calculateDiffuse(scene_light,diffuse.xyz,normal.xyz,directionToLight))*visibility;
 					
-  fragColor = vec4(ambient,1.0);
+  //fragColor = vec4(ambient,1.0);
    
 
 // Some debug features. Enable any of them to get a visual representation
 // of an internal buffer.
 // fragColor = vec4(shadowMapCoord.z/shadowMapCoord.w);
 // fragColor = (normal+1)/2;
-// fragColor = diffuse;
+ fragColor = diffuse;
 // fragColor = vec4(visibility);
 // fragColor = vec4(depth.x);
 // fragColor = vec4(worldPos.xyz,1); // Scaling may be needed to range [0,1]
