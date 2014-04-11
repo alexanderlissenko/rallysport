@@ -54,11 +54,12 @@ namespace RallysportGame
             this.changeStateToMenu();
             //this.enterGame();
 
-
-            using (game = new GameWindow(SettingsParser.GetInt(Settings.WINDOW_WIDTH), SettingsParser.GetInt(Settings.WINDOW_HEIGHT),GraphicsMode.Default, "Speed Junkies"))
+            using (game = new GameWindow(SettingsParser.GetInt(Settings.WINDOW_WIDTH), SettingsParser.GetInt(Settings.WINDOW_HEIGHT), GraphicsMode.Default, "Speed Junkies"))
             {
+
                 game.Load += (sender, e) =>
                 {
+
                     menuState.Load(game);
 
                     gameState.Load(game);

@@ -13,7 +13,8 @@ namespace RallysportGame
     {
         WINDOW_HEIGHT,
         WINDOW_WIDTH,
-        GRAVITY
+        GRAVITY,
+        FULLSCREEN
     }
 
     
@@ -82,7 +83,7 @@ namespace RallysportGame
 
         internal static void setAudioEnabled(bool p)
         {
-            //throw new NotImplementedException();
+
         }
 
         internal static void setResolution(int[] p)

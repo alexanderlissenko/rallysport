@@ -157,6 +157,12 @@ namespace RallysportGame.GUI
                 currentTextMenu.ClickSelected();
                 awaitingDownKey = false;
             }
+            else if (e.Key.Equals(Key.Escape) && awaitingDownKey) {
+                if (currentTextMenu == settingsMenu.toTextMenu()) {
+                    settingsMenu.undoStateChanges();
+                    swapToMainMenu();
+                }
+            }
         }
         public override void MouseButtonDown(object sender, MouseButtonEventArgs e)
         {
