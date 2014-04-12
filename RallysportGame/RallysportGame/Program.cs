@@ -529,7 +529,7 @@ namespace RallysportGame
 
 
                     //Music
-                    source = Audio.initSound();
+                    //source = Audio.initSound();
 
 
                     //enable depthtest and face culling
@@ -595,14 +595,14 @@ namespace RallysportGame
                     if (game.Keyboard[Key.Escape])
                     {
                         GL.DeleteTextures(1, ref shadowMapTexture);
-                        Audio.deleteBS(source);
+                        //Audio.deleteBS(source);
                         game.Exit();
                     }
                     else if (game.Keyboard[Key.Number9])
                     {
                         if (!keyHandled)
                         {
-                            Audio.increaseGain(source);
+                            //Audio.increaseGain(source);
                             keyHandled = !keyHandled;
                         }
                     }
@@ -610,7 +610,7 @@ namespace RallysportGame
                     {
                         if (!keyHandled)
                         {
-                            Audio.decreaseGain(source);
+                            //Audio.decreaseGain(source);
                             keyHandled = !keyHandled;
                         }
                     }
@@ -620,7 +620,7 @@ namespace RallysportGame
                         {
                             if (musicPaused)
                             {
-                                Audio.playSound(source);
+                                //Audio.playSound(source);
                                 musicPaused = !musicPaused;
                                 keyHandled = !keyHandled;
                             }
@@ -647,11 +647,12 @@ namespace RallysportGame
                     //playerCar.Update();
                     //////////////////////////////////////////////////////ÄNDRA TILLBAKA!!!
                     //Audio management
+                    /*
                     if (Audio.audioStatus(source) == 1)
                         Audio.playSound(source);
                     else if (Audio.audioStatus(source) == 3)
                         source = Audio.nextTrack(source);
-
+                    */
                     //move light
 
                     light_theta += camera_horizontal_delta*0.1f;
