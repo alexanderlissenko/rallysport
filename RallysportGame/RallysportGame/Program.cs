@@ -379,9 +379,8 @@ namespace RallysportGame
                     //Load uniforms and texture
                     GL.UseProgram(firstPassShader);
 
-                    //myCar2.setUpBlenderModel();
+                    
                     //playerCar.setUpMtl();
-                    //playerCar.setUp3DSModel(); Don't do this here! Scaling is done in Car class
 
                     //skybox.setUp3DSModel();// setUpBlenderModel();
                     GL.UseProgram(0);
@@ -549,7 +548,7 @@ namespace RallysportGame
                     //Network
                     if (testtimer == 180)
                     {
-                        networkhandler.sendData(new Vector3(0.0f));
+                        networkhandler.sendData(playerCar.position);
                         testtimer = 0;
                     }
                     testtimer++;
@@ -627,7 +626,6 @@ namespace RallysportGame
                     //move light
 
                     light_theta += camera_horizontal_delta*0.1f;
-                    //myCar2.modelMatrix *= Matrix4.CreateRotationY(0.1f);
                     gT.tick();
                 };
                 #endregion
