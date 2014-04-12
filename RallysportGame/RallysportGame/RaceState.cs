@@ -9,7 +9,7 @@ namespace RallysportGame
     /// <summary>
     /// Handles the states of the game, which will describe what the user can do
     /// </summary>
-    static class  GameState
+    static class  RaceState
     {
         enum States: byte
         {
