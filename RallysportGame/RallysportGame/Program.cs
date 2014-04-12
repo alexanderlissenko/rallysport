@@ -788,9 +788,9 @@ namespace RallysportGame
                     int h = game.Height;
 
 
-                    Vector3 camera_position = sphericalToCartesian(camera_theta, camera_phi, camera_r, new Vector3(0, 0, 0));//playerCar.getCarPos());
+                    Vector3 camera_position = sphericalToCartesian(camera_theta, camera_phi, camera_r, playerCar.getCarPos());
                     //camera_lookAt = new Vector3(0.0f, camera_target_altitude, 0.0f);
-                    Vector3 camera_lookAt = new Vector3(0, 0, 0);//playerCar.getCarPos();//Vector4.Transform(camera_lookAt, camera_rotation_matrix);//new Vector3(0.0f, 0.0f, 0.0f);//
+                    Vector3 camera_lookAt = playerCar.getCarPos();// new Vector3(0, 0, 0);//Vector4.Transform(camera_lookAt, camera_rotation_matrix);//new Vector3(0.0f, 0.0f, 0.0f);//
                     Matrix4 viewMatrix = Matrix4.LookAt(camera_position, camera_lookAt,up);
                     Matrix4 projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(pi / 4, (float)w / (float)h, 1f, 1000f);
                     // Here we start getting into the lighting model
