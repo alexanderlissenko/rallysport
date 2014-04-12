@@ -532,7 +532,7 @@ namespace RallysportGame
                     //GL.DepthRange(0.0f, 5.0f);
                     gT = new GameTimer();
                     gT.countDown(20);
-                    
+                    networkhandler.startSending();
                     
                 };
                 #endregion
