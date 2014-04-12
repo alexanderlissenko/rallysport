@@ -43,6 +43,10 @@ namespace RallysportGame
                 Console.WriteLine("Time left: " + timeDiff);
                 previousTimeDiff = timeDiff;
             }
+            if(timeDiff == 0)
+            {
+                RaceState.setCurrentState(RaceState.States.RACING);
+            }
         }
     }
 }
