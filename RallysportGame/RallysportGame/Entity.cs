@@ -76,6 +76,7 @@ namespace RallysportGame
             numOfTri = mesh.Tris.Length;
             makeVAO();
             matList = new List<Material>();
+            setUpMultMtl();
         }
 
         public Entity(String name, OpenTK.Vector3 position): this(name)
@@ -373,7 +374,7 @@ namespace RallysportGame
 
             string line;
             char[] splitChars = { ' ','\t'};
-            Material m;// = new Material(); //vad gör detta? kolla upp
+            Material m;
 
             while ((line = reader.ReadLine()) != null)
             {

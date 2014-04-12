@@ -2,6 +2,7 @@
 
 precision mediump float;
 uniform sampler2D firstTexture;
+uniform vec3 diffuse;
 in vec3 fragmentNormal;
 in vec2 fragmentTexCoord;
 in vec4 positionOut;
@@ -14,6 +15,9 @@ void main(void)
 {
    normOutput = vec4(fragmentNormal, 0);
    vec4 clr = texture(firstTexture, fragmentTexCoord);
+   
+   if (clr.xyz == vec3(0.0))
+		clr = vec4(diffuse,1);
 
    
    //float alpha = clr.a;

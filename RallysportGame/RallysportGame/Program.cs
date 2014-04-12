@@ -349,9 +349,9 @@ namespace RallysportGame
                     Console.WriteLine(GL.GetProgramInfoLog(postShader));
                     //Load uniforms and texture
                     GL.UseProgram(firstPassShader);
-                    environment.setUpMultMtl();//.setUpMtl();
+                    //environment.setUpMultMtl();//.setUpMtl();
                     environment.loadTexture();
-                    testWheel.setUpMultMtl();
+                    //testWheel.setUpMultMtl();
                     //environment.setUpBlenderModel();
                     //myCar2.setUpBlenderModel();
                     playerCar.setUp3DSModel();
