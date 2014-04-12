@@ -40,6 +40,7 @@ namespace RallysportGame
         //	Global variables
         //*****************************************************************************
         static int megaParticleShader, shadowShaderProgram, firstPassShader, secondPassShader, verticalGaussianFilterShader, horizontalGaussianFilterShader, perlinShader,copyShader;
+        static int mergeShader;
         //static Vector3 lightPosition;
         static GaussianFilter gaussBlurr;
         static MegapParticleFilter megaPartFilter;
@@ -348,6 +349,12 @@ namespace RallysportGame
 
                     GL.BindFragDataLocation(horizontalGaussianFilterShader, 0, "fragColor");
                     GL.LinkProgram(horizontalGaussianFilterShader);
+
+                    mergeShader = loadShaderProgram(shaderDir + "mergeShader\\mergeShaderVertex", shaderDir + "mergeShader\\mergeShaderFragment");
+                    GL.BindAttribLocation(mergeShader, 0, "positionIn");
+                    GL.BindFragDataLocation(mergeShader, 0, "fragColor");
+                    GL.LinkProgram(mergeShader);
+
 
 
                     Console.WriteLine(GL.GetProgramInfoLog(shadowShaderProgram));
@@ -679,7 +686,7 @@ namespace RallysportGame
                     GL.PushAttrib(AttribMask.EnableBit);
                     {
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer,shadowMapFBO);
-                        
+                    
                     GL.Viewport(0, 0, shadowMapRes, shadowMapRes);
                     //GL.CullFace(CullFaceMode.Front);
                     GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
@@ -699,9 +706,9 @@ namespace RallysportGame
                     //GL.Disable(EnableCap.PolygonOffsetFill);
                     #endregion
                     ///END OF SHADOWMAP FBO RENDERING
-
                     
-                    
+                   
+                   
 
 
 
@@ -802,6 +809,8 @@ namespace RallysportGame
 
                     //gaussBlurr.gaussianBlurr(deferredTex, w, h, projectionMatrix, viewMatrix);
                     //int temp_deferredDepth = megaPartFilter.displaceBlend(deferredTex, deferredDepth, game.Width, game.Height, perlinNoise[0], PERLIN_REZ_X, PERLIN_REZ_Y, copyShader, projectionMatrix, viewMatrix);
+
+
 
 
                     #region secondPass
