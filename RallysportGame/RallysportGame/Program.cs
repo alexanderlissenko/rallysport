@@ -73,8 +73,7 @@ namespace RallysportGame
 
         static Environment environment;
         static Car playerCar;
-        static Wheel w;
-
+        static ArrayList otherCars = new ArrayList();
 
 
         static ArrayList keyList = new ArrayList();
@@ -90,6 +89,10 @@ namespace RallysportGame
         private static CollisionHandler collisionHandler;
 
 
+        //NETWORK
+        static Network networkhandler;
+        static int testtimer = 0; 
+        //
 
 
         // Helper function to turn spherical coordinates into cartesian (x,y,z)
@@ -286,7 +289,7 @@ namespace RallysportGame
                 #region Load
                 game.Load += (sender, e) =>
                 {
-                
+                    networkhandler = new Network();
                     SettingsParser.Init(iniDir + "default.ini");
                     //enable depthtest and face culling
                     GL.Enable(EnableCap.DepthTest);
@@ -302,7 +305,7 @@ namespace RallysportGame
                     environment.setUpMtl();
                     environment.loadTexture();
                     //environment.setUpBlenderModel(); //Handled in constructor
-
+                    
                     playerCar = new Car(@"Mustang\mustang-no-wheels", @"Mustang\one-wheel-tex-scale", new Vector3(300, 40, 0), collisionHandler.space);
                     skybox = new Entity("Cube\\inside_koob");
                     unitSphere = new Entity("Cube\\unitSphere");
@@ -314,7 +317,7 @@ namespace RallysportGame
                     plane = new Entity("plane");
 
                     //SETUP TRIGGERS
-
+                    
                     TriggerManager.initTriggers(collisionHandler.space, environment);
                     TriggerManager.addPowerUp(new BEPUutilities.Vector3(200, 0, -250));
                     BEPUutilities.Vector3[] checkpoints = {new Vector3(150, 0, 300), new Vector3(150, 0, -300)} ;
@@ -375,7 +378,7 @@ namespace RallysportGame
                     Console.WriteLine(GL.GetProgramInfoLog(postShader));
                     //Load uniforms and texture
                     GL.UseProgram(firstPassShader);
-                    
+
                     //myCar2.setUpBlenderModel();
                     //playerCar.setUpMtl();
                     //playerCar.setUp3DSModel(); Don't do this here! Scaling is done in Car class
@@ -384,9 +387,9 @@ namespace RallysportGame
                     GL.UseProgram(0);
                     
                     //Set up Uniforms
-
+                    
                     plane.loadUniformLocations(secondPassShader);
-
+                    
                     //Shadowmaps
                     #region ShadowMap
                     shadowMapRes = 1080;
@@ -484,7 +487,7 @@ namespace RallysportGame
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
 
-
+                    
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer, deferredFBO);
                     GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, deferredTex, 0);
                     GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment1, TextureTarget.Texture2D, deferredNorm, 0);
@@ -543,13 +546,28 @@ namespace RallysportGame
                 #region Update
                 game.UpdateFrame += (sender, e) =>
                 {
+                    //Network
+                    if (testtimer == 180)
+                    {
+                        networkhandler.sendData(new Vector3(0.0f));
+                        testtimer = 0;
+                    }
+                    testtimer++;
+                    networkhandler.recieveData(ref otherCars);
+
+                    //Network
+
                     camera_rotation_matrix = Matrix4.Identity;
                     // add game logic, input handling
                     if (game.Keyboard[Key.Escape])
                     {
+                        if (!keyHandled)
+                        {
+                            networkhandler.closeSocket();
                         GL.DeleteTextures(1, ref shadowMapTexture);
                         Audio.deleteBS(source);
                         game.Exit();
+                    }
                     }
                     else if (game.Keyboard[Key.Number9])
                     {
@@ -595,7 +613,7 @@ namespace RallysportGame
                     }
                     collisionHandler.Update();
                     TriggerManager.updatePowerUps();
-                    
+
                     updateCamera();
                     UpdateMouse();
                     playerCar.Update();
@@ -617,7 +635,7 @@ namespace RallysportGame
                 #region Render
                 game.RenderFrame += (sender, e) =>
                 {
-                   
+                    
                     GL.ClearColor(0.2f, 0.2f, 0.8f, 1.0f);
                     GL.ClearDepth(1.0f);
 
@@ -648,7 +666,7 @@ namespace RallysportGame
                     #region shadowMapRender
                     Matrix4 lightViewMatrix = Matrix4.LookAt(lightPosition, new Vector3(0.0f, 0.0f, 0.0f), up);
                     Matrix4 lightProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(pi / 4, 1.0f, 2180f,3580f);
-
+                        
                     Matrix4 lightMatrix = renderSM(shadowShaderProgram,viewMatrix, lightViewMatrix, lightProjectionMatrix);
 
                     #endregion
@@ -675,10 +693,10 @@ namespace RallysportGame
                     GL.ActiveTexture(TextureUnit.Texture0);
                     GL.BindTexture(TextureTarget.Texture2D, environment.getTextureId());
                     GL.Uniform1(GL.GetUniformLocation(firstPassShader, "firstTexture"), 0);
-                    
+
                     //megaParticles.firstPass(firstPassShader, projectionMatrix, viewMatrix);
                     environment.firstPass(firstPassShader,  projectionMatrix,  viewMatrix);
-                    
+
 
                     GL.BindTexture(TextureTarget.Texture2D, 0);
                     //myCar2.firstPass(firstPassShader, projectionMatrix, viewMatrix);
@@ -689,7 +707,7 @@ namespace RallysportGame
                     GL.Disable(EnableCap.DepthTest);
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
                     #endregion
-                    
+
                     Matrix4 invProj = Matrix4.Invert(projectionMatrix);
                     
                     #region secondPass
@@ -729,17 +747,17 @@ namespace RallysportGame
                     Vector2 size = new Vector2(game.Width,game.Height);
                     GL.Uniform2(GL.GetUniformLocation(secondPassShader, "screenSize"), ref size);
                     
-
+                    
                     GL.UniformMatrix4(GL.GetUniformLocation(secondPassShader, "lightMatrix"),false, ref lightMatrix);
                     int lTUniform = GL.GetUniformLocation(secondPassShader, "lightType");
-                    
+
                     //Directional Light
                     GL.Uniform1(lTUniform, 0.0f);
                     plane.directionalLight(secondPassShader, invProj,viewMatrix, lightPosition, camera_position);
-                    
+
                     //Point Lights
                     GL.Uniform1(lTUniform, 1.0f);
-
+                    
 
                     //Render Car Lights
                     playerCar.renderBackLight(secondPassShader, plane);
@@ -753,7 +771,7 @@ namespace RallysportGame
 
                         //Spot Light
                     /*
-
+                    
                     lightViewMatrix = Matrix4.LookAt(new Vector3(0, 10, 0), new Vector3(0.0f, -40.0f, 0.0f), up);
                     lightProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(pi / 4, 1.0f, 1f, 1000f);
                     lightMatrix = renderSM(secondPassShader, viewMatrix, lightViewMatrix, lightProjectionMatrix);
@@ -771,7 +789,7 @@ namespace RallysportGame
                     GL.Uniform1(GL.GetUniformLocation(secondPassShader, "shadowMapTex"), 4);
 
                     GL.Uniform2(GL.GetUniformLocation(secondPassShader, "screenSize"), ref size);
-
+                    
 
                     GL.UniformMatrix4(GL.GetUniformLocation(secondPassShader, "lightMatrix"), false, ref lightMatrix);
                     GL.Uniform1(lTUniform, 2.0f);
@@ -780,21 +798,21 @@ namespace RallysportGame
                     //plane.spotLight(secondPassShader, new Vector3(0, 3, 0), new Vector3(1, -1, 0), new Vector3(1, 0, 0), 15.0f, (float)Math.Cos(pi / 4));
                     //plane.spotLight(secondPassShader, new Vector3(0, 3, 0), new Vector3(0, -1, -1), new Vector3(0, 1, 0), 15.0f, (float)Math.Cos(pi / 4));
                     //plane.spotLight(secondPassShader, new Vector3(0, 3, 0), new Vector3(0, -1, 1), new Vector3(0, 1, 0), 15.0f, (float)Math.Cos(pi / 4));
-                    
+
 
                     //GL.UniformMatrix4(GL.GetUniformLocation(verticalGaussianFilterShader, "projectionMatrix"), false, ref projectionMatrix);
                     //plane.directionalLight(secondPassShader,projectionMatrix, viewMatrix, lightPosition, camera_position);
-                    
+
                     GL.Enable(EnableCap.DepthTest);
                     GL.DepthMask(true);
                     GL.Disable(EnableCap.Blend);
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
                     #endregion
-
+                    
                     //gaussBlurr.gaussianBlurr(postTex, game.Width, game.Height, projectionMatrix, viewMatrix);
                    
                     #region PostProcessing pass
-                    
+
                     GL.UseProgram(postShader);
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
                     GL.DepthMask(false);
@@ -802,7 +820,7 @@ namespace RallysportGame
                     GL.Viewport(0, 0, w, h);
                     GL.ClearColor(0.0f, 0.0f, 0.0f, 0.0f); //ambient light
                     GL.Clear(ClearBufferMask.ColorBufferBit);
-
+                   
 
                     GL.ActiveTexture(TextureUnit.Texture0);
                     GL.BindTexture(TextureTarget.Texture2D, postTex);

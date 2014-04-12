@@ -75,6 +75,7 @@
     <Compile Include="CarWheel.cs" />
     <Compile Include="CollisionHandler.cs" />
     <Compile Include="Entity.cs" />
+    <Compile Include="Network.cs" />
     <Compile Include="Environment.cs" />
     <Compile Include="RaceState.cs" />
     <Compile Include="GameTimer.cs" />
