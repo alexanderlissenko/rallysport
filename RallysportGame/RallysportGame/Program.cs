@@ -171,16 +171,19 @@ namespace RallysportGame
                 switch(key)
                 {
                     case Key.A:
+                        
                         playerCar.Turn(pi / 32);
                         break;
                     case Key.D:
                         playerCar.Turn(-pi / 32);
                         break;
                     case Key.W:
-                        playerCar.accelerate(1f);
+                        if(RaceState.getCurrentState() == RaceState.States.RACING)
+                            playerCar.accelerate(1f);
                         break;
                     case Key.S:
-                        playerCar.accelerate(-1f);
+                        if (RaceState.getCurrentState() == RaceState.States.RACING)
+                            playerCar.accelerate(-1f);
                         break;
                     case Key.Left:
                         camera_theta += camera_horizontal_delta;
@@ -530,7 +533,7 @@ namespace RallysportGame
                     //GL.DepthFunc(DepthFunction.Lequal);
                     //GL.DepthRange(0.0f, 5.0f);
                     gT = new GameTimer();
-                    gT.countDown(20);
+                    gT.countDown(5);
                     networkhandler.startSending();
                     
                 };

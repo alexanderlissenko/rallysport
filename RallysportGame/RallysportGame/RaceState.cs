@@ -11,7 +11,7 @@ namespace RallysportGame
     /// </summary>
     static class  RaceState
     {
-        enum States: byte
+        public enum States: byte
         {
             PRESTART,
             RACING,
@@ -19,7 +19,17 @@ namespace RallysportGame
         }
         static States currentState = States.PRESTART;
 
-        private static void nextState()
+        public static States getCurrentState()
+        {
+            return currentState;
+        }
+
+        public static void setCurrentState(States state)
+        {
+            currentState = state;
+        }
+
+        public static void nextState()
         {
             switch (currentState)
             {

@@ -35,8 +35,11 @@ namespace RallysportGame
 
         private static void handleGoal(string triggerCauser)
         {
-            if(goalUnlocked)
+            if (goalUnlocked)
+            {
                 Console.WriteLine(triggerCauser + " crossed the Goal!");
+                RaceState.setCurrentState(RaceState.States.ENDING);
+            }
             else
                 Console.WriteLine("Goal not unlocked");
         }
