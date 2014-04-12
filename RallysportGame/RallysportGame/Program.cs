@@ -293,7 +293,7 @@ namespace RallysportGame
                     playerCar = new Car("TeapotCar\\Teapot car\\Teapot-no-materials-tri", new Vector3(0,20f,0));
                     skybox = new Entity("Cube\\inside_koob");
                     unitSphere = new Entity("Cube\\unitSphere");
-                    testWheel = new Entity("one-wheel-tex-scale");
+                    testWheel = new Entity("Cube\\megu_koob");
                     
                     //Particle System
                     megaParticles = new ParticleSystem(unitSphere, new Vector3(0, 0, 0), new Vector3(0, -1, 0), 20.0f * 3.14f / 90.0f, 10,0.1f, new Vector3(0, -0.001f, 0),new TimeSpan(0,0,5));
@@ -656,6 +656,8 @@ namespace RallysportGame
                     DrawBuffersEnum[] draw_buffs2 = { DrawBuffersEnum.ColorAttachment0, DrawBuffersEnum.ColorAttachment1, DrawBuffersEnum.ColorAttachment2, DrawBuffersEnum.ColorAttachment3 };
                     GL.DrawBuffers(4, draw_buffs2);
 
+                    
+
                     GL.ActiveTexture(TextureUnit.Texture0);
                     GL.BindTexture(TextureTarget.Texture2D, environment.getTextureId());
                     GL.Uniform1(GL.GetUniformLocation(firstPassShader, "firstTexture"), 0);
@@ -665,9 +667,11 @@ namespace RallysportGame
                     
 
                     GL.BindTexture(TextureTarget.Texture2D, 0);
-                    myCar2.firstPass(firstPassShader, projectionMatrix, viewMatrix);
+                    //myCar2.firstPass(firstPassShader, projectionMatrix, viewMatrix);
                     testWheel.firstPass(firstPassShader, projectionMatrix, viewMatrix);
+                    
                     skybox.firstPass(firstPassShader, projectionMatrix, viewMatrix);
+
                     
                     GL.DepthMask(false);
                     GL.Disable(EnableCap.DepthTest);

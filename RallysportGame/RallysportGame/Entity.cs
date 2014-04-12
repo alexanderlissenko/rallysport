@@ -93,19 +93,21 @@ namespace RallysportGame
             GL.UniformMatrix4(GL.GetUniformLocation(program, "viewMatrix"), false, ref viewMatrix);
             GL.UniformMatrix4(GL.GetUniformLocation(program, "modelMatrix"), false, ref modelMatrix);
 
-            GL.BindVertexArray(vertexArrayObject);
             
 
+            int faceCount = 0;
+            
             foreach(Material m in matList)
             {
+                GL.BindVertexArray(vertexArrayObject);
                 GL.Uniform3(GL.GetUniformLocation(program, "diffuse"), m.getDiffuse());
                 GL.Uniform3(GL.GetUniformLocation(program, "ambient"), m.getAmbient());
                 GL.Uniform3(GL.GetUniformLocation(program, "emissive"), m.getEmissive());
                 GL.Uniform3(GL.GetUniformLocation(program, "specular"), m.getSpecular());
                 GL.Uniform1(GL.GetUniformLocation(program, "shininess"), m.getShine());
 
-                GL.DrawArrays(PrimitiveType.Triangles, 0, mesh.facesPerMaterial[m.getName()] * 3);
-                //vill hålla koll på facesPerMaterial
+                GL.DrawArrays(PrimitiveType.Triangles, faceCount, mesh.facesPerMaterial[m.getName()] * 3);
+                faceCount += mesh.facesPerMaterial[m.getName()]*3;
             }
 
 
