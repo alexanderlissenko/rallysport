@@ -392,7 +392,7 @@ namespace RallysportGame
             StreamReader reader = new StreamReader(stream);
 
             string line;
-            char[] splitChars = { ' ','\t'};
+            char[] splitChars = { ' ' };
             Material m;
 
             while ((line = reader.ReadLine()) != null)
@@ -463,6 +463,7 @@ namespace RallysportGame
                         break;
                 }
             }
+            stream.Close();
         }
 
 

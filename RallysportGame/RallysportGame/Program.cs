@@ -356,7 +356,7 @@ namespace RallysportGame
                     // Dynamic objects
                     collisionHandler = new CollisionHandler();
                     environment = new Environment("map\\uggly_test_track_Triangulate");//"plane");//
-                    environment.setUpMtl();
+                    
                     environment.loadTexture();
                     //environment.setUpBlenderModel(); //Handled in constructor
 
@@ -366,7 +366,7 @@ namespace RallysportGame
                     unitSphere = new Entity("Cube\\unitSphere");
                     myCar2 = new Entity("Cube\\inside_koob");
 
-                    superSphere.setUpMtl();
+                    //superSphere.setUpMtl();
                     superSphere.loadTexture();
                     
                     //collisionHandler.addObject(playerCar);

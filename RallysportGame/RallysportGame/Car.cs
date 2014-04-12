@@ -104,13 +104,15 @@ namespace RallysportGame
              */
             var backwheel1ent = new Entity(wheelPath);
             var backwheel2ent = new Entity(wheelPath);
+            var wheel1ent = new Entity(wheelPath);
+            var wheel2ent = new Entity(wheelPath);
             var backwheel1 = addBackWheel(new Vector3(28.5f, 12.5f, 35f), carHull,out backMotor1,backwheel1ent);//y = -15.5
             var backwheel2 = addBackWheel(new Vector3(-30.5f, 12.5f, 35f), carHull,out backMotor2, backwheel2ent);//y = -30 ger 50% hjul
             
-            var wheel1ent = new Entity(wheelPath);
+            
             wheel1 = addDriveWheel( new Vector3(-30.5f, 12.5f, -60f),carHull,out drivingMotor1,out steeringMotor1,wheel1ent);
             
-            var wheel2ent = new Entity(wheelPath);
+            
             var wheel2 = addDriveWheel(new Vector3(28.5f, 12.5f, -60f), carHull, out drivingMotor2, out steeringMotor2, wheel2ent);//x 28.5
             
             var steeringStabilizer = new RevoluteAngularJoint(wheel1, wheel2, BEPUutilities.Vector3.Right);
