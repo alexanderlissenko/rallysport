@@ -1,0 +1,25 @@
+#version 420
+
+in vec2 TexCoordFragment;
+uniform vec2 screenSize;
+uniform vec2 perlinSize;
+uniform sampler2D perlinTexture;
+uniform sampler2D megaTexture;
+
+
+float rand(vec2 co){
+
+return fract(sin(dot(co.xy , vec2(12.9898,78.233))) * 43758.5453);
+
+}
+
+
+out vec4 fragmentColor;
+void main() {
+    
+     vec2 perlinFragment = texture(perlinTexture, vec2 (mod(TexCoordFragment.x,perlinSize.x),mod(TexCoordFragment.y,perlinSize.y))).xy;   
+     //perlinFragment = perlinFragment/screenSize;
+     perlinFragment = perlinFragment*2-1;
+
+     fragmentColor=texture(megaTexture,perlinFragment/50+TexCoordFragment);//
+     }
