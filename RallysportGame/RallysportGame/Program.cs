@@ -366,6 +366,9 @@ namespace RallysportGame
                     unitSphere = new Entity("Cube\\unitSphere");
                     myCar2 = new Entity("Cube\\inside_koob");
 
+                    superSphere.setUpMtl();
+                    superSphere.loadTexture();
+
                     //collisionHandler.addObject(playerCar);
                     collisionHandler.addObject(environment);
                     
@@ -649,7 +652,7 @@ namespace RallysportGame
 
                     networkhandler = new Network(collisionHandler.space);
                     //Music
-                    source = Audio.initSound();
+                    //source = Audio.initSound();
 
 
                     //enable depthtest and face culling
@@ -752,12 +755,12 @@ namespace RallysportGame
                     playerCar.Update();
                     //////////////////////////////////////////////////////ÄNDRA TILLBAKA!!!
                     //Audio management
-                    
+                    /*
                     if (Audio.audioStatus(source) == 1)
                         Audio.playSound(source);
                     else if (Audio.audioStatus(source) == 3)
                         source = Audio.nextTrack(source);
-                    
+                    */
                     //move light
 
                     light_theta += camera_horizontal_delta*0.1f;
@@ -785,11 +788,11 @@ namespace RallysportGame
                     int h = game.Height;
 
 
-                    Vector3 camera_position = sphericalToCartesian(camera_theta, camera_phi,camera_r,playerCar.getCarPos());
+                    Vector3 camera_position = sphericalToCartesian(camera_theta, camera_phi, camera_r, new Vector3(0, 0, 0));//playerCar.getCarPos());
                     //camera_lookAt = new Vector3(0.0f, camera_target_altitude, 0.0f);
-                    Vector3 camera_lookAt = playerCar.getCarPos();//Vector4.Transform(camera_lookAt, camera_rotation_matrix);//new Vector3(0.0f, 0.0f, 0.0f);//
+                    Vector3 camera_lookAt = new Vector3(0, 0, 0);//playerCar.getCarPos();//Vector4.Transform(camera_lookAt, camera_rotation_matrix);//new Vector3(0.0f, 0.0f, 0.0f);//
                     Matrix4 viewMatrix = Matrix4.LookAt(camera_position, camera_lookAt,up);
-                    Matrix4 projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(pi / 4, (float)w / (float)h, 0.1f, 1000f);
+                    Matrix4 projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(pi / 4, (float)w / (float)h, 1f, 1000f);
                     // Here we start getting into the lighting model
                     
                     //Matrix4 bias = new Matrix4(0.9f, 0.0f, 0.0f, 0.0f, 0.0f, 0.9f, 0.0f, 0.0f, 0.0f, 0.0f, 0.9f, 0.0f, 0.9f, 0.9f, 0.9f, 1.0f);
@@ -823,7 +826,7 @@ namespace RallysportGame
                     GL.DrawBuffers(3, draw_buffs_smoky);
 
                     GL.ActiveTexture(TextureUnit.Texture0);
-                    GL.BindTexture(TextureTarget.Texture2D, environment.getTextureId());
+                    GL.BindTexture(TextureTarget.Texture2D, superSphere.getTextureId());
                     GL.Uniform1(GL.GetUniformLocation(firstPassShader, "firstTexture"), 0);
 
                     /********************************************************************************************
@@ -869,8 +872,7 @@ namespace RallysportGame
 
                     //megaParticles.firstPass(firstPassShader, projectionMatrix, viewMatrix);
                     environment.firstPass(firstPassShader,  projectionMatrix,  viewMatrix);
-
-
+                    
                     GL.BindTexture(TextureTarget.Texture2D, 0);
                     //myCar2.firstPass(firstPassShader, projectionMatrix, viewMatrix);
                     playerCar.firstPass(firstPassShader, projectionMatrix, viewMatrix);
@@ -989,11 +991,12 @@ namespace RallysportGame
                     //gaussBlurr.gaussianBlurr(postTex, game.Width, game.Height, projectionMatrix, viewMatrix);
 
                     #region Smoking high
-                    
+                    GL.UseProgram(mergeShader);
+                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, postFBO);
                     
                     #endregion
 
-
+                    
                     #region PostProcessing pass
 
                     GL.UseProgram(postShader);
@@ -1009,12 +1012,25 @@ namespace RallysportGame
                     GL.BindTexture(TextureTarget.Texture2D, postTex);
                     GL.ActiveTexture(TextureUnit.Texture1);
                     GL.BindTexture(TextureTarget.Texture2D, deferredVel);
-                    GL.ActiveTexture(TextureUnit.Texture1);
+                    GL.ActiveTexture(TextureUnit.Texture2);
                     GL.BindTexture(TextureTarget.Texture2D, deferredDepth);
+
+                    GL.ActiveTexture(TextureUnit.Texture3);
+                    GL.BindTexture(TextureTarget.Texture2D, megaPartTex);
+
+                    GL.ActiveTexture(TextureUnit.Texture4);
+                    GL.BindTexture(TextureTarget.Texture2D, distorted_megaPartDepth);
+                    
+
+
                     GL.Uniform1(GL.GetUniformLocation(postShader, "postTex"), 0);
                     GL.Uniform1(GL.GetUniformLocation(postShader, "postVel"), 1);
-                    GL.Uniform1(GL.GetUniformLocation(postShader, "postDepth"), 1);
+                    GL.Uniform1(GL.GetUniformLocation(postShader, "postDepth"), 2);
+                    GL.Uniform1(GL.GetUniformLocation(postShader, "megaPartTex"), 3);
+                    GL.Uniform1(GL.GetUniformLocation(postShader, "megaPartDepth"), 4);
+
                     GL.Uniform1(GL.GetUniformLocation(postShader, "velScale"), (float)game.RenderFrequency/30.0f);
+
 
                     GL.BindVertexArray(plane.vertexArrayObject);
                     GL.DrawArrays(PrimitiveType.Triangles, 0, plane.numOfTri * 3);

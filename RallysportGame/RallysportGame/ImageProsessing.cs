@@ -97,8 +97,8 @@ namespace RallysportGame
 
             ///////////////////////////////////////////////////////////////////////////////////////
             
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, FBO);
-            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, depthTex, 0);
+            //GL.BindFramebuffer(FramebufferTarget.Framebuffer, FBO);
+            //GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, depthTex, 0);
 
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, FBO2);
             GL.UseProgram(filter);
@@ -126,7 +126,7 @@ namespace RallysportGame
 
             plane.directionalLight(filter,projectionMatrix, viewMatrix, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
 
-
+            /*
             GL.UseProgram(copyShader);
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, FBO);
             GL.DepthMask(false);
@@ -140,6 +140,7 @@ namespace RallysportGame
             
             GL.Uniform1(GL.GetUniformLocation(copyShader, "textureTarget"), 0);
             plane.directionalLight(copyShader, projectionMatrix, viewMatrix, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
+             */
             /////////////////////////////////////////////////////////////////////////////////////////////////////
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
             GL.Enable(EnableCap.DepthTest);
