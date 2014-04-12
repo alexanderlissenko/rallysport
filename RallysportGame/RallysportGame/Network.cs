@@ -10,6 +10,7 @@ using System.Threading;
 using System.Collections;
 
 using OpenTK;
+using BEPUphysics;
 
 namespace RallysportGame
 {
@@ -27,9 +28,10 @@ namespace RallysportGame
         private int ids=1;
 
         private ArrayList userList;
-
-        public Network()
+        Space space;
+        public Network(Space space)
         {
+            this.space = space;
             userList = new ArrayList();
             IPAddress localIp = getLocalIp();
             socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
@@ -152,7 +154,7 @@ namespace RallysportGame
                             if (index == -1)
                             {
                                 userList.Add(id);
-                                carList.Add(new Car(new Vector3(float.Parse(unParsedData[2].Substring(1)),float.Parse(unParsedData[3]),float.Parse(unParsedData[4].Remove(unParsedData[4].Length-1)))));
+                                carList.Add(new Car(@"Mustang\mustang-no-wheels", @"Mustang\one-wheel-tex-scale", new Vector3(float.Parse(unParsedData[2].Substring(1)), float.Parse(unParsedData[3]), float.Parse(unParsedData[4].Remove(unParsedData[4].Length - 1))),space));
                                 Console.WriteLine(carList.Count);
                             }
                             else

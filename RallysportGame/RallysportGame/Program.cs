@@ -289,7 +289,7 @@ namespace RallysportGame
                 #region Load
                 game.Load += (sender, e) =>
                 {
-                    networkhandler = new Network();
+                    
                     SettingsParser.Init(iniDir + "default.ini");
                     //enable depthtest and face culling
                     GL.Enable(EnableCap.DepthTest);
@@ -519,7 +519,7 @@ namespace RallysportGame
                     game.KeyDown += handleKeyDown;
                     game.KeyUp += handleKeyUp;
 
-
+                    networkhandler = new Network(collisionHandler.space);
                     //Music
                     source = Audio.initSound();
 
@@ -701,6 +701,10 @@ namespace RallysportGame
                     GL.BindTexture(TextureTarget.Texture2D, 0);
                     //myCar2.firstPass(firstPassShader, projectionMatrix, viewMatrix);
                     playerCar.firstPass(firstPassShader, projectionMatrix, viewMatrix);
+                    foreach(Car c in otherCars)
+                    {
+                        c.firstPass(firstPassShader, projectionMatrix, viewMatrix);
+                    }
                     //skybox.firstPass(firstPassShader, projectionMatrix, viewMatrix);
                     TriggerManager.renderPowerUps(firstPassShader, projectionMatrix, viewMatrix);
                     GL.DepthMask(false);
