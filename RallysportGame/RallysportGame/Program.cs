@@ -752,12 +752,12 @@ namespace RallysportGame
                     playerCar.Update();
                     //////////////////////////////////////////////////////ÄNDRA TILLBAKA!!!
                     //Audio management
-                    /*
+                    
                     if (Audio.audioStatus(source) == 1)
                         Audio.playSound(source);
                     else if (Audio.audioStatus(source) == 3)
                         source = Audio.nextTrack(source);
-                    */
+                    
                     //move light
 
                     light_theta += camera_horizontal_delta*0.1f;
