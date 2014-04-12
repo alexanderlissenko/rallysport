@@ -37,5 +37,6 @@ void main()
 	
 	result /= float(nSamples);
 	
-	fragColor = result;//vec4(velocity,0,1);//
+	//fragColor = result;//vec4(velocity,0,1);//
+    fragColor = texture(postTex, pos);
 }

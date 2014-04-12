@@ -82,7 +82,7 @@ namespace RallysportGame
 
             GL.UniformMatrix4(GL.GetUniformLocation(filter, "projectionMatrix"), false, ref projectionMatrix);
 
-            plane.secondPass(filter, viewMatrix, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
+            plane.directionalLight(filter,projectionMatrix , viewMatrix, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
             
            
             
@@ -92,7 +92,7 @@ namespace RallysportGame
             GL.BindTexture(TextureTarget.Texture2D, tempTex);
 
             GL.Uniform1(GL.GetUniformLocation(copyShader, "textureTarget"), 0);
-            plane.secondPass(copyShader, viewMatrix, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
+            plane.directionalLight(copyShader,projectionMatrix, viewMatrix, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
             
 
             ///////////////////////////////////////////////////////////////////////////////////////
@@ -124,7 +124,7 @@ namespace RallysportGame
 
             GL.UniformMatrix4(GL.GetUniformLocation(filter, "projectionMatrix"), false, ref projectionMatrix);
 
-            plane.secondPass(filter, viewMatrix, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
+            plane.directionalLight(filter,projectionMatrix, viewMatrix, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
 
 
             GL.UseProgram(copyShader);
@@ -139,7 +139,7 @@ namespace RallysportGame
             GL.BindTexture(TextureTarget.Texture2D, tempTex);
             
             GL.Uniform1(GL.GetUniformLocation(copyShader, "textureTarget"), 0);
-            plane.secondPass(copyShader, viewMatrix, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
+            plane.directionalLight(copyShader, projectionMatrix, viewMatrix, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
             /////////////////////////////////////////////////////////////////////////////////////////////////////
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
             GL.Enable(EnableCap.DepthTest);

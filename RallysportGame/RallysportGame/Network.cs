@@ -33,7 +33,7 @@ namespace RallysportGame
         {
             this.space = space;
             userList = new ArrayList();
-            IPAddress localIp = getLocalIp();//IPAddress.Parse("172.160.0.2");
+            IPAddress localIp = IPAddress.Parse("127.0.0.1");// getLocalIp();//
             socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             
             IPEndPoint localEP = new IPEndPoint(localIp, 11245);
