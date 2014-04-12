@@ -1,0 +1,9 @@
+#version 420
+
+uniform sampler2D textureTarget;
+in vec2 position;
+out vec4 fragColor;
+
+void main(){
+fragColor = texture2D(textureTarget,position);//vec4(1,0,0,1);//
+}

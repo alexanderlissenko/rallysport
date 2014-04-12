@@ -1,0 +1,10 @@
+#version 420  
+
+in vec3 positionIn; 
+out vec2 position;
+
+
+void main(){
+gl_Position = vec4(positionIn,1.0)*2-1;
+position = positionIn.xy;
+}

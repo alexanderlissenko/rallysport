@@ -1,0 +1,27 @@
+#version 420
+
+uniform sampler2D textureTarget1;
+uniform sampler2D depthTarget1;
+
+uniform sampler2D textureTarget2;
+uniform sampler2D depthTarget2;
+
+in vec2 TexCoordFragment;
+
+out vec4 fragCol;
+
+void main(){
+    float depth1 = texture(depthTarget1,TexCoordFragment).x;
+    float depth2 = texture(depthTarget2,TexCoordFragment).x;
+    
+    if (depth1<depth2)
+    {
+    fragCol = texture(textureTarget2, TexCoordFragment);
+    }
+    else
+    {
+    fragCol = texture(textureTarget1, TexCoordFragment);
+    
+    }
+
+}
