@@ -75,6 +75,7 @@ namespace RallysportGame
             this.mesh = new Meshomatic.ObjLoader().LoadFile(modelsDir+name +".obj");
             numOfTri = mesh.Tris.Length;
             makeVAO();
+            matList = new List<Material>();
         }
 
         public Entity(String name, OpenTK.Vector3 position): this(name)
@@ -287,7 +288,7 @@ namespace RallysportGame
 
      
 
-        public struct Material
+        public class Material
         {
             private string name;
             private float shine;
@@ -364,16 +365,17 @@ namespace RallysportGame
 
         public void setUpMultMtl()
         {
-            matList = new List<Material>();
+            //matList = new List<Material>();
             FileStream stream = new FileStream(modelsDir + fileName + ".mtl", FileMode.Open);
             StreamReader reader = new StreamReader(stream);
 
             string line;
-            char[] splitChars = { ' ' };
-            Material m = new Material(); //vad gör detta? kolla upp
+            char[] splitChars = { ' ','\t'};
+            Material m;// = new Material(); //vad gör detta? kolla upp
 
             while ((line = reader.ReadLine()) != null)
             {
+                line = line.Replace('\t', ' ');
                 line = line.Trim(splitChars);
                 line = line.Replace("  ", " ");
 
@@ -383,7 +385,14 @@ namespace RallysportGame
                 switch (parameters[0])
                 {
                     case "newmtl":
-                        m = new Material(parameters[1]);
+                        if (parameters.Length != 1)
+                        {
+                            m = new Material(parameters[1]);
+                        }
+                        else
+                        {
+                            m = new Material("apa");
+                        }
                         matList.Add(m);
                         break;
 

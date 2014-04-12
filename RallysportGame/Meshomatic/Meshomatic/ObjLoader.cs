@@ -7,16 +7,27 @@ using System.Globalization;
 
 namespace Meshomatic {
 	public class ObjLoader {
+
+       
+
 		public MeshData LoadStream(Stream stream) {
 			StreamReader reader = new StreamReader(stream);
 			List<Vector3> points = new List<Vector3>();
 			List<Vector3> normals = new List<Vector3>();
 			List<Vector2> texCoords = new List<Vector2>();
 			List<Tri> tris = new List<Tri>();
+            
+            
+            
+            /*
+             * TODO: Ordning på material beskrivs inte av facesPerMaterial, därav konstiga resultat.
+             */
+            List<string> matNames = new List<string>();
 			string line;
             string matName = "";
 			char[] splitChars = { ' ' };
             Dictionary<string, int> facesPerMaterial = new Dictionary<string, int>();
+            
 			while((line = reader.ReadLine()) != null) {
 				line = line.Trim(splitChars);
 				line = line.Replace("  ", " ");
@@ -28,8 +39,28 @@ namespace Meshomatic {
                 {
                     case "usemtl":
                         //material
-                        matName = parameters[1];
-                        facesPerMaterial.Add(matName, 0);
+
+                        if (parameters.Length != 1)
+                        {
+                            matName = parameters[1];
+                            if (!(matNames.Contains(matName)))
+                            {
+                                matNames.Add(matName);
+                                facesPerMaterial.Add(matName, 0);
+                            }
+                        }
+
+                        else
+                        {
+                            matName = "apa";
+                            if (!(matNames.Contains(matName)))
+                            {
+                                matNames.Add(matName);
+                                facesPerMaterial.Add(matName, 0);
+                            }
+                        }
+                        
+                        
                         break;
                     case "p":
                         // Point

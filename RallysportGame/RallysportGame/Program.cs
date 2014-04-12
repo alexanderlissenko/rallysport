@@ -67,7 +67,7 @@ namespace RallysportGame
 
         //test particles
         static ParticleSystem megaParticles;// = new ParticleSystem(new OpenTK.Vector3(0, 0, 0), 60f, 5, new TimeSpan(0, 0, 0, 4), new Entity());
-        static Entity environment,myCar2,skybox,unitSphere;
+        static Entity environment, myCar2, skybox, unitSphere, testWheel;
         static Entity plane;
 
         static Car playerCar;
@@ -293,6 +293,7 @@ namespace RallysportGame
                     playerCar = new Car("TeapotCar\\Teapot car\\Teapot-no-materials-tri", new Vector3(0,20f,0));
                     skybox = new Entity("Cube\\inside_koob");
                     unitSphere = new Entity("Cube\\unitSphere");
+                    testWheel = new Entity("one-wheel-tex-scale");
                     
                     //Particle System
                     megaParticles = new ParticleSystem(unitSphere, new Vector3(0, 0, 0), new Vector3(0, -1, 0), 20.0f * 3.14f / 90.0f, 10,0.1f, new Vector3(0, -0.001f, 0),new TimeSpan(0,0,5));
@@ -348,8 +349,9 @@ namespace RallysportGame
                     Console.WriteLine(GL.GetProgramInfoLog(postShader));
                     //Load uniforms and texture
                     GL.UseProgram(firstPassShader);
-                    environment.setUpMtl();
+                    environment.setUpMultMtl();//.setUpMtl();
                     environment.loadTexture();
+                    testWheel.setUpMultMtl();
                     //environment.setUpBlenderModel();
                     //myCar2.setUpBlenderModel();
                     playerCar.setUp3DSModel();
@@ -664,7 +666,7 @@ namespace RallysportGame
 
                     GL.BindTexture(TextureTarget.Texture2D, 0);
                     myCar2.firstPass(firstPassShader, projectionMatrix, viewMatrix);
-
+                    testWheel.firstPass(firstPassShader, projectionMatrix, viewMatrix);
                     skybox.firstPass(firstPassShader, projectionMatrix, viewMatrix);
                     
                     GL.DepthMask(false);
