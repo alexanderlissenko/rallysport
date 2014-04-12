@@ -17,6 +17,7 @@ namespace Meshomatic {
 	 */
 	// XXX: Sources: http://www.opentk.com/files/ObjMeshLoader.cs, OOGL (MS3D), Icarus (Colladia)
 	public class MeshData {
+        public Dictionary<string, int> facesPerMaterial;
 		public Vector3[] Vertices;
 		public Vector2[] TexCoords;
 		public Vector3[] Normals;
@@ -44,6 +45,17 @@ namespace Meshomatic {
 			
 			Verify();
 		}
+
+        public MeshData(Vector3[] vert, Vector3[] norm, Vector2[] tex, Tri[] tri, Dictionary<string,int> dic)
+        {
+            Vertices = vert;
+            TexCoords = tex;
+            Normals = norm;
+            Tris = tri;
+            facesPerMaterial = dic;
+
+            Verify();
+        }
 		/// <summary>
 		/// Returns an array containing the coordinates of all the <value>Vertices</value>.
 	    /// So {<1,1,1>, <2,2,2>} will turn into {1,1,1,2,2,2}

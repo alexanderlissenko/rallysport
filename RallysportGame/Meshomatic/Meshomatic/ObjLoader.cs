@@ -7,58 +7,99 @@ using System.Globalization;
 
 namespace Meshomatic {
 	public class ObjLoader {
+
+       
+
 		public MeshData LoadStream(Stream stream) {
 			StreamReader reader = new StreamReader(stream);
 			List<Vector3> points = new List<Vector3>();
 			List<Vector3> normals = new List<Vector3>();
 			List<Vector2> texCoords = new List<Vector2>();
 			List<Tri> tris = new List<Tri>();
+            
+            
+            
+            /*
+             * TODO: Ordning på material beskrivs inte av facesPerMaterial, därav konstiga resultat.
+             */
+            List<string> matNames = new List<string>();
 			string line;
+            string matName = "";
 			char[] splitChars = { ' ' };
+            Dictionary<string, int> facesPerMaterial = new Dictionary<string, int>();
+            
 			while((line = reader.ReadLine()) != null) {
 				line = line.Trim(splitChars);
 				line = line.Replace("  ", " ");
 
 				string[] parameters = line.Split(splitChars);
 
-				switch(parameters[0]) {
-				case "p":
-					// Point
-					break;
+                
+                switch (parameters[0])
+                {
+                    case "usemtl":
+                        //material
 
-				case "v":
-					// Vertex
-					float x = float.Parse(parameters[1], CultureInfo.InvariantCulture.NumberFormat);
-					float y = float.Parse(parameters[2], CultureInfo.InvariantCulture.NumberFormat);
-					float z = float.Parse(parameters[3], CultureInfo.InvariantCulture.NumberFormat);
-					points.Add(new Vector3(x, y, z));
-					break;
+                        if (parameters.Length != 1)
+                        {
+                            matName = parameters[1];
+                            if (!(matNames.Contains(matName)))
+                            {
+                                matNames.Add(matName);
+                                facesPerMaterial.Add(matName, 0);
+                            }
+                        }
 
-                case "vt":
-					// TexCoord
-					float u = float.Parse(parameters[1], CultureInfo.InvariantCulture.NumberFormat);
-					float v = float.Parse(parameters[2], CultureInfo.InvariantCulture.NumberFormat);
-					texCoords.Add(new Vector2(u, v));
-					break;
+                        else
+                        {
+                            matName = "apa";
+                            if (!(matNames.Contains(matName)))
+                            {
+                                matNames.Add(matName);
+                                facesPerMaterial.Add(matName, 0);
+                            }
+                        }
+                        
+                        
+                        break;
+                    case "p":
+                        // Point
+                        break;
 
-                case "vn":
-					// Normal
-					float nx = float.Parse(parameters[1], CultureInfo.InvariantCulture.NumberFormat);
-					float ny = float.Parse(parameters[2], CultureInfo.InvariantCulture.NumberFormat);
-					float nz = float.Parse(parameters[3], CultureInfo.InvariantCulture.NumberFormat);
-					normals.Add(new Vector3(nx, ny, nz));
-					break;
+                    case "v":
+                        // Vertex
+                        float x = float.Parse(parameters[1], CultureInfo.InvariantCulture.NumberFormat);
+                        float y = float.Parse(parameters[2], CultureInfo.InvariantCulture.NumberFormat);
+                        float z = float.Parse(parameters[3], CultureInfo.InvariantCulture.NumberFormat);
+                        points.Add(new Vector3(x, y, z));
+                        break;
 
-                case "f":
-					// Face
-					tris.AddRange(parseFace(parameters));
-					break;
+                    case "vt":
+                        // TexCoord
+                        float u = float.Parse(parameters[1], CultureInfo.InvariantCulture.NumberFormat);
+                        float v = float.Parse(parameters[2], CultureInfo.InvariantCulture.NumberFormat);
+                        texCoords.Add(new Vector2(u, v));
+                        break;
 
-                case "#":
-                    break;
-                default:
-                    break;
-				}
+                    case "vn":
+                        // Normal
+                        float nx = float.Parse(parameters[1], CultureInfo.InvariantCulture.NumberFormat);
+                        float ny = float.Parse(parameters[2], CultureInfo.InvariantCulture.NumberFormat);
+                        float nz = float.Parse(parameters[3], CultureInfo.InvariantCulture.NumberFormat);
+                        normals.Add(new Vector3(nx, ny, nz));
+                        break;
+
+                    case "f":
+                        // Face
+                        tris.AddRange(parseFace(parameters));
+                        facesPerMaterial[matName]++;
+                        break;
+
+                    case "#":
+                        break;
+                    default:
+                        break;
+                }
 			}
 			
 Vector3[] p = points.ToArray();
@@ -77,7 +118,7 @@ Vector3[] p = points.ToArray();
 				n[0] = new Vector3(1, 0, 0);
 			}
 				
-			return new MeshData(p, n, tc, f);
+			return new MeshData(p, n, tc, f, facesPerMaterial);
 		}
 
 		public MeshData LoadFile(string file) {

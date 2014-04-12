@@ -27,6 +27,7 @@ namespace RallysportGame
 {
     class Entity
     {
+
         private OpenTK.Vector3 ambient, emisive;
         public OpenTK.Vector3 diffuse, specular; // test so return to private when possible
         String modelsDir = @"..\..\..\..\Models\";
@@ -54,6 +55,10 @@ namespace RallysportGame
         
 
         public MeshData mesh;
+
+        public List<Material> matList;
+       
+
         /// <summary>
         /// Constructor for Entity
         /// Make sure that the .obj file and .mtl is named the same
@@ -71,6 +76,8 @@ namespace RallysportGame
             this.mesh = new Meshomatic.ObjLoader().LoadFile(modelsDir+name +".obj");
             numOfTri = mesh.Tris.Length;
             makeVAO();
+            matList = new List<Material>();
+            setUpMultMtl();
         }
 
         public Entity(String name, OpenTK.Vector3 position): this(name)
@@ -89,8 +96,24 @@ namespace RallysportGame
             GL.UniformMatrix4(GL.GetUniformLocation(program, "viewMatrix"), false, ref viewMatrix);
             GL.UniformMatrix4(GL.GetUniformLocation(program, "modelMatrix"), false, ref modelMatrix);
 
-            GL.BindVertexArray(vertexArrayObject);
-            GL.DrawArrays(PrimitiveType.Triangles, 0, numOfTri * 3);
+            
+
+            int faceCount = 0;
+            
+            foreach(Material m in matList)
+            {
+                GL.BindVertexArray(vertexArrayObject);
+                GL.Uniform3(GL.GetUniformLocation(program, "diffuse"), m.getDiffuse());
+                GL.Uniform3(GL.GetUniformLocation(program, "ambient"), m.getAmbient());
+                GL.Uniform3(GL.GetUniformLocation(program, "emissive"), m.getEmissive());
+                GL.Uniform3(GL.GetUniformLocation(program, "specular"), m.getSpecular());
+                GL.Uniform1(GL.GetUniformLocation(program, "shininess"), m.getShine());
+
+                GL.DrawArrays(PrimitiveType.Triangles, faceCount, mesh.facesPerMaterial[m.getName()] * 3);
+                faceCount += mesh.facesPerMaterial[m.getName()]*3;
+            }
+
+
 
         }
         public void directionalLight(int program, Matrix4 projectionMatrix, Matrix4 viewMatrix, OpenTK.Vector3 lightPosition, OpenTK.Vector3 cameraPosition)
@@ -285,14 +308,174 @@ namespace RallysportGame
 
         }
 
+     
+
+        public class Material
+        {
+            private string name;
+            private float shine;
+
+            //might be a better way than initializing these to 0 and then change, but works for now i guess
+            private OpenTK.Vector3 ambV, diffV, specV, emV;
+
+            public Material(string name)
+            {
+                this.name = name;
+                ambV = new OpenTK.Vector3(0.0f, 0.0f, 0.0f); 
+                diffV = new OpenTK.Vector3(0.0f, 0.0f, 0.0f);
+                specV = new OpenTK.Vector3(0.0f, 0.0f, 0.0f);
+                emV = new OpenTK.Vector3(0.0f, 0.0f, 0.0f);
+                shine = 0.0f;
+            }
+
+            public string getName()
+            {
+                return name;
+            }
+
+            public void setAmbient(float r, float g, float b)
+            {
+                ambV = new OpenTK.Vector3(r, g, b);
+            }
+
+            public OpenTK.Vector3 getAmbient()
+            {
+                return ambV;
+            }
+
+            public void setDiffuse(float r, float g, float b)
+            {
+                diffV = new OpenTK.Vector3(r, g, b);
+            }
+
+            public OpenTK.Vector3 getDiffuse()
+            {
+                return diffV;
+            }
+
+            public void setSpecular(float r, float g, float b)
+            {
+                specV = new OpenTK.Vector3(r, g, b);
+            }
+
+            public OpenTK.Vector3 getSpecular()
+            {
+                return specV;
+            }
+
+            public void setEmissive(float r, float g, float b)
+            {
+                emV = new OpenTK.Vector3(r, g, b);
+            }
+
+            public OpenTK.Vector3 getEmissive()
+            {
+                return emV;
+            }
+
+            public void setShine(float s)
+            {
+                shine = s;
+            }
+
+            public float getShine()
+            {
+                return shine;
+            }
+
+        }
+
+        public void setUpMultMtl()
+        {
+            //matList = new List<Material>();
+            FileStream stream = new FileStream(modelsDir + fileName + ".mtl", FileMode.Open);
+            StreamReader reader = new StreamReader(stream);
+
+            string line;
+            char[] splitChars = { ' ','\t'};
+            Material m;
+
+            while ((line = reader.ReadLine()) != null)
+            {
+                line = line.Replace('\t', ' ');
+                line = line.Trim(splitChars);
+                line = line.Replace("  ", " ");
+
+                string[] parameters = line.Split(splitChars);
+
+                
+                switch (parameters[0])
+                {
+                    case "newmtl":
+                        if (parameters.Length != 1)
+                        {
+                            m = new Material(parameters[1]);
+                        }
+                        else
+                        {
+                            m = new Material("apa");
+                        }
+                        matList.Add(m);
+                        break;
+
+                    case "Ka":
+                        //ambient
+                        float ar = float.Parse(parameters[1], CultureInfo.InvariantCulture.NumberFormat);
+                        float ag = float.Parse(parameters[2], CultureInfo.InvariantCulture.NumberFormat);
+                        float ab = float.Parse(parameters[3], CultureInfo.InvariantCulture.NumberFormat);
+                        matList.Last().setAmbient(ar, ag, ab);
+                        break;
+
+                    case "Kd":
+                        //diffuse
+                        float dr = float.Parse(parameters[1], CultureInfo.InvariantCulture.NumberFormat);
+                        float dg = float.Parse(parameters[2], CultureInfo.InvariantCulture.NumberFormat);
+                        float db = float.Parse(parameters[3], CultureInfo.InvariantCulture.NumberFormat);
+                        matList.Last().setDiffuse(dr, dg, db);
+                        break;
+
+                    case "Ks":
+                        //specular
+                        float sr = float.Parse(parameters[1], CultureInfo.InvariantCulture.NumberFormat);
+                        float sg = float.Parse(parameters[2], CultureInfo.InvariantCulture.NumberFormat);
+                        float sb = float.Parse(parameters[3], CultureInfo.InvariantCulture.NumberFormat);
+                        matList.Last().setSpecular(sr, sg, sb);
+                        break;
+
+                    case "Ke":
+                        //emisive
+                        float er = float.Parse(parameters[1], CultureInfo.InvariantCulture.NumberFormat);
+                        float eg = float.Parse(parameters[2], CultureInfo.InvariantCulture.NumberFormat);
+                        float eb = float.Parse(parameters[3], CultureInfo.InvariantCulture.NumberFormat);
+                        matList.Last().setEmissive(er, eg, eb);
+                        break;
+
+                    case "Ns":
+                        //Shininess
+                        matList.Last().setShine(float.Parse(parameters[1], CultureInfo.InvariantCulture.NumberFormat));
+                        break;
+
+                    case "map_Kd":
+                        texturePath = parameters[1];
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+        }
+
+
         /// <summary>
         /// sets the mtl to load the uniforms for the shaders
         /// </summary>
+        /// 
         public void setUpMtl()
         {
 
             FileStream stream = new FileStream(modelsDir +fileName + ".mtl", FileMode.Open);
             StreamReader reader = new StreamReader(stream);
+            
             string line;
             char[] splitChars = { ' ' };
             while ((line = reader.ReadLine()) != null)
