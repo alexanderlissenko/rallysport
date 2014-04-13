@@ -13,7 +13,8 @@ namespace RallysportGame
     {
         WINDOW_HEIGHT,
         WINDOW_WIDTH,
-        GRAVITY
+        GRAVITY,
+        FULLSCREEN
     }
 
     
@@ -79,5 +80,17 @@ namespace RallysportGame
             return result;
         }
 
+
+        internal static void setAudioEnabled(bool p)
+        {
+
+        }
+
+        internal static void setResolution(int[] p)
+        {
+            intSettings[Settings.WINDOW_WIDTH] = p[0];
+            intSettings[Settings.WINDOW_HEIGHT] = p[1];
+
+        }
     }
 }

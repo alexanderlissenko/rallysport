@@ -25,7 +25,7 @@ using System.Collections;
 
 namespace RallysportGame
 {
-    class Entity
+    public class Entity
     {
 
         private OpenTK.Vector3 ambient, emisive;

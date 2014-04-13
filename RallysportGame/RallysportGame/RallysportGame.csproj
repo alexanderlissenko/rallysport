@@ -26,6 +26,7 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -60,6 +61,10 @@
       <HintPath>ini\INIFileParser.dll</HintPath>
     </Reference>
     <Reference Include="OpenTK, Version=1.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL" />
+    <Reference Include="QuickFont, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\QuickFont.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -75,12 +80,22 @@
     <Compile Include="CarWheel.cs" />
     <Compile Include="CollisionHandler.cs" />
     <Compile Include="Entity.cs" />
+
     <Compile Include="Network.cs" />
     <Compile Include="Environment.cs" />
     <Compile Include="RaceState.cs" />
     <Compile Include="GameTimer.cs" />
     <Compile Include="InputHandler.cs" />
     <Compile Include="ImageProsessing.cs" />
+
+    <Compile Include="GameState.cs" />
+    <Compile Include="GUI\AlternativesButton.cs" />
+    <Compile Include="GUI\SettingsMenu.cs" />
+    <Compile Include="GUI\TextButton.cs" />
+    <Compile Include="GUI\TextRowMenu.cs" />
+    <Compile Include="IState.cs" />
+    <Compile Include="GUI\MenuState.cs" />
+
     <Compile Include="ParticleSystem.cs" />
     <Compile Include="DynamicEntity.cs" />
     <Compile Include="GenericVector3.cs" />
@@ -92,6 +107,7 @@
     <Compile Include="TriggerHandler.cs" />
     <Compile Include="TriggerManager.cs" />
     <Compile Include="Utilities.cs" />
+    <Compile Include="StateHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
