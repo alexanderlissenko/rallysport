@@ -644,7 +644,8 @@ namespace RallysportGame
             gameWindow.KeyDown += handleKeyDown;
             gameWindow.KeyUp += handleKeyUp;
 
-            networkhandler = new Network(collisionHandler.space);
+            Network.Init(collisionHandler.space);
+            networkhandler = Network.getInstance();
             //Music
             //source = Audio.initSound();
 
@@ -657,13 +658,18 @@ namespace RallysportGame
             //GL.DepthRange(0.0f, 5.0f);
             gT = new GameTimer();
             gT.countDown(5);
-            networkhandler.startSending();
+            //networkhandler.startSending();
 
             gaussBlurr = new GaussianFilter(verticalGaussianFilterShader, horizontalGaussianFilterShader, gameWindow.Width, gameWindow.Height);
             megaPartFilter = new MegapParticleFilter(megaParticleShader, gameWindow.Width, gameWindow.Height);
 
             setupPerlinNoise();
         #endregion
+        }
+
+        public void enterMultiplayer()
+        {
+            networkhandler.startSending();
         }
 
         public override void Render(GameWindow gameWindow)

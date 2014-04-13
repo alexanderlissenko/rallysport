@@ -26,10 +26,12 @@ namespace RallysportGame
         private int userId;
         private bool isLeader = false;
         private int ids=1;
+        private static Network instance;
 
         private ArrayList userList;
         Space space;
-        public Network(Space space)
+        private Network() { }
+        private Network(Space space)
         {
             this.space = space;
             userList = new ArrayList();
@@ -44,6 +46,22 @@ namespace RallysportGame
             socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
             socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.MulticastTimeToLive, 1);
             ep = (EndPoint)localEP;
+        }
+
+        public static void Init(Space space)
+        {
+            if (instance == null)
+            {
+                instance = new Network(space);
+            }
+        }
+        public static Network getInstance()
+        {
+            if (instance == null)
+            {
+                throw new Exception("Network not yet initilialized");
+            }
+            return instance;
         }
 
         public void startSending()
