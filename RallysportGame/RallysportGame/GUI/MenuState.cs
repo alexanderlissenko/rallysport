@@ -80,7 +80,7 @@ namespace RallysportGame.GUI
             Action startGame = delegate { StateHandler.Instance.changeStateToGame(); };
             mainMenu.AddTextButton("Singleplayer", startGame);
 
-            mainMenu.AddTextButton("Multiplayer", test);
+            mainMenu.AddTextButton("Multiplayer", startMultiplayer);
 
             mainMenu.AddTextButton("Options", swapToSettings);
 
@@ -91,6 +91,12 @@ namespace RallysportGame.GUI
             currentTextMenu = mainMenu;
             #endregion
             settingsMenu = new SettingsMenu(gameWindow, swapToMainMenu);
+        }
+
+        private void startMultiplayer()
+        {
+            Network.getInstance().startSending();
+            StateHandler.Instance.changeStateToGame();
         }
 
         private void swapToMainMenu()

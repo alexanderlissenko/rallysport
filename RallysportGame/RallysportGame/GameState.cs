@@ -667,11 +667,6 @@ namespace RallysportGame
         #endregion
         }
 
-        public void enterMultiplayer()
-        {
-            networkhandler.startSending();
-        }
-
         public override void Render(GameWindow gameWindow)
         {
             #region Render
@@ -949,7 +944,13 @@ namespace RallysportGame
             GL.UseProgram(0);
             #endregion
         }
-
+        private void returnToMenu()
+        {
+            //networkhandler.closeSocket();
+            //GL.DeleteTextures(1, ref shadowMapTexture);
+            //Audio.deleteBS(source);
+            StateHandler.Instance.changeStateToMenu();
+        }
         /// <summary>
         /// Will handle key events so multiple keys can be triggered at once
         /// 
@@ -977,11 +978,8 @@ namespace RallysportGame
                     {
                         if (!keyHandled)
                         {
-                            networkhandler.closeSocket();
-                        GL.DeleteTextures(1, ref shadowMapTexture);
-                        Audio.deleteBS(source);
-                        gameWindow.Exit();
-                    }
+                            returnToMenu();
+                        }
                     }
                     else if (gameWindow.Keyboard[Key.Number9])
                     {
