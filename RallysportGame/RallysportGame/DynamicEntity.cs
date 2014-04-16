@@ -91,6 +91,11 @@ namespace RallysportGame
         {
             return body;
         }
+
+        public Vector3 getVelocity()
+        {
+            return velocity;
+        }
         #endregion
 
         #region Protected Methods

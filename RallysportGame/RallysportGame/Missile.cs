@@ -16,17 +16,18 @@ namespace RallysportGame
         * Velocity (dubbel mot car, samma riktning?)
          * Position (car pos)
         **/
-        
+        private Vector3 velocity;
+        Car shooter;
 
         public Missile(String name, Car car)
             : base(name, car.getCarPos())
         {
-
+            shooter = car;
         }
 
         public void fireMissile()
         {
-
+            velocity = shooter.getVelocity() * 2;
         }
         
     }
