@@ -61,7 +61,7 @@ namespace RallysportGame
         private float maximumTurnAngle = BEPUutilities.MathHelper.Pi * 0.2f;
         private BEPUutilities.Vector3 testDir;
 
-        private String[] powerUpSlot = new String[1];
+        private String powerUpSlot = "None";
         #endregion
 
         #region Constructors
@@ -298,30 +298,31 @@ namespace RallysportGame
 
        public void addPowerUp(String type)
        {
-           powerUpSlot[0] = type;
+           powerUpSlot = type;
        }
 
        public void usePowerUp()
        {
-           if (powerUpSlot.Length == 1)
-           {
-               if (powerUpSlot[0].Equals("Missile"))
-               {
-                   //Shoot missile
-                   
-                   powerUpSlot[0] = null; //instead of clear
-               }
-               else if (powerUpSlot[0].Equals("SpeedBoost"))
-               {
-                   //Boost speed
-                   powerUpSlot[0] = null;
-               }
-               else if (powerUpSlot[0].Equals("LightOut"))
-               {
-                   //Light out
-                   powerUpSlot[0] = null;
-               }
-           }
+           if (powerUpSlot.Equals("Missile"))
+            {
+                //Shoot missile
+                powerUpSlot = "None"; 
+            }
+            else if (powerUpSlot.Equals("SpeedBoost"))
+            {
+                //Boost speed
+                powerUpSlot = "None";
+            }
+            else if (powerUpSlot.Equals("LightOut"))
+            {
+                //Light out
+                powerUpSlot = "None";
+            }
+            else
+            {
+                //No powerup in slot!
+            }
+           
        }
         #endregion
         #region Private Methods
