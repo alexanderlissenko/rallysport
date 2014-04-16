@@ -78,16 +78,15 @@
     <Compile Include="Audio.cs" />
     <Compile Include="Car.cs" />
     <Compile Include="CarWheel.cs" />
+    <Compile Include="Missile.cs" />
     <Compile Include="CollisionHandler.cs" />
     <Compile Include="Entity.cs" />
-
     <Compile Include="Network.cs" />
     <Compile Include="Environment.cs" />
     <Compile Include="RaceState.cs" />
     <Compile Include="GameTimer.cs" />
     <Compile Include="InputHandler.cs" />
     <Compile Include="ImageProsessing.cs" />
-
     <Compile Include="GameState.cs" />
     <Compile Include="GUI\AlternativesButton.cs" />
     <Compile Include="GUI\SettingsMenu.cs" />
@@ -95,7 +94,6 @@
     <Compile Include="GUI\TextRowMenu.cs" />
     <Compile Include="IState.cs" />
     <Compile Include="GUI\MenuState.cs" />
-
     <Compile Include="ParticleSystem.cs" />
     <Compile Include="DynamicEntity.cs" />
     <Compile Include="GenericVector3.cs" />

@@ -66,6 +66,7 @@ namespace RallysportGame
             {
                 case 0:
                     Console.WriteLine("Missile!");
+                    //car.addPowerUp("Missile") typ
                     break;
                 case 1:
                     Console.WriteLine("Boost!");
