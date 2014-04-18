@@ -16,18 +16,30 @@ namespace RallysportGame
         * Velocity (dubbel mot car, samma riktning?)
          * Position (car pos)
         **/
-        private Vector3 velocity;
+        private Vector3 missileVel;
         Car shooter;
 
         public Missile(String name, Car car)
             : base(name, car.getCarPos())
         {
             shooter = car;
+            //fireMissile();
+        }
+
+        public override void render(int program, Matrix4 projectionMatrix, Matrix4 viewMatrix, Vector3 lightPosition, Matrix4 lightViewMatrix, Matrix4 lightProjectionMatrix)
+        {
+            base.render(program, projectionMatrix, viewMatrix, lightPosition, lightViewMatrix, lightProjectionMatrix);
+        }
+
+        public override void firstPass(int program, Matrix4 projectionMatrix, Matrix4 viewMatrix)
+        {
+            base.firstPass(program, projectionMatrix, viewMatrix);
         }
 
         public void fireMissile()
         {
-            velocity = shooter.getVelocity() * 2;
+            shooter.renderPActive();
+            missileVel = shooter.getVelocity() * 2;
         }
         
     }

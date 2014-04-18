@@ -23,7 +23,7 @@ namespace RallysportGame
     public class GameState : IState
     {
 
-
+        #region Constants and instance variables
         //*****************************************************************************
         //	Useful constants
         //*****************************************************************************
@@ -103,6 +103,8 @@ namespace RallysportGame
         static int testtimer = 0;
         //
 
+       
+        #endregion
 
         // Helper function to turn spherical coordinates into cartesian (x,y,z)
         static Vector3 sphericalToCartesian(float theta, float phi, float r, Vector3 pos)
@@ -111,6 +113,8 @@ namespace RallysportGame
                                 (float)(r * Math.Cos(phi)),
                                 (float)(r * Math.Cos(theta) * Math.Sin(phi))));
         }
+
+        
 
         public static int loadShaderProgram(String vShaderPath, String fShaderPath)
         {
@@ -165,6 +169,10 @@ namespace RallysportGame
                     if (e.Key.Equals(Key.W) || e.Key.Equals(Key.S))
                     {
                         playerCar.accelerate(0);
+                    }
+                    if (e.Key.Equals(Key.P))
+                    {
+                        playerCar.usePowerUp();
                     }
                     keyList.RemoveAt(i);
                 }
@@ -774,6 +782,13 @@ namespace RallysportGame
             GL.BindTexture(TextureTarget.Texture2D, 0);
             //myCar2.firstPass(firstPassShader, projectionMatrix, viewMatrix);
             playerCar.firstPass(firstPassShader, projectionMatrix, viewMatrix);
+            if (playerCar.getRenderP())
+            {
+                if (playerCar.getPowerType().Equals("Missile"))
+                {
+                    playerCar.getM().firstPass(firstPassShader, projectionMatrix, viewMatrix);
+                }
+            }
             foreach (Car c in otherCars)
             {
                 c.firstPass(firstPassShader, projectionMatrix, viewMatrix);

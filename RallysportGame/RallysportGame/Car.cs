@@ -62,6 +62,9 @@ namespace RallysportGame
         private BEPUutilities.Vector3 testDir;
 
         private String powerUpSlot = "None";
+        private bool renderPower = false;
+
+        private Missile m;
         #endregion
 
         #region Constructors
@@ -299,13 +302,35 @@ namespace RallysportGame
        public void addPowerUp(String type)
        {
            powerUpSlot = type;
+           if (powerUpSlot.Equals("Missile"))
+           {
+               //Add missile
+               m = new Missile(@"Cube\megu_koob", this);
+               //m.fireMissile();
+               //powerUpSlot = "None";
+           }
+           else if (powerUpSlot.Equals("SpeedBoost"))
+           {
+               //Boost speed
+               powerUpSlot = "None";
+           }
+           else if (powerUpSlot.Equals("LightOut"))
+           {
+               //Light out
+               powerUpSlot = "None";
+           }
+           else
+           {
+               //No powerup in slot!
+           }
        }
 
        public void usePowerUp()
        {
            if (powerUpSlot.Equals("Missile"))
             {
-                //Shoot missile
+                renderPower = true; 
+                m.fireMissile();
                 powerUpSlot = "None"; 
             }
             else if (powerUpSlot.Equals("SpeedBoost"))
@@ -323,6 +348,26 @@ namespace RallysportGame
                 //No powerup in slot!
             }
            
+       }
+
+       public Missile getM()
+       {
+           return m;
+       }
+
+       public void renderPActive()
+       {
+           renderPower = true;
+       }
+
+       public bool getRenderP()
+       {
+           return renderPower;
+       }
+
+       public String getPowerType()
+       {
+           return powerUpSlot;
        }
         #endregion
         #region Private Methods
