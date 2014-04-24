@@ -61,8 +61,10 @@ namespace RallysportGame
         private float maximumTurnAngle = BEPUutilities.MathHelper.Pi * 0.2f;
         private BEPUutilities.Vector3 testDir;
 
-        private String powerUpSlot = "None";
+        private static String powerUpSlot = "None";
         private bool renderPower = false;
+        static System.Timers.Timer boostTime;
+        private static bool boostTimeActive = false;
 
         private Missile m;
         #endregion
@@ -335,8 +337,12 @@ namespace RallysportGame
             }
             else if (powerUpSlot.Equals("SpeedBoost"))
             {
-                //Boost speed
-                powerUpSlot = "None";
+                boostTime = new System.Timers.Timer(20000);
+                boostTime.Elapsed += new System.Timers.ElapsedEventHandler(boostTimeStop);
+                //boostTime.Enabled = true;
+                boostTime.Start();
+                boostTimeActive = true;
+                
             }
             else if (powerUpSlot.Equals("LightOut"))
             {
@@ -348,6 +354,27 @@ namespace RallysportGame
                 //No powerup in slot!
             }
            
+       }
+
+        //stops the timer after 20 s
+        static void boostTimeStop(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            boostTime.Stop();
+            boostTimeActive = false;
+            powerUpSlot = "None";
+        }
+
+       public bool boostActive()
+       {
+           return boostTimeActive;
+       }
+
+       public String getPowerUp()
+       {
+           if (renderPower)
+               return powerUpSlot;
+           else
+               return "None";
        }
 
        public Missile getM()

@@ -12,6 +12,7 @@ using System.Drawing;
 using OpenTK.Input;
 using BEPUphysics.Vehicle;
 using System.Threading;
+using System.Timers;
 
 
 
@@ -102,6 +103,7 @@ namespace RallysportGame
         static Network networkhandler;
         static int testtimer = 0;
         //
+
 
        
         #endregion
@@ -195,11 +197,20 @@ namespace RallysportGame
                         break;
                     case Key.W:
                         if (RaceState.getCurrentState() == RaceState.States.RACING)
-                            playerCar.accelerate(1f);
+                        {
+                            //if speedboost active, accelerate 10f for 20 s
+                            if (playerCar.getPowerUp().Equals("SpeedBoost"))
+                            {
+                                while (playerCar.boostActive())
+                                    playerCar.accelerate(10f);
+                            }
+                            else
+                                playerCar.accelerate(5f);
+                        }
                         break;
                     case Key.S:
                         if (RaceState.getCurrentState() == RaceState.States.RACING)
-                            playerCar.accelerate(-1f);
+                            playerCar.accelerate(-5f);
                         break;
                     case Key.Left:
                         camera_theta += camera_horizontal_delta;
