@@ -80,6 +80,17 @@ namespace RallysportGame
 
         #endregion
 
+        public void move(Vector3 newEmitterPos, Vector3 newFrustumDir)
+        {
+            if (newFrustumDir != null)
+            {
+                frustumDir = newFrustumDir;
+            }
+            if (newEmitterPos != null) {
+                emitterPos = newEmitterPos;
+            }
+        }
+
         public void startEmit()
         {
             emit = true;
