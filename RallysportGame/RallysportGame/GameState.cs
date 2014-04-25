@@ -49,7 +49,7 @@ namespace RallysportGame
         //*****************************************************************************
         static float camera_theta = pi / 6.0f;
         static float camera_phi = pi / 4.0f;
-        static float camera_r = 300.0f;
+        static float camera_r = 40.0f;
         static float camera_target_altitude = 5.2f;
         static float camera_horizontal_delta = 0.1f;
         static float camera_vertical_delta = 1.0f;
@@ -73,7 +73,7 @@ namespace RallysportGame
 
         static float light_theta = pi / 6.0f;
         static float light_phi = pi / 4.0f;
-        static float light_r = 3000.0f;
+        static float light_r = 200.0f;
 
         //test particles
         static ParticleSystem megaParticles;// = new ParticleSystem(new OpenTK.Vector3(0, 0, 0), 60f, 5, new TimeSpan(0, 0, 0, 4), new Entity());
@@ -87,8 +87,6 @@ namespace RallysportGame
 
         static ArrayList keyList = new ArrayList();
 
-
-        static GameTimer gT;
 
         static int source = 0;
         static bool musicPaused;
@@ -349,12 +347,12 @@ namespace RallysportGame
 
             // Dynamic objects
             collisionHandler = new CollisionHandler();
-            environment = new Environment("map\\uggly_test_track_Triangulate");//"plane");//
+            environment = new Environment("map\\finalTrack_0.07");//uggly_test_track_Triangulate");//"plane");//
                     
-            environment.loadTexture();
+            //environment.loadTexture();
             //environment.setUpBlenderModel(); //Handled in constructor
 
-            playerCar = new Car(@"Mustang\mustang-no-wheels", @"Mustang\one-wheel-tex-scale", new Vector3(300, 40, 0), collisionHandler.space);
+            playerCar = new Car(@"Mustang\mustang-textured-scale_mini", @"Mustang\one_wheel_corected_normals_recenterd", new Vector3(15, 40, 0), collisionHandler.space);
             skybox = new Entity("Cube\\inside_koob");
             superSphere = new Entity("isoSphere_15");
             unitSphere = new Entity("Cube\\unitSphere");
@@ -452,8 +450,6 @@ namespace RallysportGame
 
 
             //playerCar.setUpMtl();
-
-            //skybox.setUp3DSModel();// setUpBlenderModel();
             GL.UseProgram(0);
                     
             //Set up Uniforms
@@ -637,9 +633,7 @@ namespace RallysportGame
 
             #endregion
 
-                    
-
-            //lightPosition = new Vector3(up);
+            
            
             gameWindow.KeyDown += handleKeyDown;
             gameWindow.KeyUp += handleKeyUp;
@@ -653,11 +647,7 @@ namespace RallysportGame
             //enable depthtest and face culling
             GL.Enable(EnableCap.DepthTest);
             GL.Enable(EnableCap.CullFace);
-            //GL.DepthMask(true);
-            //GL.DepthFunc(DepthFunction.Lequal);
-            //GL.DepthRange(0.0f, 5.0f);
-            gT = new GameTimer();
-            gT.countDown(5);
+
             //networkhandler.startSending();
 
             gaussBlurr = new GaussianFilter(verticalGaussianFilterShader, horizontalGaussianFilterShader, gameWindow.Width, gameWindow.Height);
@@ -960,90 +950,91 @@ namespace RallysportGame
         /// <param name="e"></param>
         public override void Update(GameWindow gameWindow) 
         {
-
-        #region Update
-                    //Network
-                    if (testtimer == 180)
-                    {
-                        networkhandler.sendData(playerCar.position);
-                        testtimer = 0;
-                    }
-                    testtimer++;
-                    networkhandler.recieveData(ref otherCars);
-
-                    //Network
-                    camera_rotation_matrix = Matrix4.Identity;
-                    // add game logic, input handling
-                    if (gameWindow.Keyboard[Key.Escape])
-                    {
-                        if (!keyHandled)
-                        {
-                            returnToMenu();
-                        }
-                    }
-                    else if (gameWindow.Keyboard[Key.Number9])
-                    {
-                        if (!keyHandled)
-                        {
-                            Audio.increaseGain(source);
-                            keyHandled = !keyHandled;
-                        }
-                    }
-                    else if (gameWindow.Keyboard[Key.Number0])
-                    {
-                        if (!keyHandled)
-                        {
-                            Audio.decreaseGain(source);
-                            keyHandled = !keyHandled;
-                        }
-                    }
-                    else if (gameWindow.Keyboard[Key.Space])
-                    {
-                        if (!keyHandled)
-                        {
-                            if (musicPaused)
-                            {
-                                Audio.playSound(source);
-                                musicPaused = !musicPaused;
-                                keyHandled = !keyHandled;
-                            }
-                            else
-                            {
-                                Audio.pauseSound(source);
-                                musicPaused = !musicPaused;
-                                keyHandled = !keyHandled;
-                            }
-                        }
-                    }
-                    else if (gameWindow.Keyboard[Key.O])
-                    {
-                        if (!keyHandled)
-                        {
-                            source = Audio.nextTrack(source);
-                            keyHandled = !keyHandled;
-                        }
-                    }
-                    collisionHandler.Update();
-                    TriggerManager.updatePowerUps();
-
-                    updateCamera();
-                    UpdateMouse();
-                    playerCar.Update();
-                    //////////////////////////////////////////////////////ÄNDRA TILLBAKA!!!
-                    //Audio management
-                    /*
-                    if (Audio.audioStatus(source) == 1)
-                        Audio.playSound(source);
-                    else if (Audio.audioStatus(source) == 3)
-                        source = Audio.nextTrack(source);
-                    */
-                    //move light
-
-                    light_theta += camera_horizontal_delta*0.1f;
-                    gT.tick();
-                    megaParticles.tick();
+            #region Update
+            //Network
+            if (networkhandler.getStatus())
+            {
+                if (testtimer == 180)
+                {
+                    networkhandler.sendData(playerCar.position);
+                    testtimer = 0;
                 }
-                #endregion
+                testtimer++;
+                networkhandler.recieveData(ref otherCars);
+            }
+            //Network
+            camera_rotation_matrix = Matrix4.Identity;
+            // add game logic, input handling
+            if (gameWindow.Keyboard[Key.Escape])
+            {
+                if (!keyHandled)
+                {
+                    returnToMenu();
+                }
+            }
+            else if (gameWindow.Keyboard[Key.Number9])
+            {
+                if (!keyHandled)
+                {
+                    Audio.increaseGain(source);
+                    keyHandled = !keyHandled;
+                }
+            }
+            else if (gameWindow.Keyboard[Key.Number0])
+            {
+                if (!keyHandled)
+                {
+                    Audio.decreaseGain(source);
+                    keyHandled = !keyHandled;
+                }
+            }
+            else if (gameWindow.Keyboard[Key.Space])
+            {
+                if (!keyHandled)
+                {
+                    if (musicPaused)
+                    {
+                        Audio.playSound(source);
+                        musicPaused = !musicPaused;
+                        keyHandled = !keyHandled;
+                    }
+                    else
+                    {
+                        Audio.pauseSound(source);
+                        musicPaused = !musicPaused;
+                        keyHandled = !keyHandled;
+                    }
+                }
+            }
+            else if (gameWindow.Keyboard[Key.O])
+            {
+                if (!keyHandled)
+                {
+                    source = Audio.nextTrack(source);
+                    keyHandled = !keyHandled;
+                }
+            }
+            collisionHandler.Update();
+            TriggerManager.updatePowerUps();
+
+            updateCamera();
+            UpdateMouse();
+            playerCar.Update();
+            //////////////////////////////////////////////////////ÄNDRA TILLBAKA!!!
+            //Audio management
+            /*
+            if (Audio.audioStatus(source) == 1)
+                Audio.playSound(source);
+            else if (Audio.audioStatus(source) == 3)
+                source = Audio.nextTrack(source);
+            */
+            //move light
+
+            light_theta += camera_horizontal_delta*0.1f;
+            GameTimer.tick();
+            //megaParticles.tick();
+        }
+        #endregion
 
 
         public void prepareSwap(GameWindow window)

@@ -133,7 +133,7 @@ namespace RallysportGame.GUI
         private void UpdateMouse() {
 
             Point point = new Point(mouse.X, mouse.Y);
-            System.Console.WriteLine(point.ToString());
+            //System.Console.WriteLine(point.ToString());
             if (!point.Equals(previousMousePoint))
             {
                 for (int i = 0; i < hitBoxList.Count; i++)
