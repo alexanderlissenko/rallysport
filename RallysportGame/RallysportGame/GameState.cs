@@ -68,7 +68,7 @@ namespace RallysportGame
         //
 
         //postProcessing
-        static int postFBO, postTex, FBOtest;
+        static int postFBO, postTex;
         //
 
         static float light_theta = pi / 6.0f;
@@ -212,10 +212,10 @@ namespace RallysportGame
                         camera_phi += camera_horizontal_delta * 0.5f;
                         break;
                     case Key.L:
-                        //megaParticles.stopEmit();
+                        megaParticles.stopEmit();
                         break;
                     case Key.K:
-                        //megaParticles.startEmit();
+                        megaParticles.startEmit();
                         break;
                     default:
                         break;
