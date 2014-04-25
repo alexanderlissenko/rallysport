@@ -102,18 +102,22 @@ namespace RallysportGame
             vänster bak: xyz = -19.5, -34.5, 12.5
             höger bak: xyz = 35.5, -34.5, 12.5
              */
+
+            /*
+            Höger fram xyz = 1.7 , 0, 1.0 
+            Höger bak xyz = -1.5, 0, ,1.0
+            */
             var backwheel1ent = new Entity(wheelPath);
             var backwheel2ent = new Entity(wheelPath);
             var wheel1ent = new Entity(wheelPath);
             var wheel2ent = new Entity(wheelPath);
-            var backwheel1 = addBackWheel(new Vector3(28.5f, 12.5f, 35f), carHull,out backMotor1,backwheel1ent);//y = -15.5
-            var backwheel2 = addBackWheel(new Vector3(-30.5f, 12.5f, 35f), carHull,out backMotor2, backwheel2ent);//y = -30 ger 50% hjul
+            var backwheel1 = addBackWheel(new Vector3(1f, -0.2f, 1.6f), carHull,out backMotor1,backwheel1ent);//y = -15.5
+            var backwheel2 = addBackWheel(new Vector3(-0.9f, -0.2f, 1.6f), carHull,out backMotor2, backwheel2ent);//y = -30 ger 50% hjul
+
+
+            wheel1 = addDriveWheel(new Vector3(-0.9f, -0.2f, -1.7f), carHull, out drivingMotor1, out steeringMotor1, wheel1ent);
             
-            
-            wheel1 = addDriveWheel( new Vector3(-30.5f, 12.5f, -60f),carHull,out drivingMotor1,out steeringMotor1,wheel1ent);
-            
-            
-            var wheel2 = addDriveWheel(new Vector3(28.5f, 12.5f, -60f), carHull, out drivingMotor2, out steeringMotor2, wheel2ent);//x 28.5
+            var wheel2 = addDriveWheel(new Vector3(1f, -0.2f, -1.7f), carHull, out drivingMotor2, out steeringMotor2, wheel2ent);//x 28.5
             
             var steeringStabilizer = new RevoluteAngularJoint(wheel1, wheel2, BEPUutilities.Vector3.Right);
             this.space.Add(steeringStabilizer);
@@ -183,10 +187,10 @@ namespace RallysportGame
         {
             if (rate > 0)
             {
-                drivingMotor1.Settings.VelocityMotor.GoalVelocity = 100;
-                drivingMotor2.Settings.VelocityMotor.GoalVelocity = 100;
-                backMotor1.Settings.VelocityMotor.GoalVelocity = 100;
-                backMotor2.Settings.VelocityMotor.GoalVelocity = 100;
+                drivingMotor1.Settings.VelocityMotor.GoalVelocity = 10;
+                drivingMotor2.Settings.VelocityMotor.GoalVelocity = 10;
+                backMotor1.Settings.VelocityMotor.GoalVelocity = 10;
+                backMotor2.Settings.VelocityMotor.GoalVelocity = 10;
 
                 drivingMotor1.IsActive = true;
                 drivingMotor2.IsActive = true;
@@ -195,10 +199,10 @@ namespace RallysportGame
             }
             else if (rate < 0)
             {
-                drivingMotor1.Settings.VelocityMotor.GoalVelocity = -100;
-                drivingMotor2.Settings.VelocityMotor.GoalVelocity = -100;
-                backMotor1.Settings.VelocityMotor.GoalVelocity = -100;
-                backMotor2.Settings.VelocityMotor.GoalVelocity = -100;
+                drivingMotor1.Settings.VelocityMotor.GoalVelocity = -10;
+                drivingMotor2.Settings.VelocityMotor.GoalVelocity = -10;
+                backMotor1.Settings.VelocityMotor.GoalVelocity = -10;
+                backMotor2.Settings.VelocityMotor.GoalVelocity = -10;
 
                 drivingMotor1.IsActive = true;
                 drivingMotor2.IsActive = true;
@@ -263,10 +267,10 @@ namespace RallysportGame
 
        public void renderBackLight(int program, Entity renderTarget)
         {
-           Vector3 rightLight = new Vector3(32, 25, 70);
-           Vector3 leftLight = new Vector3(-20, 25, 70);
-           Vector3 rightFrontLight = new Vector3(32, 25, -80);
-           Vector3 leftFrontLight = new Vector3(-20, 25, -80);
+           Vector3 rightLight = new Vector3(0.8f, 0, 3.0f);
+           Vector3 leftLight = new Vector3(-0.8f, 0, 3.0f);
+           Vector3 rightFrontLight = new Vector3(0.8f, 0.3f, -2.3f);
+           Vector3 leftFrontLight = new Vector3(-0.8f, 0.3f, -2.3f);
 
            Vector3 rightRot;
            Quaternion rot = carHull.Orientation;
@@ -276,8 +280,8 @@ namespace RallysportGame
            Quaternion rot2 = carHull.Orientation;
            Vector3.Transform(ref leftLight, ref rot2, out leftRot);
 
-           renderTarget.pointLight(program, Utilities.ConvertToTK(carHull.WorldTransform.Translation) + rightRot, new Vector3(1, 0, 0), 25);
-           renderTarget.pointLight(program, Utilities.ConvertToTK(carHull.WorldTransform.Translation) + leftRot, new Vector3(1, 0, 0), 25);
+           renderTarget.pointLight(program, Utilities.ConvertToTK(carHull.WorldTransform.Translation) + rightRot, new Vector3(1, 0, 0), 1);
+           renderTarget.pointLight(program, Utilities.ConvertToTK(carHull.WorldTransform.Translation) + leftRot, new Vector3(1, 0, 0), 1);
 
            Quaternion rot3 = carHull.Orientation;
            Quaternion rot4 = carHull.Orientation;

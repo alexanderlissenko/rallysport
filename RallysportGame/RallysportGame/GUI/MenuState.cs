@@ -72,13 +72,12 @@ namespace RallysportGame.GUI
             GL.BindFragDataLocation(shader, 0, "diffuseOutput");
             GL.LinkProgram(shader);
             
-            texture = LoadTexture(@"..\\..\\..\\..\\Models\\2d\\temp.jpg");//vegitatio,n_bana_berg.jpg");//
+            texture = LoadTexture(@"..\\..\\..\\..\\Models\\2d\\temp.png");//vegitatio,n_bana_berg.jpg");//
             #region mainMenu
             QFont.ForceViewportRefresh();
             mainMenu = new TextRowMenu((SettingsParser.GetInt(Settings.WINDOW_WIDTH) / 11), VERTICAL_OFFSET, TEXT_SIZE, MAX_WIDTH, LINE_SPACE, gameWindow.Mouse); //needs to be rerun in case of resize call not sure what'll happen
 
-            Action startGame = delegate { StateHandler.Instance.changeStateToGame(); };
-            mainMenu.AddTextButton("Singleplayer", startGame);
+            mainMenu.AddTextButton("Singleplayer", startSingleplayer);
 
             mainMenu.AddTextButton("Multiplayer", startMultiplayer);
 
@@ -93,10 +92,19 @@ namespace RallysportGame.GUI
             settingsMenu = new SettingsMenu(gameWindow, swapToMainMenu);
         }
 
+        private void startSingleplayer()
+        {
+            StateHandler.Instance.changeStateToGame();
+            GameTimer.countDown(5);
+        }
+
         private void startMultiplayer()
         {
             Network.getInstance().startSending();
+            
             StateHandler.Instance.changeStateToGame();
+
+            GameTimer.countDown(5);
         }
 
         private void swapToMainMenu()
@@ -147,6 +155,7 @@ namespace RallysportGame.GUI
         }
 
         bool awaitingDownKey = true;
+
         public override void HandleKeyDown(object sender, KeyboardKeyEventArgs e)
         {
             if (e.Key.Equals(Key.Down) && awaitingDownKey)

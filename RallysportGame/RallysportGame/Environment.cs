@@ -12,7 +12,7 @@ namespace RallysportGame
 {
     class Environment : DynamicEntity
     {
-        private float scaling_factor = 30f;
+        private float scaling_factor = 200f;
 
         public readonly StaticMesh bepu_mesh;
 

@@ -22,7 +22,7 @@ namespace RallysportGame
         private EndPoint ep;
         private IPAddress multicastAddr = IPAddress.Parse("234.123.123.123");
 
-
+        private bool networkStarted;
         private int userId;
         private bool isLeader = false;
         private int ids=1;
@@ -33,6 +33,7 @@ namespace RallysportGame
         private Network() { }
         private Network(Space space)
         {
+            networkStarted = false;
             this.space = space;
             userList = new ArrayList();
             IPAddress localIp = IPAddress.Parse("127.0.0.1");// getLocalIp();//
@@ -55,6 +56,11 @@ namespace RallysportGame
                 instance = new Network(space);
             }
         }
+
+        public bool getStatus()
+        {
+            return networkStarted;
+        }
         public static Network getInstance()
         {
             if (instance == null)
@@ -66,6 +72,7 @@ namespace RallysportGame
 
         public void startSending()
         {
+            networkStarted = true;
             Thread.Sleep(2000);
             if(socket.Available==0)
             {

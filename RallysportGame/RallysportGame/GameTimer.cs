@@ -7,34 +7,29 @@ using System.Threading.Tasks;
 
 namespace RallysportGame
 {
-    class GameTimer
+    static class GameTimer
     {
-        private DateTime gameTimer;
-        private DateTime leaderTime;
-        private DateTime countDownTarget;
+        static private DateTime gameTimer;
+        static private DateTime leaderTime;
+        static private DateTime countDownTarget;
 
-        private TimeSpan timeLeft;
+        static private TimeSpan timeLeft;
 
-        private int previousTimeDiff,timeDiff;
+        static private int previousTimeDiff,timeDiff;
 
-        public GameTimer()
-        {
-
-        }
-
-        public void countDown(int seconds)
+        static public void countDown(int seconds)
         {
             countDownTarget = DateTime.Now;
             timeLeft = new TimeSpan(0, 0, seconds);
             countDownTarget=countDownTarget.Add(timeLeft);
         }
 
-        public void externalCountDown(int seconds, string leaderTimeString)
+        static public void externalCountDown(int seconds, string leaderTimeString)
         {
             leaderTime = DateTime.Parse(leaderTimeString);
         }
 
-        public void tick()
+        static public void tick()
         {
             gameTimer = DateTime.Now;
             timeDiff = countDownTarget.Subtract(DateTime.Now).Seconds;
