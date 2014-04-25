@@ -66,6 +66,10 @@ namespace RallysportGame
         static System.Timers.Timer boostTime;
         private static bool boostTimeActive = false;
 
+        static DateTime countDownTarget, gameTimer;
+        static TimeSpan timeLeft;
+        static int timeDiff = 0, previousTimeDiff = 0;
+
         private Missile m;
         #endregion
 
@@ -314,7 +318,7 @@ namespace RallysportGame
            else if (powerUpSlot.Equals("SpeedBoost"))
            {
                //Boost speed
-               powerUpSlot = "None";
+               //powerUpSlot = "None";
            }
            else if (powerUpSlot.Equals("LightOut"))
            {
@@ -324,6 +328,33 @@ namespace RallysportGame
            else
            {
                //No powerup in slot!
+           }
+       }
+
+       public void timerBoost(int seconds)
+       {
+           countDownTarget = DateTime.Now;
+           timeLeft = new TimeSpan(0, 0, seconds);
+           countDownTarget = countDownTarget.Add(timeLeft);
+       }
+
+       public void tick()
+       {
+           //Console.WriteLine("Car tick entered");
+           gameTimer = DateTime.Now;
+           timeDiff = countDownTarget.Subtract(DateTime.Now).Seconds;
+           if (timeDiff != previousTimeDiff && timeDiff >= 0)
+           {
+               //Console.WriteLine("Timer is active");
+               boostTimeActive = true;
+               previousTimeDiff = timeDiff;
+           }
+           if (timeDiff == 0)
+           {
+               //Console.WriteLine("Not active");
+               powerUpSlot = "None";
+               boostTimeActive = false;
+               //RaceState.setCurrentState(RaceState.States.RACING);
            }
        }
 
@@ -337,11 +368,17 @@ namespace RallysportGame
             }
             else if (powerUpSlot.Equals("SpeedBoost"))
             {
-                boostTime = new System.Timers.Timer(20000);
-                boostTime.Elapsed += new System.Timers.ElapsedEventHandler(boostTimeStop);
+                //boostTime = new System.Timers.Timer(20000);
+                //boostTime.Elapsed += new System.Timers.ElapsedEventHandler(boostTimeStop);
                 //boostTime.Enabled = true;
-                boostTime.Start();
-                boostTimeActive = true;
+                //boostTime.Start();
+
+                //timeBoost = new DateTime
+
+                Console.WriteLine("Timer started: 20s");
+                
+                timerBoost(20);
+                //tick();
                 
             }
             else if (powerUpSlot.Equals("LightOut"))
@@ -362,6 +399,7 @@ namespace RallysportGame
             boostTime.Stop();
             boostTimeActive = false;
             powerUpSlot = "None";
+            Console.WriteLine("Timer stop!");
         }
 
        public bool boostActive()
@@ -371,10 +409,7 @@ namespace RallysportGame
 
        public String getPowerUp()
        {
-           if (renderPower)
-               return powerUpSlot;
-           else
-               return "None";
+           return powerUpSlot;
        }
 
        public Missile getM()

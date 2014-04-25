@@ -199,18 +199,23 @@ namespace RallysportGame
                         if (RaceState.getCurrentState() == RaceState.States.RACING)
                         {
                             //if speedboost active, accelerate 10f for 20 s
-                            if (playerCar.getPowerUp().Equals("SpeedBoost"))
+                            if (playerCar.getPowerUp().Equals("SpeedBoost") && playerCar.boostActive())
                             {
-                                while (playerCar.boostActive())
-                                    playerCar.accelerate(10f);
+                                playerCar.accelerate(10f);
                             }
                             else
-                                playerCar.accelerate(5f);
+                            {
+                                playerCar.accelerate(1f);
+                                //Console.WriteLine("Boost not active");
+                            }
                         }
                         break;
                     case Key.S:
                         if (RaceState.getCurrentState() == RaceState.States.RACING)
                             playerCar.accelerate(-5f);
+                        break;
+                    case Key.P:
+                        playerCar.usePowerUp();
                         break;
                     case Key.Left:
                         camera_theta += camera_horizontal_delta;
@@ -393,7 +398,7 @@ namespace RallysportGame
             TriggerManager.addPowerUp(new BEPUutilities.Vector3(200, 0, -250));
             BEPUutilities.Vector3[] checkpoints = {new Vector3(150, 0, 300), new Vector3(150, 0, -300)} ;
             TriggerManager.addGoal(checkpoints);
-
+            TriggerHandler.connectCar(ref playerCar);
 
                     
             //Particle System
@@ -1067,6 +1072,7 @@ namespace RallysportGame
 
                     light_theta += camera_horizontal_delta*0.1f;
                     gT.tick();
+                    playerCar.tick();
                     megaParticles.tick();
                 }
                 #endregion
