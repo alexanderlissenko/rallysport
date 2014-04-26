@@ -965,6 +965,7 @@ namespace RallysportGame
             //Network
             camera_rotation_matrix = Matrix4.Identity;
             // add game logic, input handling
+            #region extrakeys
             if (gameWindow.Keyboard[Key.Escape])
             {
                 if (!keyHandled)
@@ -1014,12 +1015,17 @@ namespace RallysportGame
                     keyHandled = !keyHandled;
                 }
             }
+            #endregion
             collisionHandler.Update();
             TriggerManager.updatePowerUps();
 
             updateCamera();
             UpdateMouse();
             playerCar.Update();
+            foreach (Car c in otherCars)
+            {
+                c.Update();
+            }
             //////////////////////////////////////////////////////ÄNDRA TILLBAKA!!!
             //Audio management
             /*
