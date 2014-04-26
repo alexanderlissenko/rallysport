@@ -84,7 +84,7 @@ namespace RallysportGame
                 game.Mouse.ButtonDown += currentState.MouseButtonDown;
                 game.Mouse.ButtonUp += currentState.MouseButtonUp;
                 // Run the game at 60 updates per second
-                game.Run(60.0);
+                game.Run(60.0,60.0);
             }
         }
 

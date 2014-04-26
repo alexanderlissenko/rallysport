@@ -73,7 +73,7 @@ namespace RallysportGame
 
         static float light_theta = pi / 6.0f;
         static float light_phi = pi / 4.0f;
-        static float light_r = 200.0f;
+        static float light_r = 1800.0f;
 
         //test particles
         static ParticleSystem megaParticles;// = new ParticleSystem(new OpenTK.Vector3(0, 0, 0), 60f, 5, new TimeSpan(0, 0, 0, 4), new Entity());
@@ -352,7 +352,7 @@ namespace RallysportGame
             //environment.loadTexture();
             //environment.setUpBlenderModel(); //Handled in constructor
 
-            playerCar = new Car(@"Mustang\mustang-textured-scale_mini", @"Mustang\one_wheel_corected_normals_recenterd", new Vector3(15, 40, 0), collisionHandler.space);
+            playerCar = new Car(@"Mustang\mustang-textured-scale_mini", @"Mustang\one_wheel_corected_normals_recenterd", new Vector3(182, 2, -6), collisionHandler.space);
             skybox = new Entity("Cube\\inside_koob");
             superSphere = new Entity("isoSphere_15");
             unitSphere = new Entity("Cube\\unitSphere");
@@ -688,7 +688,7 @@ namespace RallysportGame
 
             #region shadowMapRender
             Matrix4 lightViewMatrix = Matrix4.LookAt(lightPosition, new Vector3(0.0f, 0.0f, 0.0f), up);
-            Matrix4 lightProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(pi / 4, 1.0f, 2180f, 3580f);
+            Matrix4 lightProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(pi / 4, 1.0f, 1080f, 3580f);
 
             Matrix4 lightMatrix = renderSM(shadowShaderProgram, viewMatrix, lightViewMatrix, lightProjectionMatrix);
 
