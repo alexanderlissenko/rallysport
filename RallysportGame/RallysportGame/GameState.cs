@@ -956,7 +956,7 @@ namespace RallysportGame
             {
                 if (testtimer == 180)
                 {
-                    networkhandler.sendData(playerCar.position);
+                    networkhandler.sendData(playerCar.getCarPos());
                     testtimer = 0;
                 }
                 testtimer++;

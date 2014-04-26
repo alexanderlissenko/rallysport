@@ -83,7 +83,7 @@ namespace RallysportGame.GUI
 
             mainMenu.AddTextButton("Options", swapToSettings);
 
-            Action exitAction = delegate { gameWindow.Exit(); };
+            Action exitAction = delegate { gameWindow.Exit(); Network.getInstance().closeSocket(); };
 
             mainMenu.AddTextButton("Exit", exitAction);
 

@@ -73,7 +73,7 @@ namespace RallysportGame
         public void startSending()
         {
             networkStarted = true;
-            Thread.Sleep(3000);
+            Thread.Sleep(2000);
             if(socket.Available==0)
             {
                 Console.WriteLine("Starting Network");
