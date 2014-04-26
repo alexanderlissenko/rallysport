@@ -181,8 +181,6 @@ namespace RallysportGame
             }
         }
 
-       
-
         public void accelerate(float rate)
         {
             if (rate > 0)
@@ -249,6 +247,11 @@ namespace RallysportGame
         public Vector3 getCarPos()
         {
             return carHull.WorldTransform.Translation;
+        }
+
+        public void setCarPos(Vector3 pos)
+        {
+            carHull.WorldTransform = BEPUutilities.Matrix.CreateTranslation(Utilities.ConvertToBepu(pos));
         }
 
         public OpenTK.Quaternion getCarAngle()
