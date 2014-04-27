@@ -254,6 +254,12 @@ namespace RallysportGame
             carHull.WorldTransform = BEPUutilities.Matrix.CreateTranslation(Utilities.ConvertToBepu(pos));
         }
 
+        public void setCarPos(Vector3 pos,Quaternion rot)
+        {
+            carHull.WorldTransform = BEPUutilities.Matrix.CreateTranslation(Utilities.ConvertToBepu(pos));
+            carHull.Orientation = rot;
+        }
+
         public OpenTK.Quaternion getCarAngle()
         {
             return carHull.Orientation;
