@@ -194,7 +194,7 @@ namespace RallysportGame
                                 object o = carList[index];
                                 Car c = o as Car;
                                 //c.setCarPos(new Vector3(float.Parse(unParsedData[2].Substring(1)), float.Parse(unParsedData[3]), float.Parse(unParsedData[4].Remove(unParsedData[4].Length - 1))));
-                                c.setCarPos(new Vector3(float.Parse(unParsedData[2]), float.Parse(unParsedData[3]), float.Parse(unParsedData[4])),new Quaternion(float.Parse(unParsedData[5]),float.Parse(unParsedData[6]),float.Parse(unParsedData[7]),float.Parse(unParsedData[7])));
+                                c.setCarPos(new Vector3(float.Parse(unParsedData[2]), float.Parse(unParsedData[3]), float.Parse(unParsedData[4])),new Quaternion(float.Parse(unParsedData[5]),float.Parse(unParsedData[6]),float.Parse(unParsedData[7]),float.Parse(unParsedData[8])));
                                 carList[index] = c;
                             }
                         }
