@@ -186,7 +186,7 @@ namespace RallysportGame
                             if (index == -1)
                             {
                                 userList.Add(id);
-                                carList.Add(new Car(@"Mustang\mustang-textured-scale_mini", @"Mustang\one_wheel_corected_normals_recenterd", new Vector3(float.Parse(unParsedData[2].Substring(1)), float.Parse(unParsedData[3]), float.Parse(unParsedData[4].Remove(unParsedData[4].Length - 1))), space));
+                                carList.Add(new Car(@"Mustang\mustang-textured-scale_mini", @"Mustang\one_wheel_corected_normals_recenterd", new Vector3(float.Parse(unParsedData[2]), float.Parse(unParsedData[3]), float.Parse(unParsedData[4])), space));
                                 Console.WriteLine(carList.Count);
                             }
                             else
@@ -195,7 +195,7 @@ namespace RallysportGame
                                 Car c = o as Car;
                                 //c.setCarPos(new Vector3(float.Parse(unParsedData[2].Substring(1)), float.Parse(unParsedData[3]), float.Parse(unParsedData[4].Remove(unParsedData[4].Length - 1))));
                                 c.setCarPos(new Vector3(float.Parse(unParsedData[2]), float.Parse(unParsedData[3]), float.Parse(unParsedData[4])),new Quaternion(float.Parse(unParsedData[5]),float.Parse(unParsedData[6]),float.Parse(unParsedData[7]),float.Parse(unParsedData[8])));
-                                carList[index] = c;
+                                //carList[index] = c;
                             }
                         }
                         break;
