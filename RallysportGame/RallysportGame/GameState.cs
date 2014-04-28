@@ -302,8 +302,8 @@ namespace RallysportGame
                 //GL.CullFace(CullFaceMode.Front);
                 GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-                GL.Enable(EnableCap.PolygonOffsetFill);
-                GL.PolygonOffset(1.0f, 1.0f);
+                //GL.Enable(EnableCap.PolygonOffsetFill);
+                //GL.PolygonOffset(1.0f, 1.0f);
 
                 //GL.BindTexture(TextureTarget.Texture2D, shadowMapTexture);
                 playerCar.renderShadowMap(shadowShaderProgram, lightProjectionMatrix, lightViewMatrix);
@@ -458,7 +458,7 @@ namespace RallysportGame
 
             //Shadowmaps
             #region ShadowMap
-            shadowMapRes = 1080;
+            shadowMapRes = 9000;
             shadowMapTexture = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2D, shadowMapTexture);
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent32, shadowMapRes, shadowMapRes, 0, PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
@@ -681,7 +681,7 @@ namespace RallysportGame
             Matrix4 projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(pi / 4, (float)w / (float)h, 1f, 1000f);
             // Here we start getting into the lighting model
 
-            //Matrix4 bias = new Matrix4(0.9f, 0.0f, 0.0f, 0.0f, 0.0f, 0.9f, 0.0f, 0.0f, 0.0f, 0.0f, 0.9f, 0.0f, 0.9f, 0.9f, 0.9f, 1.0f);
+            //Matrix4 bias = new Matrix4(0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.5f, 0.0f, 0.5f, 0.5f, 0.5f, 1.0f);
 
 
             //Render Shadowmap
@@ -810,6 +810,7 @@ namespace RallysportGame
             GL.Uniform1(GL.GetUniformLocation(secondPassShader, "depthTex"), 2);
             GL.Uniform1(GL.GetUniformLocation(secondPassShader, "velTex"), 3);
             GL.Uniform1(GL.GetUniformLocation(secondPassShader, "shadowMapTex"), 4);
+            //GL.UniformMatrix4(GL.GetUniformLocation(secondPassShader, "biasMatrix"), false, ref bias);
 
             Vector2 size = new Vector2(gameWindow.Width, gameWindow.Height);
             GL.Uniform2(GL.GetUniformLocation(secondPassShader, "screenSize"), ref size);
