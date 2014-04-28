@@ -19,7 +19,7 @@ void main(void)
    vec4 clr = texture(firstTexture, fragmentTexCoord);
    
    if (clr.xyz == vec3(0.0))
-		clr = vec4(diffuse,1);
+		clr = vec4(diffuse*vec3(2),1);
 
    //float alpha = clr.a;
    //if (alpha < 0.1)
