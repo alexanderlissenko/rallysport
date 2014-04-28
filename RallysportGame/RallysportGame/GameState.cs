@@ -358,9 +358,11 @@ namespace RallysportGame
             unitSphere = new Entity("Cube\\unitSphere");
             myCar2 = new Entity("Cube\\inside_koob");
 
-            //superSphere.setUpMtl();
+            superSphere.setUpMtl();
             superSphere.loadTexture();
-                    
+
+
+            
             //collisionHandler.addObject(playerCar);
             collisionHandler.addObject(environment);
                     
@@ -753,16 +755,15 @@ namespace RallysportGame
             GL.DrawBuffers(4, draw_buffs2);
 
 
-
+            /* Görs is Först pass numera
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, environment.getTextureId());
             GL.Uniform1(GL.GetUniformLocation(firstPassShader, "firstTexture"), 0);
-
+            */
             //megaParticles.firstPass(firstPassShader, projectionMatrix, viewMatrix);
             environment.firstPass(firstPassShader, projectionMatrix, viewMatrix);
 
             GL.BindTexture(TextureTarget.Texture2D, 0);
-            //myCar2.firstPass(firstPassShader, projectionMatrix, viewMatrix);
             playerCar.firstPass(firstPassShader, projectionMatrix, viewMatrix);
             foreach (Car c in otherCars)
             {

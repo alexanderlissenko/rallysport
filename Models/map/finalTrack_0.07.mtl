@@ -19,7 +19,7 @@ Ks 0.500000 0.500000 0.500000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd map\texturer\pattern_286\diffuse.tga
+/map_Kd map\texturer\pattern_286\diffuse.tga
 map_Bump map\texturer\pattern_287\normal.tga
 
 
@@ -53,7 +53,7 @@ Ks 0.500000 0.500000 0.500000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd map\texturer\pattern_286\diffuse.tga
+/map_Kd map\texturer\pattern_286\diffuse.tga
 
 
 newmtl grass_tarmac.jpg
@@ -137,7 +137,7 @@ Ks 0.500000 0.500000 0.500000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd map\texturer\pattern_289\diffuse.tga
+/map_Kd map\texturer\pattern_289\diffuse.tga
 
 
 newmtl third_phase_diffuse.tga.003
@@ -148,7 +148,7 @@ Ks 0.500000 0.500000 0.500000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd map\texturer\pattern_289\diffuse.tga
+/map_Kd map\texturer\pattern_289\diffuse.tga
 
 
 newmtl third_phase_diffuse.tga.004
@@ -159,7 +159,7 @@ Ks 0.500000 0.500000 0.500000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd map\texturer\pattern_286\diffuse.tga
+/map_Kd map\texturer\pattern_286\diffuse.tga
 
 
 newmtl whater_tex_Water.jpg

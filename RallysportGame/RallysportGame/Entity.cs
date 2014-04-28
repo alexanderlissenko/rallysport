@@ -78,6 +78,8 @@ namespace RallysportGame
             makeVAO();
             matList = new List<Material>();
             setUpMultMtl();
+            setUpMultText();
+            
         }
 
         public Entity(String name, OpenTK.Vector3 position): this(name)
@@ -100,6 +102,10 @@ namespace RallysportGame
 
             foreach(Material m in matList)//for (int i = matList.Count-1; i >= 0; i-- )
             {
+                GL.ActiveTexture(TextureUnit.Texture0);
+                GL.BindTexture(TextureTarget.Texture2D, m.getTexture());
+                GL.Uniform1(GL.GetUniformLocation(program, "firstTexture"), 0);
+
                 //Material m = matList[i];
                 GL.BindVertexArray(vertexArrayObject);
                 GL.Uniform3(GL.GetUniformLocation(program, "diffuse"), m.getDiffuse());
@@ -298,15 +304,6 @@ namespace RallysportGame
         }
 
 
-
-
-        public void render(int program, OpenTK.Vector3 position)
-        {
-
-
-
-        }
-
      
 
         public class Material
@@ -316,7 +313,8 @@ namespace RallysportGame
 
             //might be a better way than initializing these to 0 and then change, but works for now i guess
             private OpenTK.Vector3 ambV, diffV, specV, emV;
-
+            private int texture;
+            private string texturePath;
             public Material(string name)
             {
                 this.name = name;
@@ -382,6 +380,24 @@ namespace RallysportGame
                 return shine;
             }
 
+            public void setTexture(int tex)
+            {
+                texture = tex;
+            }
+            public int getTexture()
+            {
+                return texture;
+            }
+
+
+            public void setTexturePath(string p)
+            {
+                texturePath = p;
+            }
+            public string getTexturePath()
+            {
+                return texturePath;
+            }
         }
 
         public void setUpMultMtl()
@@ -455,7 +471,7 @@ namespace RallysportGame
                         break;
 
                     case "map_Kd":
-                        texturePath = parameters[1];
+                        matList.Last().setTexturePath(parameters[1]);
                         break;
 
                     default:
@@ -464,7 +480,19 @@ namespace RallysportGame
             }
             stream.Close();
         }
-
+        /// <summary>
+        /// Has to be done AFTER setupMultMtl!!!!
+        /// </summary>
+        public void setUpMultText()
+        {
+            foreach(Material m in matList)
+            {
+                if(!(m.getTexturePath() == null))
+                {
+                    m.setTexture(loadTextureMult(m.getTexturePath()));
+                }
+            }
+        }
 
         /// <summary>
         /// sets the mtl to load the uniforms for the shaders
@@ -562,6 +590,37 @@ namespace RallysportGame
 
             textureId= texture;
             GL.BindTexture(TextureTarget.Texture2D, 0);
+        }
+
+        public int loadTextureMult(string texPath)
+        {
+            TextureTarget Target = TextureTarget.Texture2D;
+            String filename = modelsDir + texPath;
+
+            int texture = GL.GenTexture();
+            GL.BindTexture(Target, texture);
+            GL.PixelStore(PixelStoreParameter.UnpackAlignment, 1);
+            GL.TexEnv(TextureEnvTarget.TextureEnv, TextureEnvParameter.TextureEnvMode, (int)All.Modulate);
+
+            Bitmap bitmap = new Bitmap(filename);
+            BitmapData data = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            GL.TexImage2D(Target, 0, PixelInternalFormat.Rgba, data.Width, data.Height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
+            GL.Finish();
+            bitmap.UnlockBits(data);
+
+            GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+            GL.TexParameter(Target, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+            GL.TexParameter(Target, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);
+
+            GL.TexParameter(Target, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
+            GL.TexParameter(Target, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
+
+            if (GL.GetError() != ErrorCode.NoError)
+                throw new Exception("Error loading texture " + filename);
+
+            
+            GL.BindTexture(TextureTarget.Texture2D, 0);
+            return texture;
         }
 
         public int getTextureId()
