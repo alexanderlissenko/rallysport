@@ -1,7 +1,7 @@
 # Blender MTL File: 'finalTrack_0.07.blend'
 # Material Count: 17
 newmtl Tarmac_tarmac.jpg
-Ns 96.078431
+Ns 0.078431
 Ka 0.000000 0.000000 0.000000
 Kd 0.011735 0.011735 0.011735
 Ks 0.006212 0.006212 0.006212
@@ -12,7 +12,7 @@ map_Kd map\texturer\tarmac.jpg
 
 
 newmtl desert_diffuse.tga.004
-Ns 96.078431
+Ns 20.078431
 Ka 0.000000 0.000000 0.000000
 Kd 0.464218 0.476025 0.175094
 Ks 0.500000 0.500000 0.500000
@@ -24,7 +24,7 @@ map_Bump map\texturer\pattern_287\normal.tga
 
 
 newmtl grass
-Ns 96.078431
+Ns 5.078431
 Ka 0.000000 0.000000 0.000000
 Kd 0.000000 0.106288 0.001707
 Ks 0.500000 0.500000 0.500000
@@ -35,7 +35,7 @@ map_Kd map\texturer\Grass_Texture_by_catemate.jpg
 
 
 newmtl grass_Grass_Texture_by_cate
-Ns 96.078431
+Ns 5.078431
 Ka 0.000000 0.000000 0.000000
 Kd 0.000000 0.106288 0.001707
 Ks 0.500000 0.500000 0.500000
@@ -46,7 +46,7 @@ map_Kd map\texturer\Grass_Texture_by_catemate.jpg
 
 
 newmtl grass_diffuse.tga.004
-Ns 96.078431
+Ns 5.078431
 Ka 0.000000 0.000000 0.000000
 Kd 0.000000 0.106288 0.001707
 Ks 0.500000 0.500000 0.500000
@@ -57,7 +57,7 @@ map_Kd map\texturer\pattern_286\diffuse.tga
 
 
 newmtl grass_tarmac.jpg
-Ns 96.078431
+Ns 5.078431
 Ka 0.000000 0.000000 0.000000
 Kd 0.000000 0.106288 0.001707
 Ks 0.500000 0.500000 0.500000
@@ -68,7 +68,7 @@ map_Kd map\texturer\tarmac.jpg
 
 
 newmtl grass_tex_Water.jpg
-Ns 96.078431
+Ns 5.078431
 Ka 0.000000 0.000000 0.000000
 Kd 0.000000 0.106288 0.001707
 Ks 0.500000 0.500000 0.500000
@@ -79,7 +79,7 @@ map_Kd map\texturer\tex_Water.jpg
 
 
 newmtl marble
-Ns 92.156863
+Ns 12.156863
 Ka 0.000000 0.000000 0.000000
 Kd 0.512000 0.512000 0.512000
 Ks 0.500000 0.500000 0.500000
@@ -89,7 +89,7 @@ illum 2
 
 
 newmtl rail
-Ns 92.156863
+Ns 12.156863
 Ka 0.000000 0.000000 0.000000
 Kd 0.512000 0.512000 0.512000
 Ks 0.500000 0.500000 0.500000
@@ -99,7 +99,7 @@ illum 2
 
 
 newmtl rock_rocky_johan_ekdahl.jp
-Ns 96.078431
+Ns 30.078431
 Ka 0.000000 0.000000 0.000000
 Kd 0.224802 0.031060 0.143816
 Ks 0.500000 0.500000 0.500000
@@ -110,7 +110,7 @@ map_Kd map\texturer\100_1377_seamless_public_domain.jpg
 
 
 newmtl sides
-Ns 92.156863
+Ns 15.156863
 Ka 0.000000 0.000000 0.000000
 Kd 0.512000 0.512000 0.512000
 Ks 0.500000 0.500000 0.500000
@@ -120,7 +120,7 @@ illum 2
 
 
 newmtl stone
-Ns 92.156863
+Ns 30.156863
 Ka 0.000000 0.000000 0.000000
 Kd 0.512000 0.512000 0.512000
 Ks 0.500000 0.500000 0.500000
@@ -130,7 +130,7 @@ illum 2
 
 
 newmtl third_phase
-Ns 96.078431
+Ns 8.078431
 Ka 0.000000 0.000000 0.000000
 Kd 0.110063 0.101137 0.102545
 Ks 0.500000 0.500000 0.500000
@@ -141,7 +141,7 @@ map_Kd map\texturer\pattern_289\diffuse.tga
 
 
 newmtl third_phase_diffuse.tga.003
-Ns 96.078431
+Ns 8.078431
 Ka 0.000000 0.000000 0.000000
 Kd 0.110063 0.101137 0.102545
 Ks 0.500000 0.500000 0.500000
@@ -152,7 +152,7 @@ map_Kd map\texturer\pattern_289\diffuse.tga
 
 
 newmtl third_phase_diffuse.tga.004
-Ns 96.078431
+Ns 8.078431
 Ka 0.000000 0.000000 0.000000
 Kd 0.110063 0.101137 0.102545
 Ks 0.500000 0.500000 0.500000
@@ -163,7 +163,7 @@ map_Kd map\texturer\pattern_286\diffuse.tga
 
 
 newmtl whater_tex_Water.jpg
-Ns 96.078431
+Ns 50.078431
 Ka 0.000000 0.000000 0.000000
 Kd 0.160262 0.052844 0.417778
 Ks 0.500000 0.500000 0.500000
@@ -174,7 +174,7 @@ map_Kd map\texturer\tex_Water.jpg
 
 
 newmtl world
-Ns 96.078431
+Ns 1.078431
 Ka 0.000000 0.000000 0.000000
 Kd 0.020733 0.160000 0.000000
 Ks 0.100000 0.100000 0.100000

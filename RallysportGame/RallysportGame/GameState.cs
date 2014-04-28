@@ -531,7 +531,7 @@ namespace RallysportGame
 
             deferredNorm = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2D, deferredNorm);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb16f, gameWindow.Width, gameWindow.Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, (IntPtr)0);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, gameWindow.Width, gameWindow.Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, (IntPtr)0);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
