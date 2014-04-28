@@ -98,10 +98,9 @@ namespace RallysportGame
 
             
 
-            int faceCount = 0;
-            
-            foreach(Material m in matList)
+            foreach(Material m in matList)//for (int i = matList.Count-1; i >= 0; i-- )
             {
+                //Material m = matList[i];
                 GL.BindVertexArray(vertexArrayObject);
                 GL.Uniform3(GL.GetUniformLocation(program, "diffuse"), m.getDiffuse());
                 GL.Uniform3(GL.GetUniformLocation(program, "ambient"), m.getAmbient());
@@ -109,8 +108,8 @@ namespace RallysportGame
                 GL.Uniform3(GL.GetUniformLocation(program, "specular"), m.getSpecular());
                 GL.Uniform1(GL.GetUniformLocation(program, "shininess"), m.getShine());
 
-                GL.DrawArrays(PrimitiveType.Triangles, faceCount, mesh.facesPerMaterial[m.getName()] * 3);
-                faceCount += mesh.facesPerMaterial[m.getName()]*3;
+                GL.DrawArrays(PrimitiveType.Triangles, mesh.offsetPerMaterial[m.getName()]*3, mesh.facesPerMaterial[m.getName()] * 3);
+
             }
 
 

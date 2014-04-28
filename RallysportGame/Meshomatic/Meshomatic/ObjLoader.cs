@@ -27,6 +27,8 @@ namespace Meshomatic {
             string matName = "";
 			char[] splitChars = { ' ' };
             Dictionary<string, int> facesPerMaterial = new Dictionary<string, int>();
+            Dictionary<string, int> offsetPerMaterial = new Dictionary<string, int>();
+            int offsetCounter = 0; 
             
 			while((line = reader.ReadLine()) != null) {
 				line = line.Trim(splitChars);
@@ -39,7 +41,7 @@ namespace Meshomatic {
                 {
                     case "usemtl":
                         //material
-
+                        
                         if (parameters.Length != 1)
                         {
                             matName = parameters[1];
@@ -47,6 +49,7 @@ namespace Meshomatic {
                             {
                                 matNames.Add(matName);
                                 facesPerMaterial.Add(matName, 0);
+                                offsetPerMaterial.Add(matName, offsetCounter); // stores the offset to the previous material
                             }
                         }
 
@@ -57,6 +60,7 @@ namespace Meshomatic {
                             {
                                 matNames.Add(matName);
                                 facesPerMaterial.Add(matName, 0);
+                                offsetPerMaterial.Add(matName, offsetCounter); // stores the offset to the previous material
                             }
                         }
                         
@@ -93,6 +97,7 @@ namespace Meshomatic {
                         // Face
                         tris.AddRange(parseFace(parameters));
                         facesPerMaterial[matName]++;
+                        offsetCounter++;
                         break;
 
                     case "#":
@@ -101,7 +106,7 @@ namespace Meshomatic {
                         break;
                 }
 			}
-			
+            
 Vector3[] p = points.ToArray();
 			Vector2[] tc = texCoords.ToArray();
 			Vector3[] n = normals.ToArray();
@@ -118,7 +123,7 @@ Vector3[] p = points.ToArray();
 				n[0] = new Vector3(1, 0, 0);
 			}
 				
-			return new MeshData(p, n, tc, f, facesPerMaterial);
+			return new MeshData(p, n, tc, f, facesPerMaterial,offsetPerMaterial);
 		}
 
 		public MeshData LoadFile(string file) {
