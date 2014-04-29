@@ -61,7 +61,7 @@ namespace RallysportGame
         private float maximumTurnAngle = BEPUutilities.MathHelper.Pi * 0.2f;
         private BEPUutilities.Vector3 testDir;
 
-        private static String powerUpSlot = "None";
+        private static String powerUpSlot = "Missile";
         private bool renderPower = false;
         static System.Timers.Timer boostTime;
         private static bool boostTimeActive = false;
@@ -172,6 +172,9 @@ namespace RallysportGame
             base.modelMatrix = carHull.WorldTransform;
             base.firstPass(program, projectionMatrix, viewMatrix);
             
+            if (powerUpSlot.Equals("Missile") && renderPower) {
+                m.firstPass(program, projectionMatrix, viewMatrix); 
+            }
             foreach (Entity w in wheelents)
             {
                 w.firstPass(program, projectionMatrix, viewMatrix);
@@ -182,6 +185,24 @@ namespace RallysportGame
         {
             //position = Utilities.ConvertToTK(body.Position);
             base.Update();
+            if (powerUpSlot.Equals("Missile") && renderPower){
+                
+
+
+                    if (m==null){
+                        Vector3 rotVec;
+                        Quaternion rot = getCarAngle();
+                        Vector3.Transform(ref forward, ref rot, out rotVec);
+                        m = new Missile(@"isoSphere_15", getCarPos(), rotVec, carHull.LinearVelocity , (float)(5 * 60));//new Missile(@"Cube\megu_koob", this.position, this.velocity, (float)(5 * 60));//
+                        }
+                    
+                    if (m.update()) {
+                        renderPower = false;
+                        m = null;
+                        
+                    }
+                
+               }
             for (int i = 0; i < wheelents.Count; i++)
             {
                 wheelents[i].modelMatrix = wheels[i].WorldTransform;
@@ -308,14 +329,7 @@ namespace RallysportGame
        public void addPowerUp(String type)
        {
            powerUpSlot = type;
-           if (powerUpSlot.Equals("Missile"))
-           {
-               //Add missile
-               m = new Missile(@"Cube\megu_koob", this);
-               //m.fireMissile();
-               //powerUpSlot = "None";
-           }
-           else if (powerUpSlot.Equals("SpeedBoost"))
+           if (powerUpSlot.Equals("SpeedBoost"))
            {
                //Boost speed
                //powerUpSlot = "None";
@@ -360,13 +374,9 @@ namespace RallysportGame
 
        public void usePowerUp()
        {
-           if (powerUpSlot.Equals("Missile"))
-            {
-                renderPower = true; 
-                m.fireMissile();
-                powerUpSlot = "None"; 
-            }
-            else if (powerUpSlot.Equals("SpeedBoost"))
+           renderPower = true;
+            /*
+            if (powerUpSlot.Equals("SpeedBoost"))
             {
                 //boostTime = new System.Timers.Timer(20000);
                 //boostTime.Elapsed += new System.Timers.ElapsedEventHandler(boostTimeStop);
@@ -390,7 +400,7 @@ namespace RallysportGame
             {
                 //No powerup in slot!
             }
-           
+           */
        }
 
         //stops the timer after 20 s

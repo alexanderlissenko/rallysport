@@ -17,29 +17,40 @@ namespace RallysportGame
          * Position (car pos)
         **/
         private Vector3 missileVel;
-        Car shooter;
-
-        public Missile(String name, Car car)
-            : base(name, car.getCarPos())
+        private float TTL;
+        public Missile(String name, Vector3 pos,Vector3 orientation, Vector3 lin_vel, float ttl)
+            : base(name)
         {
-            shooter = car;
-            //fireMissile();
+            TTL = ttl;
+
+            base.position = Vector3.Add(pos,Vector3.Mult(orientation, 100)); // magic number is the distance from the car, the missile will spawn
+            missileVel = lin_vel;
         }
 
         public override void render(int program, Matrix4 projectionMatrix, Matrix4 viewMatrix, Vector3 lightPosition, Matrix4 lightViewMatrix, Matrix4 lightProjectionMatrix)
         {
+            
             base.render(program, projectionMatrix, viewMatrix, lightPosition, lightViewMatrix, lightProjectionMatrix);
         }
 
         public override void firstPass(int program, Matrix4 projectionMatrix, Matrix4 viewMatrix)
         {
+            base.setCoordiants(base.position.X, base.position.Y, base.position.Z);
             base.firstPass(program, projectionMatrix, viewMatrix);
         }
 
-        public void fireMissile()
-        {
-            shooter.renderPActive();
-            missileVel = shooter.getVelocity() * 2;
+        public bool update() {
+
+            base.position = Vector3.Add(base.position, missileVel);
+            missileVel = Vector3.Add(missileVel, Vector3.Mult(missileVel, 0.1f));
+
+            
+
+            Console.WriteLine(base.position);
+            if (TTL-- <= 0)
+                return true;
+
+            return false;
         }
         
     }
