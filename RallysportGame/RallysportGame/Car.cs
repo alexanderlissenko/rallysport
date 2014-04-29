@@ -61,7 +61,7 @@ namespace RallysportGame
         private float maximumTurnAngle = BEPUutilities.MathHelper.Pi * 0.2f;
         private BEPUutilities.Vector3 testDir;
 
-        private static String powerUpSlot = "None";
+        private static String powerUpSlot = "Missile";
         private bool renderPower = false;
         static System.Timers.Timer boostTime;
         private static bool boostTimeActive = false;
@@ -311,7 +311,7 @@ namespace RallysportGame
            if (powerUpSlot.Equals("Missile"))
            {
                //Add missile
-               m = new Missile(@"Cube\megu_koob", this);
+               m = new Missile(@"Cube\megu_koob", /*nån referens*/);
                //m.fireMissile();
                //powerUpSlot = "None";
            }

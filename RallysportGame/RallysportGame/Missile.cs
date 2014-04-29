@@ -19,7 +19,7 @@ namespace RallysportGame
         private Vector3 missileVel;
         Car shooter;
 
-        public Missile(String name, Car car)
+        public Missile(String name, ref Car car)
             : base(name, car.getCarPos())
         {
             shooter = car;
