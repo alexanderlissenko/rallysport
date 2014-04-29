@@ -168,8 +168,6 @@ namespace RallysportGame
                 }
             }
         }
-
-
         static void updateCamera()
         {
             foreach (Key key in keyList)
@@ -290,7 +288,6 @@ namespace RallysportGame
         /// <param name="lightProjectionMatrix">Projectionmatrix of the light</param>
         static Matrix4 renderSM(int program, Matrix4 viewMatrix, Matrix4 lightViewMatrix, Matrix4 lightProjectionMatrix)
         {
-
             //ändra till 300f
             GL.UseProgram(shadowShaderProgram);
             //SHADOW MAP FBO RENDERING
