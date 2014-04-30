@@ -672,8 +672,14 @@ namespace RallysportGame
             int w = gameWindow.Width;
             int h = gameWindow.Height;
 
-
-            Vector3 camera_position = sphericalToCartesian(camera_theta, camera_phi, camera_r, playerCar.getCarPos());
+            Vector3 back = new Vector3(0, 5, 15);
+            Vector3 behindcar;
+            Quaternion rot2 = playerCar.getCarAngle();
+            rot2.Z = 0;
+            rot2.X = rot2.X*0.5f;
+            Vector3.Transform(ref back, ref rot2, out behindcar);
+            
+            Vector3 camera_position =playerCar.getCarPos()+ behindcar;//sphericalToCartesian(camera_theta, camera_phi, camera_r, playerCar.getCarPos());
             //camera_lookAt = new Vector3(0.0f, camera_target_altitude, 0.0f);
             Vector3 camera_lookAt = playerCar.getCarPos();// new Vector3(0, 0, 0);//Vector4.Transform(camera_lookAt, camera_rotation_matrix);//new Vector3(0.0f, 0.0f, 0.0f);//
             Matrix4 viewMatrix = Matrix4.LookAt(camera_position, camera_lookAt, up);

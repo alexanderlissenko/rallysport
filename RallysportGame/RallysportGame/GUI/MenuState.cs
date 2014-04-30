@@ -94,12 +94,14 @@ namespace RallysportGame.GUI
 
         private void startSingleplayer()
         {
+            mainMenu.clearAllHitboxes();
             StateHandler.Instance.changeStateToGame();
             GameTimer.countDown(5);
         }
 
         private void startMultiplayer()
         {
+            mainMenu.clearAllHitboxes();
             Network.getInstance().startSending();
             
             StateHandler.Instance.changeStateToGame();
