@@ -106,6 +106,10 @@ namespace RallysportGame
                 GL.BindTexture(TextureTarget.Texture2D, m.getTexture());
                 GL.Uniform1(GL.GetUniformLocation(program, "firstTexture"), 0);
 
+                GL.ActiveTexture(TextureUnit.Texture1);
+                GL.BindTexture(TextureTarget.Texture2D, m.getNormalTexture());
+                GL.Uniform1(GL.GetUniformLocation(program, "normalTexture"), 1);
+
                 //Material m = matList[i];
                 GL.BindVertexArray(vertexArrayObject);
                 GL.Uniform3(GL.GetUniformLocation(program, "diffuse"), m.getDiffuse());
@@ -115,6 +119,7 @@ namespace RallysportGame
                 GL.Uniform1(GL.GetUniformLocation(program, "shininess"), m.getShine());
 
                 GL.DrawArrays(PrimitiveType.Triangles, mesh.offsetPerMaterial[m.getName()]*3, mesh.facesPerMaterial[m.getName()] * 3);
+                GL.BindTexture(TextureTarget.Texture2D, 0);
 
             }
 
@@ -315,6 +320,8 @@ namespace RallysportGame
             private OpenTK.Vector3 ambV, diffV, specV, emV;
             private int texture;
             private string texturePath;
+            private int normalTexture;
+            private string normalTexurePath;
             public Material(string name)
             {
                 this.name = name;
@@ -389,7 +396,6 @@ namespace RallysportGame
                 return texture;
             }
 
-
             public void setTexturePath(string p)
             {
                 texturePath = p;
@@ -398,6 +404,26 @@ namespace RallysportGame
             {
                 return texturePath;
             }
+
+            public void setNormalTexturePath(string p)
+            {
+                normalTexurePath = p;
+            }
+            public string getNormalTexturePath()
+            {
+                return normalTexurePath;
+            }
+            public void setNormalTexture(int tex)
+            {
+                normalTexture = tex;
+            }
+            public int getNormalTexture()
+            {
+                return normalTexture;
+            }
+
+
+            
         }
 
         public void setUpMultMtl()
@@ -473,6 +499,9 @@ namespace RallysportGame
                     case "map_Kd":
                         matList.Last().setTexturePath(parameters[1]);
                         break;
+                    case "map_Bump":
+                        matList.Last().setNormalTexturePath(parameters[1]);
+                        break;
 
                     default:
                         break;
@@ -490,6 +519,10 @@ namespace RallysportGame
                 if(!(m.getTexturePath() == null))
                 {
                     m.setTexture(loadTextureMult(m.getTexturePath()));
+                }
+                if (!(m.getNormalTexturePath() == null))
+                {
+                    m.setNormalTexture(loadTextureMult(m.getNormalTexturePath()));
                 }
             }
         }
