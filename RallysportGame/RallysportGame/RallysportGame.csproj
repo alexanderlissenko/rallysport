@@ -60,10 +60,13 @@
     <Reference Include="INIFileParser">
       <HintPath>ini\INIFileParser.dll</HintPath>
     </Reference>
-    <Reference Include="OpenTK, Version=1.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL" />
-    <Reference Include="QuickFont, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="OpenTK, Version=1.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\OpenTK.dll</HintPath>
+    </Reference>
+    <Reference Include="QuickFont, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>bin\Debug\QuickFont.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -80,14 +83,12 @@
     <Compile Include="CarWheel.cs" />
     <Compile Include="CollisionHandler.cs" />
     <Compile Include="Entity.cs" />
-
     <Compile Include="Network.cs" />
     <Compile Include="Environment.cs" />
     <Compile Include="RaceState.cs" />
     <Compile Include="GameTimer.cs" />
     <Compile Include="InputHandler.cs" />
     <Compile Include="ImageProsessing.cs" />
-
     <Compile Include="GameState.cs" />
     <Compile Include="GUI\AlternativesButton.cs" />
     <Compile Include="GUI\SettingsMenu.cs" />
@@ -95,7 +96,6 @@
     <Compile Include="GUI\TextRowMenu.cs" />
     <Compile Include="IState.cs" />
     <Compile Include="GUI\MenuState.cs" />
-
     <Compile Include="ParticleSystem.cs" />
     <Compile Include="DynamicEntity.cs" />
     <Compile Include="GenericVector3.cs" />
