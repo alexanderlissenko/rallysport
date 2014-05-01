@@ -88,7 +88,7 @@ namespace RallysportGame
         static ArrayList keyList = new ArrayList();
 
 
-        static int source = 0;
+        static int source = 0, sfx = 0;
         static bool musicPaused;
         static bool keyHandled = false;
         static MouseState current;
@@ -657,8 +657,8 @@ namespace RallysportGame
             Network.Init(collisionHandler.space);
             networkhandler = Network.getInstance();
             //Music
-            //source = Audio.initSound();
-
+            source = Audio.initSound();
+            sfx = Audio.initSfx();
 
             //enable depthtest and face culling
             GL.Enable(EnableCap.DepthTest);
@@ -702,7 +702,8 @@ namespace RallysportGame
             Matrix4 viewMatrix = Matrix4.LookAt(camera_position, camera_lookAt, up);
             Matrix4 projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(pi / 4, (float)w / (float)h, 1f, 1000f);
             // Here we start getting into the lighting model
-
+            Audio.setUpListener(ref camera_position, ref camera_lookAt, ref up);
+            Audio.setUpSourcePos(sfx,playerCar.getCarPos());
             //Matrix4 bias = new Matrix4(0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.5f, 0.0f, 0.5f, 0.5f, 0.5f, 1.0f);
 
 
@@ -1070,14 +1071,18 @@ namespace RallysportGame
             {
                 c.Update();
             }
+            
             //////////////////////////////////////////////////////ÄNDRA TILLBAKA!!!
             //Audio management
-            /*
-            if (Audio.audioStatus(source) == 1)
+            
+            if (Audio.audioStatus(source) == 0)
                 Audio.playSound(source);
             else if (Audio.audioStatus(source) == 3)
                 source = Audio.nextTrack(source);
-            */
+
+            if (Audio.audioStatus(sfx) == 0||Audio.audioStatus(sfx) == 3)
+                Audio.playSound(sfx);
+            Audio.sfxSpeed(sfx, playerCar.carHull.LinearVelocity.Length());
             //move light
 
             light_theta += camera_horizontal_delta*0.1f;
