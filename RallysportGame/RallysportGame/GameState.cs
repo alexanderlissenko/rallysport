@@ -61,6 +61,9 @@ namespace RallysportGame
         static int shadowMapTexture, shadowMapFBO;
         //
 
+        //CSM constants
+        static int currNumSplits;
+
         //Deferred Rendering
         static int deferredTex, deferredNorm, deferredDepth, deferredFBO, deferredVel, deferredSSAO;
         static int megaPartTex, megaPartNorm, megaPartPos, megaPartDepth, megaParticleFBO;
@@ -279,6 +282,63 @@ namespace RallysportGame
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
             GL.UseProgram(0);
         }
+
+        //some CSM methods start here
+        private class Frustum
+        {
+            public float nearDist;
+            public float farDist;
+            public float fov;
+            public float ratio;
+            public Vector3[] point = new Vector3[8];
+        }
+
+        void calculateSMSplitDepth(Frustum[] frustums, float near, float far)
+        {
+            float lambda = 0.75f;
+            float ratio = far / near;
+
+            frustums[0].nearDist = near;
+
+            for (int i = 1; i < currNumSplits; i++)
+            {
+                float splitIndex = i / (float)currNumSplits;
+
+                frustums[i].nearDist = lambda * (near * (float)Math.Pow(ratio, splitIndex)) 
+                                        + (1 - lambda) * (near + (far - near) * splitIndex);
+
+                frustums[i - 1].farDist = frustums[i].nearDist * 1.005f; //farDist slightly infront of nearDist, pls no hate magic number
+
+            }
+
+            frustums[currNumSplits - 1].farDist = far;
+        }
+
+        void updateFrustumPoints(Frustum f, Vector3 center, Vector3 viewDir)
+        {
+            Vector3 right = Vector3.Cross(viewDir, up);
+            right = Vector3.Normalize(right);
+            Vector3 farCenter = center + viewDir * f.farDist;
+            Vector3 nearCenter = center + viewDir * f.nearDist;
+            Vector3 up2 = Vector3.Normalize(Vector3.Cross(right, viewDir));
+
+            float nearHeight = (float)Math.Tan(f.fov/2)*f.nearDist;
+            float nearWidth = nearHeight*f.ratio;
+            float farHeight = (float)Math.Tan(f.fov/2)*f.farDist;
+            float farWidth = farHeight*f.ratio;
+
+            f.point[0] = nearCenter - up2 * nearHeight - right * nearWidth;
+            f.point[1] = nearCenter + up2 * nearHeight - right * nearWidth;
+            f.point[2] = nearCenter + up2 * nearHeight + right * nearWidth;
+            f.point[3] = nearCenter - up2 * nearHeight + right * nearWidth;
+
+            f.point[4] = farCenter - up2 * farHeight - right * farWidth;
+            f.point[5] = farCenter + up2 * farHeight - right * farWidth;
+            f.point[6] = farCenter + up2 * farHeight + right * farWidth;
+            f.point[7] = farCenter - up2 * farHeight + right * farWidth;
+
+        }
+        //end CSM
 
         /// <summary>
         /// Renders a shadowmap for a given light
