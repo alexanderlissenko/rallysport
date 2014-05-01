@@ -1,0 +1,136 @@
+# Blender MTL File: 'finalTrack_1.0.blend'
+# Material Count: 12
+newmtl Ramp_Bump_overlord
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.208590 0.007861 0.021151
+Ks 0.162420 0.162420 0.162420
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd map\textures\Diffuse_Map2.jpg
+
+
+newmtl Tarmac_Bump_overlord
+Ns 0.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.008891 0.008891 0.008891
+Ks 0.006212 0.006212 0.006212
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd map\textures\Diffuse_Map2.jpg
+map_Bump map\textures\Bump_Map2.jpg
+
+
+newmtl desert_Bump_overlord
+Ns 15.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.800000 0.725333 0.725333
+Ks 0.025478 0.025478 0.025478
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd map\textures\Diffuse_Map2.jpg
+map_Bump map\textures\Bump_Map2.jpg
+
+
+newmtl grass_Bump_overlord
+Ns 3.470588
+Ka 0.000000 0.000000 0.000000
+Kd 0.000000 0.066430 0.001067
+Ks 0.010000 0.010000 0.010000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd map\textures\Diffuse_Map2.jpg
+map_Bump map\textures\Bump_Map2.jpg
+
+
+newmtl marble
+Ns 40.156863
+Ka 0.000000 0.000000 0.000000
+Kd 0.312295 0.318297 0.313795
+Ks 0.203822 0.203822 0.203822
+Ni 1.000000
+d 1.000000
+illum 2
+
+
+newmtl rail
+Ns 13.725490
+Ka 0.000000 0.000000 0.000000
+Kd 0.274379 0.108057 0.000000
+Ks 0.150000 0.150000 0.150000
+Ni 1.000000
+d 1.000000
+illum 2
+
+
+newmtl rock_Bump_overlord
+Ns 3.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.047337 0.047337 0.047337
+Ks 0.000532 0.000532 0.000532
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd map\textures\Diffuse_Map2.jpg
+map_Bump map\textures\Bump_Map2.jpg
+
+
+newmtl sides
+Ns 3.156863
+Ka 0.000000 0.000000 0.000000
+Kd 0.007835 0.007300 0.007199
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
+
+
+newmtl stone
+Ns 3.156863
+Ka 0.000000 0.000000 0.000000
+Kd 0.017886 0.015317 0.016251
+Ks 0.050000 0.050000 0.050000
+Ni 1.000000
+d 1.000000
+illum 2
+
+
+newmtl third_phase_Bump_overlord
+Ns 3.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.755414 0.694147 0.703810
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
+map_Kd map\textures\Diffuse_Map2.jpg
+map_Bump map\textures\Bump_Map2.jpg
+
+
+newmtl whater_Bump_overlord
+Ns 40.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.117259 0.038665 0.305676
+Ks 0.200637 0.200637 0.200637
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd map\textures\Diffuse_Map2.jpg
+map_Bump map\textures\Bump_Map2.jpg
+
+
+newmtl world_Bump_overlord
+Ns 3.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.020733 0.160000 0.000000
+Ks 0.100000 0.100000 0.100000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd map\textures\Diffuse_Map2.jpg
+
+

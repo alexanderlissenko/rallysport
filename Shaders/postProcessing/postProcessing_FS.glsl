@@ -54,5 +54,5 @@ void main()
     
 	vec4 glow = texture2D(glowTexture,pos );
     
-    fragColor = glow;
+    fragColor =  result+glow;//
 }
