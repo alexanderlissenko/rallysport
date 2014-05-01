@@ -117,6 +117,7 @@ namespace RallysportGame
                 GL.Uniform3(GL.GetUniformLocation(program, "emissive"), m.getEmissive());
                 GL.Uniform3(GL.GetUniformLocation(program, "specular"), m.getSpecular());
                 GL.Uniform1(GL.GetUniformLocation(program, "shininess"), m.getShine());
+                GL.Uniform1(GL.GetUniformLocation(program, "glow"), m.getGlow());
 
                 GL.DrawArrays(PrimitiveType.Triangles, mesh.offsetPerMaterial[m.getName()]*3, mesh.facesPerMaterial[m.getName()] * 3);
                 GL.BindTexture(TextureTarget.Texture2D, 0);
@@ -314,7 +315,7 @@ namespace RallysportGame
         public class Material
         {
             private string name;
-            private float shine;
+            private float shine,glow = 0.0f;
 
             //might be a better way than initializing these to 0 and then change, but works for now i guess
             private OpenTK.Vector3 ambV, diffV, specV, emV;
@@ -385,6 +386,16 @@ namespace RallysportGame
             public float getShine()
             {
                 return shine;
+            }
+
+            public void setGlow(float s)
+            {
+                glow = s;
+            }
+
+            public float getGlow()
+            {
+                return glow;
             }
 
             public void setTexture(int tex)
@@ -494,6 +505,11 @@ namespace RallysportGame
                     case "Ns":
                         //Shininess
                         matList.Last().setShine(float.Parse(parameters[1], CultureInfo.InvariantCulture.NumberFormat));
+                        break;
+
+                    case "Gl":
+                        //Glow factor
+                        matList.Last().setGlow(float.Parse(parameters[1], CultureInfo.InvariantCulture.NumberFormat));
                         break;
 
                     case "map_Kd":

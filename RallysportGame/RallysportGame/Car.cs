@@ -219,7 +219,7 @@ namespace RallysportGame
             Quaternion rot2 = carHull.Orientation;
             Vector3.Transform(ref forward, ref rot2, out leftRot);
 
-            Vector3.Multiply(ref leftRot, rate *0.5f, out acceleration);
+            Vector3.Multiply(ref leftRot, rate *0.8f, out acceleration);
             carHull.LinearVelocity += Utilities.ConvertToBepu(acceleration);
 
             

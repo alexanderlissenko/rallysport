@@ -7,6 +7,7 @@ uniform sampler2D postVel;
 uniform sampler2D postDepth;
 uniform sampler2D megaPartTex;
 uniform sampler2D megaPartDepth;
+uniform sampler2D glowTexture;
 uniform float velScale;
 
 in vec2 pos;
@@ -51,6 +52,7 @@ void main()
 	}
 	//fragColor = result;//vec4(velocity,0,1);//
     
+	vec4 glow = texture2D(glowTexture,pos );
     
-    fragColor = result;
+    fragColor = glow;
 }

@@ -5,6 +5,7 @@ uniform sampler2D firstTexture;
 uniform sampler2D normalTexture;
 uniform vec3 diffuse;
 uniform float shininess;
+uniform float glow;
 uniform mat4 modelMatrix;
 in vec3 fragmentNormal;
 in vec2 fragmentTexCoord;
@@ -50,7 +51,7 @@ void main(void)
    //blendOutput.rgb = clr.rgb * clr.a; // Pre multiplied alpha
    //blendOutput.a = clr.a;
    
-   diffuseOutput = clr;
+   diffuseOutput = vec4(clr.xyz,glow);
    normOutput=vec4(normMap,shininessOut);
    vec2 a = vec2(positionOut.xy/positionOut.w);
    vec2 b = vec2(prevPositionOut.xy/prevPositionOut.w);
