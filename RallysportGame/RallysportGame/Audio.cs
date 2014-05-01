@@ -306,7 +306,7 @@ namespace RallysportGame
 
         public static void sfxSpeed(int source,float speed)
         {
-            AL.Source(source, ALSourcef.Pitch, speed);
+            AL.Source(source, ALSourcef.Pitch, 1+ speed*0.04f);
         }
     }
 }

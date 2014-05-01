@@ -20,7 +20,7 @@ Ni 1.000000
 d 1.000000
 illum 2
 map_Kd map\textures\Diffuse_Map2.jpg
-map_Bump map\textures\Bump_Map2.jpg
+map_Bump map\texturer\pattern_286\normal.jpg
 
 
 newmtl desert_Bump_overlord
@@ -44,7 +44,7 @@ Ni 1.000000
 d 1.000000
 illum 2
 map_Kd map\textures\Diffuse_Map2.jpg
-map_Bump map\textures\Bump_Map2.jpg
+map_Bump map\texturer\pattern_286\normal.jpg
 
 
 newmtl marble

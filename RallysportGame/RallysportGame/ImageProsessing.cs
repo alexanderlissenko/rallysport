@@ -221,7 +221,7 @@ namespace RallysportGame
                     #region Vertical
                     
                     GL.UseProgram(verticalGaussianFilterShader);
-                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, gaussFBO2);
                     GL.DepthMask(false);
                     GL.Disable(EnableCap.DepthTest);
                     GL.Viewport(0, 0, width, height);

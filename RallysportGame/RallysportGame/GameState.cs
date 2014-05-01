@@ -919,14 +919,15 @@ namespace RallysportGame
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, deferredTex);
 
-            GL.Uniform1(GL.GetUniformLocation(glowTex, "texture"), 0);
+            GL.Uniform1(GL.GetUniformLocation(deferredTex, "texture"), 0);
             GL.BindVertexArray(plane.vertexArrayObject);
             GL.DrawArrays(PrimitiveType.Triangles, 0, plane.numOfTri * 3);
 
             GL.Enable(EnableCap.DepthTest);
             GL.DepthMask(true);
 
-            //gaussBlurr.gaussianBlurr(postTex, w, h, projectionMatrix, viewMatrix);
+            gaussBlurr.gaussianBlurr(glowTex, w, h, projectionMatrix, viewMatrix);
+            //gaussBlurr.gaussianBlurr(glowTex, w, h, projectionMatrix, viewMatrix);
 
             #region PostProcessing pass
 
@@ -1075,12 +1076,12 @@ namespace RallysportGame
             //////////////////////////////////////////////////////ÄNDRA TILLBAKA!!!
             //Audio management
             
-            if (Audio.audioStatus(source) == 0)
+            if (Audio.audioStatus(source) == 1)
                 Audio.playSound(source);
             else if (Audio.audioStatus(source) == 3)
                 source = Audio.nextTrack(source);
 
-            if (Audio.audioStatus(sfx) == 0||Audio.audioStatus(sfx) == 3)
+            if (Audio.audioStatus(sfx) == 1||Audio.audioStatus(sfx) == 3)
                 Audio.playSound(sfx);
             Audio.sfxSpeed(sfx, playerCar.carHull.LinearVelocity.Length());
             //move light
