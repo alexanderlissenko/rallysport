@@ -78,7 +78,7 @@ namespace RallysportGame
 
         public void startSending()
         {
-            socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveBuffer, 0);
+            socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveBuffer,1);
             networkStarted = true;
             Thread.Sleep(2000);
             if(socket.Available==0)
