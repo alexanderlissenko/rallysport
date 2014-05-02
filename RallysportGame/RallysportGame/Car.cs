@@ -41,6 +41,7 @@ namespace RallysportGame
         // The wheels
         public List<Entity> wheelents;
         public List<BEPUphysics.Entities.Entity> wheels;
+        public float carRate;
         // The angle between the direction and forward vectors
         private float turning_angle;
         // Friction coefficient, material-dependent
@@ -183,6 +184,7 @@ namespace RallysportGame
 
         public void accelerate(float rate)
         {
+            carRate = rate;
             if (rate > 0)
             {
                 drivingMotor1.Settings.VelocityMotor.GoalVelocity = 10;
@@ -229,8 +231,8 @@ namespace RallysportGame
             Quaternion rot = carHull.Orientation;
             Vector3.Transform(ref forward, ref rot, out leftRot);
 
-            Vector3.Multiply(ref leftRot, rate * 0.8f, out acceleration);
-            carHull.LinearVelocity += Utilities.ConvertToBepu(acceleration); 
+            Vector3.Multiply(ref leftRot, rate, out acceleration);
+            carHull.LinearVelocity = Utilities.ConvertToBepu(acceleration); 
         }
         // Angle in radians
         public void Turn(float angle)
