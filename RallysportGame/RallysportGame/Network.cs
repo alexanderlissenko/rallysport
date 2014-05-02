@@ -23,13 +23,13 @@ namespace RallysportGame
         private IPAddress multicastAddr = IPAddress.Parse("234.123.123.123");
 
         private bool networkStarted;
-        private int userId;
+        public int userId;
         private bool isLeader = false;
         private int ids=1;
         private static Network instance;
-
         private ArrayList userList;
         Space space;
+        private Car car;
         private Network() { }
         private Network(Space space)
         {
@@ -55,6 +55,11 @@ namespace RallysportGame
             {
                 instance = new Network(space);
             }
+        }
+
+        public void setCar(Car c)
+        {
+            this.car = c;
         }
 
         public bool getStatus()
@@ -140,6 +145,13 @@ namespace RallysportGame
             Console.WriteLine("network data sending userlist: " + userList.Count);
             socket.SendTo(msg, endpoint);
         }
+        public void sendStart()
+        {
+            IPEndPoint endpoint = new IPEndPoint(multicastAddr, 11245);
+            byte[] msg = Encoding.UTF8.GetBytes("4;0");
+            Console.WriteLine("sending start");
+            socket.SendTo(msg, endpoint);
+        }
 
         public void recieveData(ref ArrayList carList)
         {
@@ -207,6 +219,13 @@ namespace RallysportGame
                             }
                         }
                         break;
+                    case "4":
+                        int trigger = int.Parse(unParsedData[1]);
+                        if (trigger == 0)
+                        {
+                            RaceState.StartRace(car,ref carList);
+                        }
+                        break;
                     default:
                         break;
                 }
@@ -227,6 +246,16 @@ namespace RallysportGame
                 Console.WriteLine(e.ToString());
             }
             socket.Close();
+        }
+
+        public int getUserID()
+        {
+            return userId;
+        }
+
+        public ArrayList getUserList()
+        {
+            return userList;
         }
 
         private IPAddress getLocalIp()

@@ -43,7 +43,7 @@ namespace RallysportGame
             triggerObj = new Entity(entityPath);
             triggerHull = new ConvexHull(Utilities.meshToVectorArray(triggerObj.mesh), 0f);
 
-            triggerHull.WorldTransform = BEPUutilities.Matrix.CreateTranslation(Utilities.ConvertToBepu(pos));;
+            triggerHull.WorldTransform = BEPUutilities.Matrix.CreateTranslation(Utilities.ConvertToBepu(pos));
 
             triggerHull.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.NoSolver;
             CollisionRules.AddRule(triggerHull, world, CollisionRule.NoBroadPhase);

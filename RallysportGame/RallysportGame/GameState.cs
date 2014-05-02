@@ -716,6 +716,7 @@ namespace RallysportGame
 
             Network.Init(collisionHandler.space);
             networkhandler = Network.getInstance();
+            networkhandler.setCar(playerCar);
             //Music
             source = Audio.initSound();
             sfx = Audio.initSfx();
@@ -1060,7 +1061,7 @@ namespace RallysportGame
             //Network
             if (networkhandler.getStatus())
             {
-                if (testtimer == 180)
+                if (testtimer == 60)
                 {
                     networkhandler.sendData(playerCar.getCarPos(),playerCar.getCarAngle(),playerCar.carRate);
                     testtimer = 0;
@@ -1119,6 +1120,13 @@ namespace RallysportGame
                 {
                     source = Audio.nextTrack(source);
                     keyHandled = !keyHandled;
+                }
+            }
+            else if (gameWindow.Keyboard[Key.N])
+            {
+                if (!keyHandled)
+                {
+                    networkhandler.sendStart();
                 }
             }
             #endregion

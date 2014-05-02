@@ -96,7 +96,6 @@ namespace RallysportGame.GUI
         {
             mainMenu.clearAllHitboxes();
             StateHandler.Instance.changeStateToGame();
-            GameTimer.countDown(5);
         }
 
         private void startMultiplayer()
@@ -105,8 +104,6 @@ namespace RallysportGame.GUI
             Network.getInstance().startSending();
             
             StateHandler.Instance.changeStateToGame();
-
-            GameTimer.countDown(5);
         }
 
         private void swapToMainMenu()
@@ -183,9 +180,12 @@ namespace RallysportGame.GUI
         }
         public override void MouseButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (e.Button.Equals(MouseButton.Left))
+            if (StateHandler.Instance.isInMenu())
             {
-                currentTextMenu.ClickSelected();
+                if (e.Button.Equals(MouseButton.Left))
+                {
+                    currentTextMenu.ClickSelected();
+                }
             }
         }
 
