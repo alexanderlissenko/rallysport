@@ -50,21 +50,23 @@ namespace RallysportGame
 
         public static void StartRace(Car playerCar,ref ArrayList carList)
         {
+            int offset = 0;
             bool playerAdded = false;
             for (int i = 0; i < carList.Count; i++ )
             {
                 if(Network.getInstance().getUserID() < (int)Network.getInstance().getUserList()[i]&& !playerAdded)
                 {
-                    playerCar.setCarPos(new Vector3(182, 2, -6 + i));
+                    playerCar.setCarPos(new Vector3(182, 2, -6 + i*2));
                     playerAdded = true;
+                    offset = 3;
                 }
                 object o = carList[i];
                 Car c = o as Car;
-                c.setCarPos(new Vector3(182, 2, -6+ 3*i));
+                c.setCarPos(new Vector3(182, 2, -6+ i*2 + offset));
             }
             if(!playerAdded)
             {
-                playerCar.setCarPos(new Vector3(182, 2, -6 + carList.Count));
+                playerCar.setCarPos(new Vector3(182, 2, -6 + 2*carList.Count));
             }
             GameTimer.countDown(5);
         }
