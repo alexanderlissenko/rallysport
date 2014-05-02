@@ -256,13 +256,38 @@ namespace RallysportGame
 
         public void setCarPos(Vector3 pos,Quaternion rot)
         {
+            Vector3 frontRight = new Vector3(-0.9f, -0.2f, -1.7f);
+            Vector3 frontLeft = new Vector3(1f, -0.2f, -1.7f);
+            Vector3 backLeft = new Vector3(1f, -0.2f, 1.6f);
+            Vector3 backRight = new Vector3(-0.9f, -0.2f, 1.6f);
             carHull.WorldTransform = BEPUutilities.Matrix.CreateTranslation(Utilities.ConvertToBepu(pos));
             carHull.Orientation = rot;
+            Quaternion rot2 = carHull.Orientation;
+            
+            Vector3 frontRRot;
+            Vector3.Transform(ref frontRight, ref rot, out frontRRot);
+            
+            Vector3 frontLRot;
+            Vector3.Transform(ref frontLeft, ref rot2, out frontLRot);
 
-            wheels[0].WorldTransform = BEPUutilities.Matrix.CreateTranslation(pos + new Vector3(-0.9f, -0.2f, -1.7f));
-            wheels[1].WorldTransform = BEPUutilities.Matrix.CreateTranslation(pos + new Vector3(1f, -0.2f, -1.7f));
-            wheels[2].WorldTransform = BEPUutilities.Matrix.CreateTranslation(pos + new Vector3(1f, -0.2f, 1.6f));
-            wheels[3].WorldTransform = BEPUutilities.Matrix.CreateTranslation(pos + new Vector3(-0.9f, -0.2f, 1.6f));
+            Quaternion rot3 = carHull.Orientation;
+            Quaternion rot4 = carHull.Orientation;
+
+            Vector3 backRRot;
+            Vector3.Transform(ref backLeft, ref rot3, out backRRot);
+            Vector3 backLRot;
+            Vector3.Transform(ref backRight, ref rot4, out backLRot);
+
+            wheels[0].WorldTransform = BEPUutilities.Matrix.CreateTranslation(pos + frontRRot);
+            wheels[1].WorldTransform = BEPUutilities.Matrix.CreateTranslation(pos + frontLRot);
+            wheels[2].WorldTransform = BEPUutilities.Matrix.CreateTranslation(pos + backRRot);
+            wheels[3].WorldTransform = BEPUutilities.Matrix.CreateTranslation(pos + backLRot);
+
+            wheels[0].Orientation = rot;
+            wheels[1].Orientation = rot;
+            wheels[2].Orientation = rot;
+            wheels[3].Orientation = rot;
+
         }
 
         public OpenTK.Quaternion getCarAngle()

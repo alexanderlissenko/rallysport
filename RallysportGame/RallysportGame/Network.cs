@@ -175,7 +175,7 @@ namespace RallysportGame
                         index = userList.IndexOf(id);
                         carList.RemoveAt(index);
                         userList.Remove(id);
-                        if (id == userId)
+                        if (int.Parse(unParsedData[2]) == userId)
                             isLeader = true;
                         break;
                     case "3":
@@ -209,7 +209,7 @@ namespace RallysportGame
         {
             userList.Reverse();
             if(userList.Count != 0)
-                sendData("2;" + userList[0]);
+                sendData("2;"+userId +";"+ userList[0]);
             try
             {
                 socket.Shutdown(SocketShutdown.Both);
