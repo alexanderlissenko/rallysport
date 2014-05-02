@@ -151,7 +151,7 @@ namespace RallysportGame
         {
             IPEndPoint endpoint = new IPEndPoint(multicastAddr, 11245);
             byte[] msg = Encoding.UTF8.GetBytes("4;0");
-            Console.WriteLine("sending start");
+            Console.WriteLine("raceing starts");
             socket.SendTo(msg, endpoint);
         }
 
