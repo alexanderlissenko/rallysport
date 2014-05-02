@@ -133,6 +133,13 @@ namespace RallysportGame
             Console.WriteLine("network data sending userlist: " + userList.Count);
             socket.SendTo(msg, endpoint);
         }
+        public void sendData(Vector3 vector, Quaternion rot,float acceleration)
+        {
+            IPEndPoint endpoint = new IPEndPoint(multicastAddr, 11245);
+            byte[] msg = Encoding.UTF8.GetBytes("3;" + userId + ";" + vector.X + ";" + vector.Y + ";" + vector.Z + ";" + rot.X + ";" + rot.Y + ";" + rot.Z + ";" + rot.W + ";"+ acceleration+";");
+            Console.WriteLine("network data sending userlist: " + userList.Count);
+            socket.SendTo(msg, endpoint);
+        }
 
         public void recieveData(ref ArrayList carList)
         {
@@ -195,6 +202,7 @@ namespace RallysportGame
                                 Car c = o as Car;
                                 //c.setCarPos(new Vector3(float.Parse(unParsedData[2].Substring(1)), float.Parse(unParsedData[3]), float.Parse(unParsedData[4].Remove(unParsedData[4].Length - 1))));
                                 c.setCarPos(new Vector3(float.Parse(unParsedData[2]), float.Parse(unParsedData[3]), float.Parse(unParsedData[4])),new Quaternion(float.Parse(unParsedData[5]),float.Parse(unParsedData[6]),float.Parse(unParsedData[7]),float.Parse(unParsedData[8])));
+                                c.networkAccel(float.Parse(unParsedData[9]));
                                 //carList[index] = c;
                             }
                         }

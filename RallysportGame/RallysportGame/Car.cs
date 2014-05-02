@@ -220,9 +220,17 @@ namespace RallysportGame
             Vector3.Transform(ref forward, ref rot2, out leftRot);
 
             Vector3.Multiply(ref leftRot, rate *0.8f, out acceleration);
-            carHull.LinearVelocity += Utilities.ConvertToBepu(acceleration);
+            carHull.LinearVelocity += Utilities.ConvertToBepu(acceleration); 
+        }
 
-            
+        public void networkAccel(float rate)
+        {
+            Vector3 leftRot;
+            Quaternion rot = carHull.Orientation;
+            Vector3.Transform(ref forward, ref rot, out leftRot);
+
+            Vector3.Multiply(ref leftRot, rate * 0.8f, out acceleration);
+            carHull.LinearVelocity += Utilities.ConvertToBepu(acceleration); 
         }
         // Angle in radians
         public void Turn(float angle)

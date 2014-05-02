@@ -1062,7 +1062,7 @@ namespace RallysportGame
             {
                 if (testtimer == 180)
                 {
-                    networkhandler.sendData(playerCar.getCarPos(),playerCar.getCarAngle());
+                    networkhandler.sendData(playerCar.getCarPos(),playerCar.getCarAngle(),playerCar.carHull.LinearVelocity.Length());
                     testtimer = 0;
                 }
                 testtimer++;
