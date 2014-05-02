@@ -47,6 +47,7 @@ namespace RallysportGame
             socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
             socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.MulticastTimeToLive, 1);
             ep = (EndPoint)localEP;
+            socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveBuffer, 0);
         }
 
         public static void Init(Space space)
@@ -77,6 +78,7 @@ namespace RallysportGame
 
         public void startSending()
         {
+            socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveBuffer, 0);
             networkStarted = true;
             Thread.Sleep(2000);
             if(socket.Available==0)
