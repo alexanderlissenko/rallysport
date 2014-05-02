@@ -57,7 +57,6 @@ namespace RallysportGame
                 {
                     playerCar.setCarPos(new Vector3(182, 2, -6 + i));
                     playerAdded = true;
-                    i++;
                 }
                 object o = carList[i];
                 Car c = o as Car;
