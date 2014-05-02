@@ -261,7 +261,16 @@ namespace RallysportGame
 
         public void setCarPos(Vector3 pos)
         {
+            Vector3 frontRight = new Vector3(-0.9f, -0.2f, -1.7f);
+            Vector3 frontLeft = new Vector3(1f, -0.2f, -1.7f);
+            Vector3 backLeft = new Vector3(1f, -0.2f, 1.6f);
+            Vector3 backRight = new Vector3(-0.9f, -0.2f, 1.6f);
             carHull.WorldTransform = BEPUutilities.Matrix.CreateTranslation(Utilities.ConvertToBepu(pos));
+
+            wheels[0].WorldTransform = BEPUutilities.Matrix.CreateTranslation(pos + frontRight);
+            wheels[1].WorldTransform = BEPUutilities.Matrix.CreateTranslation(pos + frontLeft);
+            wheels[2].WorldTransform = BEPUutilities.Matrix.CreateTranslation(pos + backRight);
+            wheels[3].WorldTransform = BEPUutilities.Matrix.CreateTranslation(pos + backLeft);
         }
 
         public void setCarPos(Vector3 pos,Quaternion rot)

@@ -62,6 +62,10 @@ namespace RallysportGame
                 Car c = o as Car;
                 c.setCarPos(new Vector3(182, 2, -6+ 3*i));
             }
+            if(!playerAdded)
+            {
+                playerCar.setCarPos(new Vector3(182, 2, -6 + carList.Count));
+            }
             GameTimer.countDown(5);
         }
     }
