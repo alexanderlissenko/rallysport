@@ -258,6 +258,11 @@ namespace RallysportGame
         {
             carHull.WorldTransform = BEPUutilities.Matrix.CreateTranslation(Utilities.ConvertToBepu(pos));
             carHull.Orientation = rot;
+
+            wheels[0].WorldTransform = BEPUutilities.Matrix.CreateTranslation(pos + new Vector3(-0.9f, -0.2f, -1.7f));
+            wheels[1].WorldTransform = BEPUutilities.Matrix.CreateTranslation(pos + new Vector3(1f, -0.2f, -1.7f));
+            wheels[2].WorldTransform = BEPUutilities.Matrix.CreateTranslation(pos + new Vector3(1f, -0.2f, 1.6f));
+            wheels[3].WorldTransform = BEPUutilities.Matrix.CreateTranslation(pos + new Vector3(-0.9f, -0.2f, 1.6f));
         }
 
         public OpenTK.Quaternion getCarAngle()
