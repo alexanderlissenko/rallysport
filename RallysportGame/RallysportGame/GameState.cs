@@ -446,14 +446,14 @@ namespace RallysportGame
             //environment.setUpBlenderModel(); //Handled in constructor
 
             playerCar = new Car(@"Mustang\mustang-textured-scale_mini", @"Mustang\one_wheel_corected_normals_recenterd", new Vector3(182, 2, -6), collisionHandler.space);
-            skybox = new Entity("Cube\\inside_koob");
+            skybox = new Entity("map\\skyDome");
             superSphere = new Entity("isoSphere_15");
             unitSphere = new Entity("Cube\\unitSphere");
             myCar2 = new Entity("Cube\\inside_koob");
 
-            superSphere.setUpMtl();
-            superSphere.loadTexture();
-
+            superSphere.setUpMultMtl();
+            superSphere.setUpMultText();
+            skybox.skyboxScale();
 
             
             //collisionHandler.addObject(playerCar);
@@ -872,13 +872,14 @@ namespace RallysportGame
             DrawBuffersEnum[] draw_buffs2 = { DrawBuffersEnum.ColorAttachment0, DrawBuffersEnum.ColorAttachment1, DrawBuffersEnum.ColorAttachment2, DrawBuffersEnum.ColorAttachment3 };
             GL.DrawBuffers(4, draw_buffs2);
 
-
+            skybox.firstPass(firstPassShader, projectionMatrix, viewMatrix);
             /* Görs is Först pass numera
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, environment.getTextureId());
             GL.Uniform1(GL.GetUniformLocation(firstPassShader, "firstTexture"), 0);
             */
             //megaParticles.firstPass(firstPassShader, projectionMatrix, viewMatrix);
+           
             environment.firstPass(firstPassShader, projectionMatrix, viewMatrix);
 
             GL.BindTexture(TextureTarget.Texture2D, 0);
@@ -887,7 +888,7 @@ namespace RallysportGame
             {
                 c.firstPass(firstPassShader, projectionMatrix, viewMatrix);
             }
-            //skybox.firstPass(firstPassShader, projectionMatrix, viewMatrix);
+           
             TriggerManager.renderPowerUps(firstPassShader, projectionMatrix, viewMatrix);
             GL.DepthMask(false);
             GL.Disable(EnableCap.DepthTest);

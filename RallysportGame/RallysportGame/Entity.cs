@@ -285,6 +285,11 @@ namespace RallysportGame
             modelMatrix = modelMatrix + Matrix4.CreateScale(20f);
         }
 
+        public void skyboxScale()
+        {
+            modelMatrix = modelMatrix + Matrix4.CreateScale(165f) + Matrix4.CreateTranslation(new OpenTK.Vector3(0,-240,0));
+        }
+
         public void SetUpPlane()
         {
             modelMatrix *= Matrix4.CreateScale(100f);

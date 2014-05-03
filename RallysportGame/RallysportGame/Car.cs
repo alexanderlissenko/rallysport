@@ -171,6 +171,7 @@ namespace RallysportGame
                 w.firstPass(program, projectionMatrix, viewMatrix);
             }
         }
+        public override void renderShadowMap()
 
         public override void Update()
         {
