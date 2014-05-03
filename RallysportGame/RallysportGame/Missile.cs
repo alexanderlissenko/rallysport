@@ -5,9 +5,20 @@ using System.Text;
 using System.Threading.Tasks;
 using OpenTK;
 
+using BEPUphysics;
+using BEPUphysics.Entities;
+using BEPUphysics.Entities.Prefabs;
+using BEPUphysics.BroadPhaseEntries;
+using BEPUphysics.EntityStateManagement;
+using BEPUphysics.BroadPhaseEntries.Events;
+using BEPUphysics.BroadPhaseEntries.MobileCollidables;
+using BEPUphysics.NarrowPhaseSystems.Pairs;
+using BEPUphysics.CollisionRuleManagement;
+
+
 namespace RallysportGame
 {
-    class Missile : DynamicEntity
+    class Missile 
     {
         
         /**
@@ -16,39 +27,50 @@ namespace RallysportGame
         * Velocity (dubbel mot car, samma riktning?)
          * Position (car pos)
         **/
-        private Vector3 missileVel;
-        private float TTL;
-        public Missile(String name, Vector3 pos,Vector3 orientation, Vector3 lin_vel, float ttl)
-            : base(name)
+        private int TTL;
+        public bool launched;
+        private Entity triggerObj;
+        ConvexHull triggerHull;
+        public Missile(String name, Vector3 pos, Space space)
         {
-            TTL = ttl;
-
-            base.position = Vector3.Add(pos,Vector3.Mult(orientation, 100)); // magic number is the distance from the car, the missile will spawn
-            missileVel = lin_vel;
-        }
-
-        public override void render(int program, Matrix4 projectionMatrix, Matrix4 viewMatrix, Vector3 lightPosition, Matrix4 lightViewMatrix, Matrix4 lightProjectionMatrix)
-        {
+            triggerObj = new Entity(name);
+            triggerHull = new ConvexHull(Utilities.meshToVectorArray(triggerObj.mesh), 500f);
+            triggerHull.WorldTransform = BEPUutilities.Matrix.CreateTranslation(Utilities.ConvertToBepu(pos));
             
-            base.render(program, projectionMatrix, viewMatrix, lightPosition, lightViewMatrix, lightProjectionMatrix);
+            triggerHull.IsAffectedByGravity = false;
+            
+
+            triggerHull.Tag = "Missile";
+            space.Add(triggerHull);
+        }
+        // sets the missile to the specified location and speed aswell as setting the time it will live provided no collitions.
+        public void launch(Vector3 start,Vector3 initialVel,int timeToLive){
+            System.Console.WriteLine("Lanch Missile!!");
+            launched = true;
+            TTL = timeToLive;
+            triggerHull.Position = start; // might desync if missile not hit anything this is whay // william
+            //triggerHull.WorldTransform = BEPUutilities.Matrix.CreateTranslation(Utilities.ConvertToBepu(start));
+            triggerHull.LinearVelocity = initialVel;
+            
+        }
+       
+        public void firstPass(int program, Matrix4 projectionMatrix, Matrix4 viewMatrix)
+        {
+            triggerObj.modelMatrix = triggerHull.WorldTransform;
+            triggerObj.firstPass(program, projectionMatrix, viewMatrix);
         }
 
-        public override void firstPass(int program, Matrix4 projectionMatrix, Matrix4 viewMatrix)
-        {
-            base.setCoordiants(base.position.X, base.position.Y, base.position.Z);
-            base.firstPass(program, projectionMatrix, viewMatrix);
-        }
+
 
         public bool update() {
 
-            base.position = Vector3.Add(base.position, missileVel);
-            missileVel = Vector3.Add(missileVel, Vector3.Mult(missileVel, 0.1f));
+            triggerHull.LinearVelocity = Vector3.Add(triggerHull.LinearVelocity, Vector3.Mult(triggerHull.LinearVelocity, 0.1f)); // accelerate
 
-            
-
-            Console.WriteLine(base.position);
-            if (TTL-- <= 0)
+            if (TTL-- <= 0) //decriment and compare
+            { 
+                launched = false;
                 return true;
+            }
 
             return false;
         }

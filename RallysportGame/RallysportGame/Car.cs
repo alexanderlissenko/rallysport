@@ -152,7 +152,7 @@ namespace RallysportGame
                 w.PositionUpdated += new Action<BEPUphysics.Entities.Entity>(PositionUpdated);
             }
             Console.WriteLine("car has id " + carHull.InstanceId);
-            
+            m = new Missile(@"isoSphere_15", new Vector3(0, -200, 0), space);
         }
 
         #endregion
@@ -172,41 +172,59 @@ namespace RallysportGame
             base.modelMatrix = carHull.WorldTransform;
             base.firstPass(program, projectionMatrix, viewMatrix);
             
-            if (powerUpSlot.Equals("Missile") && renderPower) {
-                m.firstPass(program, projectionMatrix, viewMatrix); 
-            }
             foreach (Entity w in wheelents)
             {
                 w.firstPass(program, projectionMatrix, viewMatrix);
             }
+
+                m.firstPass(program, projectionMatrix, viewMatrix);
         }
 
         public override void Update()
         {
             //position = Utilities.ConvertToTK(body.Position);
             base.Update();
-            if (powerUpSlot.Equals("Missile") && renderPower){
-                
-
-
-                    if (m==null){
-                        Vector3 rotVec;
-                        Quaternion rot = getCarAngle();
-                        Vector3.Transform(ref forward, ref rot, out rotVec);
-                        m = new Missile(@"isoSphere_15", getCarPos(), rotVec, carHull.LinearVelocity , (float)(5 * 60));//new Missile(@"Cube\megu_koob", this.position, this.velocity, (float)(5 * 60));//
-                        }
-                    
-                    if (m.update()) {
-                        renderPower = false;
-                        m = null;
-                        
-                    }
-                
-               }
             for (int i = 0; i < wheelents.Count; i++)
             {
                 wheelents[i].modelMatrix = wheels[i].WorldTransform;
             }
+            #region Powerup Update
+            if (renderPower)
+            {
+                if (powerUpSlot.Equals("Missile"))
+                {
+                    if (!m.launched)
+                    {
+                        Vector3 temp = Vector3.Add(getCarPos()+ new Vector3(0,10,0), Vector3.Mult(Vector3.Transform(new Vector3(0,0,-1), carHull.Orientation),100));
+                        m.launch(temp, Vector3.Add(carHull.LinearVelocity,Vector3.Mult(Vector3.Transform(new Vector3(0,0,-1), carHull.Orientation),100)),60*5); 
+                    }
+
+                    if (m.update())
+                    {
+                        renderPower = false;
+                        //powerUpSlot="None";
+                    }
+
+                }
+                else if (powerUpSlot.Equals("SpeedBoost"))
+                {
+
+
+                }
+                else if (powerUpSlot.Equals("LightsOut"))
+                {
+
+
+
+                }
+                else
+                {
+                    powerUpSlot = "None";
+                }
+            }
+            #endregion
+
+
         }
 
        
@@ -251,8 +269,6 @@ namespace RallysportGame
 
             Vector3.Multiply(ref leftRot, rate *0.5f, out acceleration);
             carHull.LinearVelocity += Utilities.ConvertToBepu(acceleration);
-
-            
         }
         // Angle in radians
         public void Turn(float angle)
@@ -375,32 +391,28 @@ namespace RallysportGame
        public void usePowerUp()
        {
            renderPower = true;
-            /*
-            if (powerUpSlot.Equals("SpeedBoost"))
-            {
-                //boostTime = new System.Timers.Timer(20000);
-                //boostTime.Elapsed += new System.Timers.ElapsedEventHandler(boostTimeStop);
-                //boostTime.Enabled = true;
-                //boostTime.Start();
 
-                //timeBoost = new DateTime
+           if (powerUpSlot.Equals("SpeedBoost"))
+           {
+               
+               Console.WriteLine("Timer started: 20s");
 
-                Console.WriteLine("Timer started: 20s");
-                
-                timerBoost(20);
-                //tick();
-                
-            }
-            else if (powerUpSlot.Equals("LightOut"))
-            {
-                //Light out
-                powerUpSlot = "None";
-            }
-            else
-            {
-                //No powerup in slot!
-            }
-           */
+               timerBoost(20);
+               
+
+           }
+           else if (powerUpSlot.Equals("Missile"))
+           {
+
+           }
+           else if (powerUpSlot.Equals("LightsOut"))
+           {
+
+           }
+           else
+           {
+               powerUpSlot = "None";
+           }
        }
 
         //stops the timer after 20 s
