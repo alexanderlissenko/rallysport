@@ -51,9 +51,9 @@ namespace RallysportGame
             triggerHull.Position = start; // might desync if missile not hit anything this is whay // william
             //triggerHull.WorldTransform = BEPUutilities.Matrix.CreateTranslation(Utilities.ConvertToBepu(start));
             triggerHull.LinearVelocity = initialVel;
-            
+
         }
-       
+
         public void firstPass(int program, Matrix4 projectionMatrix, Matrix4 viewMatrix)
         {
             triggerObj.modelMatrix = triggerHull.WorldTransform;
@@ -67,10 +67,10 @@ namespace RallysportGame
             triggerHull.LinearVelocity = Vector3.Add(triggerHull.LinearVelocity, Vector3.Mult(triggerHull.LinearVelocity, 0.1f)); // accelerate
 
             if (TTL-- <= 0) //decriment and compare
-            { 
+        {
                 launched = false;
                 return true;
-            }
+        }
 
             return false;
         }

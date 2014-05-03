@@ -803,6 +803,7 @@ namespace RallysportGame
                 if (playerCar.getPowerType().Equals("Missile"))
                 {
                     playerCar.getM().firstPass(firstPassShader, projectionMatrix, viewMatrix);
+                    Console.WriteLine("Missile rendered");
                 }
             }
             foreach (Car c in otherCars)
