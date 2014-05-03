@@ -96,6 +96,7 @@ namespace RallysportGame.GUI
         {
             mainMenu.clearAllHitboxes();
             StateHandler.Instance.changeStateToGame();
+            RaceState.setCurrentState(RaceState.States.RACING);
         }
 
         private void startMultiplayer()
@@ -104,6 +105,7 @@ namespace RallysportGame.GUI
             Network.getInstance().startSending();
             
             StateHandler.Instance.changeStateToGame();
+            RaceState.setCurrentState(RaceState.States.RACING);
         }
 
         private void swapToMainMenu()
