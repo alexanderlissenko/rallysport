@@ -338,6 +338,42 @@ namespace RallysportGame
             f.point[7] = farCenter - up2 * farHeight + right * farWidth;
 
         }
+
+        float applyCropMatrix(Frustum f)
+        {
+            Matrix4 shadowmodelView = new Matrix4();
+            Matrix4 shadowProjection = new Matrix4();
+            Matrix4 shaodowCrop = new Matrix4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+            float maxX = -1000;
+            float maxY = -1000;
+            float maxZ;
+            float minX = 1000;
+            float minY = 1000;
+            float minZ = 0;
+
+            Vector4 transf;
+            GL.GetFloat(GetPName.ModelviewMatrix, out shadowmodelView);
+
+            transf = Vector4.Transform(new Vector4(f.point[0], 1.0f), shadowmodelView);
+
+            minZ = transf.Z;
+            maxZ = transf.Z;
+
+            for (int i = 1; i < 8; i++ )
+            {
+                transf = Vector4.Transform(new Vector4(f.point[i], 1.0f), shadowmodelView);
+                if(transf.Z > maxZ) maxZ = transf.Z;
+                if(transf.Z < minZ) minZ = transf.Z;
+            }
+
+            /*for (int i = 0; i < shadowcaster; i++ )
+            {
+                transf = Vector4.Transform(new Vector4(shadowcaster[i].pos, 1.0f), shadowmodelView);
+                if()
+            }*/
+
+                return -1;
+        }
         //end CSM
 
         /// <summary>
@@ -1067,7 +1103,7 @@ namespace RallysportGame
                     testtimer = 0;
                 }
                 testtimer++;
-                networkhandler.recieveData(ref otherCars);
+                 networkhandler.recieveData(ref otherCars);
             }
             //Network
             camera_rotation_matrix = Matrix4.Identity;
