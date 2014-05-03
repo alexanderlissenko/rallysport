@@ -60,6 +60,17 @@ namespace RallysportGame
 
         private float maximumTurnAngle = BEPUutilities.MathHelper.Pi * 0.2f;
         private BEPUutilities.Vector3 testDir;
+
+        private static String powerUpSlot = "Missile";
+        private bool renderPower = false;
+        static System.Timers.Timer boostTime;
+        private static bool boostTimeActive = false;
+
+        static DateTime countDownTarget, gameTimer;
+        static TimeSpan timeLeft;
+        static int timeDiff = 0, previousTimeDiff = 0;
+
+        private Missile m;
         #endregion
 
         #region Constructors
@@ -145,7 +156,7 @@ namespace RallysportGame
                 w.PositionUpdated += new Action<BEPUphysics.Entities.Entity>(PositionUpdated);
             }
             Console.WriteLine("car has id " + carHull.InstanceId);
-            
+            m = new Missile(@"isoSphere_15", new Vector3(0, -200, 0), space);
         }
 
         #endregion
@@ -169,6 +180,8 @@ namespace RallysportGame
             {
                 w.firstPass(program, projectionMatrix, viewMatrix);
             }
+
+                m.firstPass(program, projectionMatrix, viewMatrix);
         }
 
         public override void Update()
@@ -179,6 +192,43 @@ namespace RallysportGame
             {
                 wheelents[i].modelMatrix = wheels[i].WorldTransform;
             }
+            #region Powerup Update
+            if (renderPower)
+            {
+                if (powerUpSlot.Equals("Missile"))
+                {
+                    if (!m.launched)
+                    {
+                        Vector3 temp = Vector3.Add(getCarPos()+ new Vector3(0,10,0), Vector3.Mult(Vector3.Transform(new Vector3(0,0,-1), carHull.Orientation),100));
+                        m.launch(temp, Vector3.Add(carHull.LinearVelocity,Vector3.Mult(Vector3.Transform(new Vector3(0,0,-1), carHull.Orientation),100)),60*5); 
+                    }
+
+                    if (m.update())
+                    {
+                        renderPower = false;
+                        //powerUpSlot="None";
+                    }
+
+                }
+                else if (powerUpSlot.Equals("SpeedBoost"))
+                {
+
+
+                }
+                else if (powerUpSlot.Equals("LightsOut"))
+                {
+
+
+
+                }
+                else
+                {
+                    powerUpSlot = "None";
+                }
+            }
+            #endregion
+
+
         }
 
        
@@ -223,8 +273,6 @@ namespace RallysportGame
 
             Vector3.Multiply(ref leftRot, rate *0.5f, out acceleration);
             carHull.LinearVelocity += Utilities.ConvertToBepu(acceleration);
-
-            
         }
         // Angle in radians
         public void Turn(float angle)
@@ -297,6 +345,118 @@ namespace RallysportGame
 
 
         }
+
+       public void addPowerUp(String type)
+       {
+           powerUpSlot = type;
+           if (powerUpSlot.Equals("SpeedBoost"))
+           {
+               //Boost speed
+               //powerUpSlot = "None";
+           }
+           else if (powerUpSlot.Equals("LightOut"))
+           {
+               //Light out
+               powerUpSlot = "None";
+           }
+           else
+           {
+               //No powerup in slot!
+           }
+       }
+
+       public void timerBoost(int seconds)
+       {
+           countDownTarget = DateTime.Now;
+           timeLeft = new TimeSpan(0, 0, seconds);
+           countDownTarget = countDownTarget.Add(timeLeft);
+       }
+
+       public void tick()
+       {
+           //Console.WriteLine("Car tick entered");
+           gameTimer = DateTime.Now;
+           timeDiff = countDownTarget.Subtract(DateTime.Now).Seconds;
+           if (timeDiff != previousTimeDiff && timeDiff >= 0)
+           {
+               //Console.WriteLine("Timer is active");
+               boostTimeActive = true;
+               previousTimeDiff = timeDiff;
+           }
+           if (timeDiff == 0)
+           {
+               //Console.WriteLine("Not active");
+               powerUpSlot = "None";
+               boostTimeActive = false;
+               //RaceState.setCurrentState(RaceState.States.RACING);
+           }
+       }
+
+       public void usePowerUp()
+       {
+                renderPower = true; 
+
+           if (powerUpSlot.Equals("SpeedBoost"))
+            {
+
+                Console.WriteLine("Timer started: 20s");
+                
+                timerBoost(20);
+               
+
+           }
+           else if (powerUpSlot.Equals("Missile"))
+           {
+                
+            }
+           else if (powerUpSlot.Equals("LightsOut"))
+            {
+
+            }
+            else
+            {
+               powerUpSlot = "None";
+            }
+       }
+
+        //stops the timer after 20 s
+        static void boostTimeStop(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            boostTime.Stop();
+            boostTimeActive = false;
+            powerUpSlot = "None";
+            Console.WriteLine("Timer stop!");
+        }
+
+       public bool boostActive()
+       {
+           return boostTimeActive;
+       }
+
+       public String getPowerUp()
+       {
+           return powerUpSlot;
+       }
+
+       public Missile getM()
+       {
+           return m;
+       }
+
+       public void renderPActive()
+       {
+           renderPower = true;
+       }
+
+       public bool getRenderP()
+       {
+           return renderPower;
+       }
+
+       public String getPowerType()
+       {
+           return powerUpSlot;
+       }
         #endregion
         #region Private Methods
 

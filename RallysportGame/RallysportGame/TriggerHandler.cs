@@ -16,6 +16,7 @@ namespace RallysportGame
         static ArrayList passedCheckPoint = new ArrayList();
         static int nrCheckpoints = 0;
         static bool goalUnlocked = false;
+        static Car car;
         public static void triggerEvent(string triggerSender,string triggerCauser)
         {
             splitString = triggerSender.Split(' ');
@@ -58,6 +59,11 @@ namespace RallysportGame
             }
         }
 
+        public static void connectCar(ref Car coolCar)
+        {
+            car = coolCar;
+        }
+
         private static void handlePowerUp()
         {
             Random randomGen = new Random();
@@ -66,9 +72,11 @@ namespace RallysportGame
             {
                 case 0:
                     Console.WriteLine("Missile!");
+                    car.addPowerUp("Missile");
                     break;
                 case 1:
                     Console.WriteLine("Boost!");
+                    car.addPowerUp("SpeedBoost");
                     break;
                 case 2:
                     Console.WriteLine("Lights out!");

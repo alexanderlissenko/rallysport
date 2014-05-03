@@ -151,7 +151,7 @@ namespace RallysportGame.GUI
         public override void Update(GameWindow gameWindow)
         {
             currentTextMenu.Update();
-            //
+            
         }
 
         bool awaitingDownKey = true;

@@ -12,6 +12,7 @@ using System.Drawing;
 using OpenTK.Input;
 using BEPUphysics.Vehicle;
 using System.Threading;
+using System.Timers;
 
 
 
@@ -23,7 +24,7 @@ namespace RallysportGame
     public class GameState : IState
     {
 
-
+        #region Constants and instance variables
         //*****************************************************************************
         //	Useful constants
         //*****************************************************************************
@@ -102,6 +103,9 @@ namespace RallysportGame
         //
 
 
+       
+        #endregion
+
         // Helper function to turn spherical coordinates into cartesian (x,y,z)
         static Vector3 sphericalToCartesian(float theta, float phi, float r, Vector3 pos)
         {
@@ -109,6 +113,8 @@ namespace RallysportGame
                                 (float)(r * Math.Cos(phi)),
                                 (float)(r * Math.Cos(theta) * Math.Sin(phi))));
         }
+
+        
 
         public static int loadShaderProgram(String vShaderPath, String fShaderPath)
         {
@@ -164,6 +170,10 @@ namespace RallysportGame
                     {
                         playerCar.accelerate(0);
                     }
+                    if (e.Key.Equals(Key.P))
+                    {
+                        playerCar.usePowerUp();
+                    }
                     keyList.RemoveAt(i);
                 }
             }
@@ -185,11 +195,25 @@ namespace RallysportGame
                         break;
                     case Key.W:
                         if (RaceState.getCurrentState() == RaceState.States.RACING)
+                        {
+                            //if speedboost active, accelerate 10f for 20 s
+                            if (playerCar.getPowerUp().Equals("SpeedBoost") && playerCar.boostActive())
+                            {
+                                playerCar.accelerate(10f);
+                            }
+                            else
+                            {
                             playerCar.accelerate(1f);
+                                //Console.WriteLine("Boost not active");
+                            }
+                        }
                         break;
                     case Key.S:
                         if (RaceState.getCurrentState() == RaceState.States.RACING)
-                            playerCar.accelerate(-1f);
+                            playerCar.accelerate(-5f);
+                        break;
+                    case Key.P:
+                        playerCar.usePowerUp();
                         break;
                     case Key.Left:
                         camera_theta += camera_horizontal_delta;
@@ -372,7 +396,7 @@ namespace RallysportGame
             TriggerManager.addPowerUp(new BEPUutilities.Vector3(200, 0, -250));
             BEPUutilities.Vector3[] checkpoints = {new Vector3(150, 0, 300), new Vector3(150, 0, -300)} ;
             TriggerManager.addGoal(checkpoints);
-
+            TriggerHandler.connectCar(ref playerCar);
 
                     
             //Particle System
@@ -633,7 +657,7 @@ namespace RallysportGame
 
             #endregion
 
-            
+                    
            
             gameWindow.KeyDown += handleKeyDown;
             gameWindow.KeyUp += handleKeyUp;
@@ -764,6 +788,14 @@ namespace RallysportGame
             GL.BindTexture(TextureTarget.Texture2D, 0);
             //myCar2.firstPass(firstPassShader, projectionMatrix, viewMatrix);
             playerCar.firstPass(firstPassShader, projectionMatrix, viewMatrix);
+            if (playerCar.getRenderP())
+            {
+                if (playerCar.getPowerType().Equals("Missile"))
+                {
+                    playerCar.getM().firstPass(firstPassShader, projectionMatrix, viewMatrix);
+                    Console.WriteLine("Missile rendered");
+                }
+            }
             foreach (Car c in otherCars)
             {
                 c.firstPass(firstPassShader, projectionMatrix, viewMatrix);
@@ -950,91 +982,91 @@ namespace RallysportGame
         /// <param name="e"></param>
         public override void Update(GameWindow gameWindow) 
         {
-            #region Update
-            //Network
+        #region Update
+                    //Network
             if (networkhandler.getStatus())
             {
-                if (testtimer == 180)
-                {
-                    networkhandler.sendData(playerCar.position);
-                    testtimer = 0;
-                }
-                testtimer++;
-                networkhandler.recieveData(ref otherCars);
-            }
-            //Network
-            camera_rotation_matrix = Matrix4.Identity;
-            // add game logic, input handling
-            if (gameWindow.Keyboard[Key.Escape])
-            {
-                if (!keyHandled)
-                {
-                    returnToMenu();
-                }
-            }
-            else if (gameWindow.Keyboard[Key.Number9])
-            {
-                if (!keyHandled)
-                {
-                    Audio.increaseGain(source);
-                    keyHandled = !keyHandled;
-                }
-            }
-            else if (gameWindow.Keyboard[Key.Number0])
-            {
-                if (!keyHandled)
-                {
-                    Audio.decreaseGain(source);
-                    keyHandled = !keyHandled;
-                }
-            }
-            else if (gameWindow.Keyboard[Key.Space])
-            {
-                if (!keyHandled)
-                {
-                    if (musicPaused)
+                    if (testtimer == 180)
                     {
+                        networkhandler.sendData(playerCar.position);
+                        testtimer = 0;
+                    }
+                    testtimer++;
+                    networkhandler.recieveData(ref otherCars);
+            }
+                    //Network
+                    camera_rotation_matrix = Matrix4.Identity;
+                    // add game logic, input handling
+                    if (gameWindow.Keyboard[Key.Escape])
+                    {
+                        if (!keyHandled)
+                        {
+                            returnToMenu();
+                        }
+                    }
+                    else if (gameWindow.Keyboard[Key.Number9])
+                    {
+                        if (!keyHandled)
+                        {
+                            Audio.increaseGain(source);
+                            keyHandled = !keyHandled;
+                        }
+                    }
+                    else if (gameWindow.Keyboard[Key.Number0])
+                    {
+                        if (!keyHandled)
+                        {
+                            Audio.decreaseGain(source);
+                            keyHandled = !keyHandled;
+                        }
+                    }
+                    else if (gameWindow.Keyboard[Key.Space])
+                    {
+                        if (!keyHandled)
+                        {
+                            if (musicPaused)
+                            {
+                                Audio.playSound(source);
+                                musicPaused = !musicPaused;
+                                keyHandled = !keyHandled;
+                            }
+                            else
+                            {
+                                Audio.pauseSound(source);
+                                musicPaused = !musicPaused;
+                                keyHandled = !keyHandled;
+                            }
+                        }
+                    }
+                    else if (gameWindow.Keyboard[Key.O])
+                    {
+                        if (!keyHandled)
+                        {
+                            source = Audio.nextTrack(source);
+                            keyHandled = !keyHandled;
+                        }
+                    }
+                    collisionHandler.Update();
+                    TriggerManager.updatePowerUps();
+
+                    updateCamera();
+                    UpdateMouse();
+                    playerCar.Update();
+                    //////////////////////////////////////////////////////ÄNDRA TILLBAKA!!!
+                    //Audio management
+                    /*
+                    if (Audio.audioStatus(source) == 1)
                         Audio.playSound(source);
-                        musicPaused = !musicPaused;
-                        keyHandled = !keyHandled;
-                    }
-                    else
-                    {
-                        Audio.pauseSound(source);
-                        musicPaused = !musicPaused;
-                        keyHandled = !keyHandled;
-                    }
-                }
-            }
-            else if (gameWindow.Keyboard[Key.O])
-            {
-                if (!keyHandled)
-                {
-                    source = Audio.nextTrack(source);
-                    keyHandled = !keyHandled;
-                }
-            }
-            collisionHandler.Update();
-            TriggerManager.updatePowerUps();
+                    else if (Audio.audioStatus(source) == 3)
+                        source = Audio.nextTrack(source);
+                    */
+                    //move light
 
-            updateCamera();
-            UpdateMouse();
-            playerCar.Update();
-            //////////////////////////////////////////////////////ÄNDRA TILLBAKA!!!
-            //Audio management
-            /*
-            if (Audio.audioStatus(source) == 1)
-                Audio.playSound(source);
-            else if (Audio.audioStatus(source) == 3)
-                source = Audio.nextTrack(source);
-            */
-            //move light
-
-            light_theta += camera_horizontal_delta*0.1f;
+                    light_theta += camera_horizontal_delta*0.1f;
             GameTimer.tick();
             //megaParticles.tick();
-        }
-        #endregion
+                }
+                #endregion
 
 
         public void prepareSwap(GameWindow window)
