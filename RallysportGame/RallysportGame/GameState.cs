@@ -1061,6 +1061,7 @@ namespace RallysportGame
             GL.Uniform1(GL.GetUniformLocation(postShader, "megaPartDepth"), 4);
             GL.Uniform1(GL.GetUniformLocation(postShader, "glowTexture"), 5);
             GL.Uniform1(GL.GetUniformLocation(postShader, "velScale"), (float)gameWindow.RenderFrequency / 30.0f);
+            GL.Uniform3(GL.GetUniformLocation(postShader, "lightPos"), ref lightPosition);
 
 
             GL.BindVertexArray(plane.vertexArrayObject);

@@ -141,6 +141,8 @@ void main(void)
 	occlusion /= sample_count;
 	occlusion = 1- occlusion;
 	//
+	
+	
    
 		shading = ambient*scene_ambient_light//*occlusion
 				+ (calculateSpecular(scene_light, fresnelSpecular,material_shininess,normal.xyz,directionToLight,directionFromEye)

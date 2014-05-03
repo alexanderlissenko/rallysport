@@ -9,8 +9,10 @@ uniform sampler2D megaPartTex;
 uniform sampler2D megaPartDepth;
 uniform sampler2D glowTexture;
 uniform float velScale;
+uniform vec3 lightPos;
 
 in vec2 pos;
+
 
 out vec4 fragColor;
 
@@ -52,7 +54,37 @@ void main()
 	}
 	//fragColor = result;//vec4(velocity,0,1);//
     
+	//viewspace godrays
+	int NUM_SAMPLES = 10;
+	float Exposure = 1.0;
+	float Density = 0.5;
+	float Weight = 0.1;
+	float Decay = 0.5;
+	
+	vec2 tmpPos = pos;
+	
+	vec2 deltaTexCoord = (pos.xy - lightPos.xy);
+	deltaTexCoord *= 1.0 / NUM_SAMPLES * Density;			//NUM_SAMPLES & Density undefined
+	
+	//vec3 color = texture2D(postTex, pos.xy);		
+	vec3 color = result.xyz;
+	float illuminationDecay = 1.0;
+	vec3 sample2 = vec3(0);
+	
+	for (int i = 0; i < NUM_SAMPLES; i++) 					//NUM_SAMPLES
+	{
+		tmpPos.xy -= deltaTexCoord;
+		sample2 = texture2D(postTex, tmpPos.xy).xyz;	
+		sample2 *= illuminationDecay * Weight;				//Weight
+		
+		color += sample2;
+		illuminationDecay *= Decay;
+	}
+	
+	vec4 godrayRes = vec4(color * Exposure, 1);					//Exposure
+	//godrays end
+	
 	vec4 glow = texture2D(glowTexture,pos );
-    
+    result = (result + godrayRes) / 2;
     fragColor = result+glow;// 
 }
