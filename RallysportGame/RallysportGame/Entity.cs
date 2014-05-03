@@ -230,7 +230,7 @@ namespace RallysportGame
         }
 
 
-        public void renderShadowMap(int program, Matrix4 lightProjectionMatrix, Matrix4 lightViewMatrix)
+        public virtual void renderShadowMap(int program, Matrix4 lightProjectionMatrix, Matrix4 lightViewMatrix)
         {
 
             setSMMatrices(program, lightProjectionMatrix, lightViewMatrix);

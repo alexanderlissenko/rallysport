@@ -171,7 +171,16 @@ namespace RallysportGame
                 w.firstPass(program, projectionMatrix, viewMatrix);
             }
         }
-        public override void renderShadowMap()
+        public override void renderShadowMap(int program, Matrix4 projectionMatrix, Matrix4 viewMatrix)
+        {
+            base.modelMatrix = carHull.WorldTransform;
+            base.renderShadowMap(program, projectionMatrix, viewMatrix);
+
+            foreach (Entity w in wheelents)
+            {
+                w.renderShadowMap(program, projectionMatrix, viewMatrix);
+            }
+        }
 
         public override void Update()
         {

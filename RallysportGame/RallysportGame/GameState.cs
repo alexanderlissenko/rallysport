@@ -440,7 +440,7 @@ namespace RallysportGame
 
             // Dynamic objects
             collisionHandler = new CollisionHandler();
-            environment = new Environment("map\\finalTrack_1.0");//uggly_test_track_Triangulate");//"plane");//
+            environment = new Environment("map\\finalTrack_0.2");//uggly_test_track_Triangulate");//"plane");//
                     
             //environment.loadTexture();
             //environment.setUpBlenderModel(); //Handled in constructor
@@ -777,7 +777,7 @@ namespace RallysportGame
             GL.ClearDepth(1.0f);
 
             #region Let there be light
-            Vector3 lightPosition = sphericalToCartesian(light_theta, light_phi, light_r, new Vector3(0, 0, 0));
+            Vector3 lightPosition = sphericalToCartesian(light_theta, light_phi, light_r, new Vector3(0, 0, 0));//new Vector3(-545, 329, -138);//
             Vector3 scaleVector = new Vector3(10, 10, 10);
             //Vector3 scaleVector = new Vector3(1000, 1000, 1000);
 
@@ -803,7 +803,7 @@ namespace RallysportGame
             Audio.setUpSourcePos(sfx,playerCar.getCarPos());
             //Matrix4 bias = new Matrix4(0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.5f, 0.0f, 0.5f, 0.5f, 0.5f, 1.0f);
 
-
+            //Console.WriteLine(camera_position.ToString());
             //Render Shadowmap
 
             #region shadowMapRender

@@ -56,9 +56,9 @@ void main()
     
 	//viewspace godrays
 	int NUM_SAMPLES = 10;
-	float Exposure = 1.0;
+	float Exposure = 2.0;
 	float Density = 0.5;
-	float Weight = 0.1;
+	float Weight = 0.5;
 	float Decay = 0.5;
 	
 	vec2 tmpPos = pos;
@@ -85,6 +85,6 @@ void main()
 	//godrays end
 	
 	vec4 glow = texture2D(glowTexture,pos );
-    result = (result + godrayRes) / 2;
+    //result = (result + godrayRes) / 2;
     fragColor = result+glow;// 
 }
