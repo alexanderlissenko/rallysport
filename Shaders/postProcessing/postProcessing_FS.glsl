@@ -67,21 +67,21 @@ void main()
 	vec2 deltaTexCoord = (pos.xy - lightPos.xy);
 	deltaTexCoord *= 1.0 / NUM_SAMPLES * Density;			//NUM_SAMPLES & Density undefined
 	
-	vec3 color = texture2D(godTex,pos ).xyz;//	
+	vec4 color = texture2D(godTex,pos );//	
 	float illuminationDecay = 1.0;
-	vec3 sample2 = vec3(0);
+	vec4 sample2 = vec4(0);
 	
 	for (int i = 0; i < NUM_SAMPLES; i++) 					//NUM_SAMPLES
 	{
 		tmpPos.xy -= deltaTexCoord;
-		sample2 = texture2D(godTex,tmpPos ).xyz;//	
+		sample2 = texture2D(godTex,tmpPos );//	
 		sample2 *= illuminationDecay * Weight;				//Weight
 		
 		color += sample2;
 		illuminationDecay *= Decay;
 	}
 	
-	vec4 godrayRes = vec4(color * Exposure, 1);					//Exposure
+	vec4 godrayRes = color * Exposure;					//Exposure
 	//godrays end
 	
 	vec4 glow = texture2D(glowTexture,pos );

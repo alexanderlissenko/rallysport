@@ -1066,7 +1066,7 @@ namespace RallysportGame
             gaussBlurr.gaussianBlurr(glowTex, w, h, projectionMatrix, viewMatrix);
             //gaussBlurr.gaussianBlurr(glowTex, w, h, projectionMatrix, viewMatrix);
 
-            //God pass
+            //GOD PASS
             GL.UseProgram(godShader);
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, godFBO);
             GL.DepthMask(false);
