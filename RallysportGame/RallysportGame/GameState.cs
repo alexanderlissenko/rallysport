@@ -118,17 +118,23 @@ namespace RallysportGame
                                   OpenTK.Vector3 pos,
                                   Matrix4 viewMatrix,
                                   Matrix4 projectionMatrix,
-                                  int screenWidth,
-                                  int screenHeight)
+                                  float screenWidth,
+                                  float screenHeight)
         {
+            Matrix4 orth_proj = new Matrix4(new Vector4((float)(1 / screenWidth), 0, 0, 0),
+                                new Vector4(0, (float)(1 / screenHeight), 0, 0),
+                                new Vector4(0, 0, (float)(-2f / (1000f - 1f)), (float)(-(1000f + 1f) / (1000f - 1f))),
+                                new Vector4(0, 0, 0, 1));
             pos = OpenTK.Vector3.Transform(pos, viewMatrix);
-            pos = OpenTK.Vector3.Transform(pos, projectionMatrix);
-            pos.X /= pos.Z;
-            pos.Y /= pos.Z;
-            pos.X = (pos.X + 1) * screenWidth / 2;
-            pos.Y = (pos.Y + 1) * screenHeight / 2;
+            pos = OpenTK.Vector3.Transform(pos, orth_proj);
+          
+           pos = pos/pos.Z;
+           
+           pos.X = (pos.X + 1) * screenWidth / 2;
+           pos.Y = (pos.Y + 1) * screenHeight / 2;
+           
 
-            return new OpenTK.Vector2(pos.X, pos.Y);
+           return new OpenTK.Vector2(pos.X, pos.Y);
         }
 
         public static int loadShaderProgram(String vShaderPath, String fShaderPath)
@@ -548,6 +554,8 @@ namespace RallysportGame
 
             postShader = loadShaderProgram(shaderDir + "postProcessing\\postProcessing_VS.glsl", shaderDir + "postProcessing\\postProcessing_FS.glsl");
             GL.BindAttribLocation(postShader, 0, "positionIn");
+            GL.BindAttribLocation(postShader, 1, "lightPos");
+
             GL.BindFragDataLocation(postShader, 0, "fragColor");
             GL.LinkProgram(postShader);
 
@@ -790,8 +798,8 @@ namespace RallysportGame
             networkhandler = Network.getInstance();
             networkhandler.setCar(playerCar);
             //Music
-            source = Audio.initSound();
-            sfx = Audio.initSfx();
+            //source = Audio.initSound();
+            //sfx = Audio.initSfx();
 
             //enable depthtest and face culling
             GL.Enable(EnableCap.DepthTest);
@@ -835,8 +843,8 @@ namespace RallysportGame
             Matrix4 viewMatrix = Matrix4.LookAt(camera_position, camera_lookAt, up);
             Matrix4 projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(pi / 4, (float)w / (float)h, 1f, 1000f);
             // Here we start getting into the lighting model
-            Audio.setUpListener(ref camera_position, ref camera_lookAt, ref up);
-            Audio.setUpSourcePos(sfx,playerCar.getCarPos());
+            //Audio.setUpListener(ref camera_position, ref camera_lookAt, ref up);
+            //Audio.setUpSourcePos(sfx,playerCar.getCarPos());
             //Matrix4 bias = new Matrix4(0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.5f, 0.0f, 0.5f, 0.5f, 0.5f, 1.0f);
 
             //Console.WriteLine(camera_position.ToString());
@@ -1250,7 +1258,7 @@ namespace RallysportGame
             
             //////////////////////////////////////////////////////ÄNDRA TILLBAKA!!!
             //Audio management
-            
+            /*
             if (Audio.audioStatus(source) == 1)
                 Audio.playSound(source);
             else if (Audio.audioStatus(source) == 3)
@@ -1260,7 +1268,7 @@ namespace RallysportGame
                 Audio.playSound(sfx);
             Audio.sfxSpeed(sfx, playerCar.carHull.LinearVelocity.Length());
             //move light
-
+            */
             light_theta += camera_horizontal_delta*0.1f;
             GameTimer.tick();
             //megaParticles.tick();
