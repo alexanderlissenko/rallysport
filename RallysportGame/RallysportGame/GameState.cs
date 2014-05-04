@@ -1064,7 +1064,7 @@ namespace RallysportGame
 
                     light_theta += camera_horizontal_delta*0.1f;
             GameTimer.tick();
-            //megaParticles.tick();
+            megaParticles.tick();
                 }
                 #endregion
 
