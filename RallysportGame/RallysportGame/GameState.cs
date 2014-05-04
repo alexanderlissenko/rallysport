@@ -368,7 +368,7 @@ namespace RallysportGame
             float minX = 1000;
             float minY = 1000;
             float minZ = 0;
-
+            
             Vector4 transf;
             GL.GetFloat(GetPName.ModelviewMatrix, out shadowmodelView);
 
@@ -384,14 +384,32 @@ namespace RallysportGame
                 if(transf.Z < minZ) minZ = transf.Z;
             }
 
-            /*for (int i = 0; i < shadowcaster; i++ )
-            {
-                transf = Vector4.Transform(new Vector4(shadowcaster[i].pos, 1.0f), shadowmodelView);
-                if()
-            }*/
+           // for (int i = 0; i < shadowcaster.Count(); i++ )
+           // {
+           //     transf = Vector4.Transform(new Vector4(shadowcaster[i].pos, 1.0f), shadowmodelView);
+           // }
 
-                return -1;
+
+            shadowProjection = Matrix4.CreateOrthographicOffCenter(-1, 1, -1, 1, -maxZ, -minZ);
+
+
+            return -1;
         }
+
+        static void ohogonalShadowMap(Frustum f)
+        {
+            Vector3 frustumCentrum = new Vector3();
+
+            foreach(Vector3 p in f.point )
+            {
+                frustumCentrum += p;
+            }
+            frustumCentrum /= 8;
+
+
+        }
+
+
         //end CSM
 
         /// <summary>
@@ -458,7 +476,7 @@ namespace RallysportGame
 
             // Dynamic objects
             collisionHandler = new CollisionHandler();
-            environment = new Environment("map\\finalTrack_0.2");//uggly_test_track_Triangulate");//"plane");//
+            environment = new Environment("map\\finalTrack_0.3");//uggly_test_track_Triangulate");//"plane");//
                     
             //environment.loadTexture();
             //environment.setUpBlenderModel(); //Handled in constructor
