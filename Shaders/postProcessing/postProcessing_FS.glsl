@@ -9,6 +9,7 @@ uniform sampler2D megaPartTex;
 uniform sampler2D megaPartDepth;
 uniform sampler2D glowTexture;
 uniform sampler2D godTex;
+uniform sampler2D skyboxTex;
 uniform float velScale;
 uniform vec2 lightPos;
 
@@ -25,6 +26,13 @@ void main()
 	vec2 texelSize = 1.0/vec2(textureSize(postTex,0));
 	float depth = texture(postDepth,pos).x;
     float depth2 = texture(megaPartDepth,pos).x;
+	float offsetDepth;
+   if(depth.x == 1)
+   {
+	result = vec4(texture2D(skyboxTex,pos).xyz,1);
+   }
+   else
+   {
     if(depth > depth2)
     {
     result = texture(megaPartTex, pos);
@@ -40,15 +48,19 @@ void main()
 	float speed = length(velocity / texelSize);
 	int nSamples = clamp(int(speed),1,20);
 	
-	
-	
-	float offsetDepth;
 	for(int i = 1; i < nSamples; i++)
 	{
 		vec2 offset = velocity *(float(i)/float(nSamples-1)-0.5);
 		offsetDepth = texture(postDepth,pos+offset).x;
-		float weight = 1-(offsetDepth-depth);
-		result += texture(postTex,pos+offset);//*weight;
+		//float weight = 1-(offsetDepth-depth);
+		if(offsetDepth == 1)
+		{
+			result += texture(skyboxTex,pos+offset);//*weight;
+		}
+		else
+		{
+			result += texture(postTex,pos+offset);//*weight;
+		}
 	}
 	
 	result /= float(nSamples);
@@ -86,5 +98,7 @@ void main()
 	
 	vec4 glow = texture2D(glowTexture,pos );
     //result = (result + godrayRes) / 2;
-    fragColor =  godrayRes;//result+glow;// 
+	result = result+glow;
+	}
+    fragColor = result;// godrayRes;//
 }
