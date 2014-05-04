@@ -156,7 +156,7 @@ namespace RallysportGame
                 w.PositionUpdated += new Action<BEPUphysics.Entities.Entity>(PositionUpdated);
             }
             Console.WriteLine("car has id " + carHull.InstanceId);
-            m = new Missile(@"isoSphere_15", new Vector3(0, -200, 0), space);
+            m = new Missile(@"Missile", new Vector3(0, -200, 0), space);
         }
 
         #endregion
@@ -199,8 +199,8 @@ namespace RallysportGame
                 {
                     if (!m.launched)
                     {
-                        Vector3 temp = Vector3.Add(getCarPos()+ new Vector3(0,10,0), Vector3.Mult(Vector3.Transform(new Vector3(0,0,-1), carHull.Orientation),100));
-                        m.launch(temp, Vector3.Add(carHull.LinearVelocity,Vector3.Mult(Vector3.Transform(new Vector3(0,0,-1), carHull.Orientation),100)),60*5); 
+                        Vector3 temp = Vector3.Add(getCarPos()+ new Vector3(0,1,0), Vector3.Mult(Vector3.Transform(new Vector3(0,0,-1), carHull.Orientation),10));
+                        m.launch(temp, Vector3.Add(carHull.LinearVelocity,Vector3.Mult(Vector3.Transform(new Vector3(0,0,1), carHull.Orientation),100)),60*5); 
                     }
 
                     if (m.update())
