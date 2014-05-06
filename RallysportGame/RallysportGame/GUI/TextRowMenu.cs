@@ -78,6 +78,11 @@ namespace RallysportGame.GUI
             hitBoxList.Add(new Rectangle(x,y, width, height));
         }
 
+        public void clearAllHitboxes()
+        {
+            hitBoxList.Clear();
+        }
+
         public void ClickSelected()
         {
             buttonList[selected].Click();

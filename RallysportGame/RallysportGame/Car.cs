@@ -41,6 +41,7 @@ namespace RallysportGame
         // The wheels
         public List<Entity> wheelents;
         public List<BEPUphysics.Entities.Entity> wheels;
+        public float carRate;
         // The angle between the direction and forward vectors
         private float turning_angle;
         // Friction coefficient, material-dependent
@@ -183,6 +184,16 @@ namespace RallysportGame
 
                 m.firstPass(program, projectionMatrix, viewMatrix);
         }
+        public override void renderShadowMap(int program, Matrix4 projectionMatrix, Matrix4 viewMatrix)
+        {
+            base.modelMatrix = carHull.WorldTransform;
+            base.renderShadowMap(program, projectionMatrix, viewMatrix);
+
+            foreach (Entity w in wheelents)
+            {
+                w.renderShadowMap(program, projectionMatrix, viewMatrix);
+            }
+        }
 
         public override void Update()
         {
@@ -207,7 +218,7 @@ namespace RallysportGame
                     {
                         renderPower = false;
                         //powerUpSlot="None";
-                    }
+        }
 
                 }
                 else if (powerUpSlot.Equals("SpeedBoost"))
@@ -235,6 +246,7 @@ namespace RallysportGame
 
         public void accelerate(float rate)
         {
+            carRate = rate;
             if (rate > 0)
             {
                 drivingMotor1.Settings.VelocityMotor.GoalVelocity = 10;
@@ -271,8 +283,18 @@ namespace RallysportGame
             Quaternion rot2 = carHull.Orientation;
             Vector3.Transform(ref forward, ref rot2, out leftRot);
 
-            Vector3.Multiply(ref leftRot, rate *0.5f, out acceleration);
+            Vector3.Multiply(ref leftRot, rate *0.8f, out acceleration);
             carHull.LinearVelocity += Utilities.ConvertToBepu(acceleration);
+        }
+
+        public void networkAccel(float rate)
+        {
+            Vector3 leftRot;
+            Quaternion rot = carHull.Orientation;
+            Vector3.Transform(ref forward, ref rot, out leftRot);
+
+            Vector3.Multiply(ref leftRot, rate, out acceleration);
+            carHull.LinearVelocity = Utilities.ConvertToBepu(acceleration); 
         }
         // Angle in radians
         public void Turn(float angle)
@@ -297,6 +319,56 @@ namespace RallysportGame
         public Vector3 getCarPos()
         {
             return carHull.WorldTransform.Translation;
+        }
+
+        public void setCarPos(Vector3 pos)
+        {
+            Vector3 frontRight = new Vector3(-0.9f, -0.2f, -1.7f);
+            Vector3 frontLeft = new Vector3(1f, -0.2f, -1.7f);
+            Vector3 backLeft = new Vector3(1f, -0.2f, 1.6f);
+            Vector3 backRight = new Vector3(-0.9f, -0.2f, 1.6f);
+            carHull.WorldTransform = BEPUutilities.Matrix.CreateTranslation(Utilities.ConvertToBepu(pos));
+
+            wheels[0].WorldTransform = BEPUutilities.Matrix.CreateTranslation(pos + frontRight);
+            wheels[1].WorldTransform = BEPUutilities.Matrix.CreateTranslation(pos + frontLeft);
+            wheels[2].WorldTransform = BEPUutilities.Matrix.CreateTranslation(pos + backRight);
+            wheels[3].WorldTransform = BEPUutilities.Matrix.CreateTranslation(pos + backLeft);
+        }
+
+        public void setCarPos(Vector3 pos,Quaternion rot)
+        {
+            Vector3 frontRight = new Vector3(-0.9f, -0.2f, -1.7f);
+            Vector3 frontLeft = new Vector3(1f, -0.2f, -1.7f);
+            Vector3 backLeft = new Vector3(1f, -0.2f, 1.6f);
+            Vector3 backRight = new Vector3(-0.9f, -0.2f, 1.6f);
+            carHull.WorldTransform = BEPUutilities.Matrix.CreateTranslation(Utilities.ConvertToBepu(pos));
+            carHull.Orientation = rot;
+            Quaternion rot2 = carHull.Orientation;
+            
+            Vector3 frontRRot;
+            Vector3.Transform(ref frontRight, ref rot, out frontRRot);
+            
+            Vector3 frontLRot;
+            Vector3.Transform(ref frontLeft, ref rot2, out frontLRot);
+
+            Quaternion rot3 = carHull.Orientation;
+            Quaternion rot4 = carHull.Orientation;
+
+            Vector3 backRRot;
+            Vector3.Transform(ref backLeft, ref rot3, out backRRot);
+            Vector3 backLRot;
+            Vector3.Transform(ref backRight, ref rot4, out backLRot);
+
+            wheels[0].WorldTransform = BEPUutilities.Matrix.CreateTranslation(pos + frontRRot);
+            wheels[1].WorldTransform = BEPUutilities.Matrix.CreateTranslation(pos + frontLRot);
+            wheels[2].WorldTransform = BEPUutilities.Matrix.CreateTranslation(pos + backRRot);
+            wheels[3].WorldTransform = BEPUutilities.Matrix.CreateTranslation(pos + backLRot);
+
+            wheels[0].Orientation = rot;
+            wheels[1].Orientation = rot;
+            wheels[2].Orientation = rot;
+            wheels[3].Orientation = rot;
+
         }
 
         public OpenTK.Quaternion getCarAngle()
@@ -456,7 +528,7 @@ namespace RallysportGame
        public String getPowerType()
        {
            return powerUpSlot;
-       }
+        }
         #endregion
         #region Private Methods
 

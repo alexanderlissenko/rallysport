@@ -21,7 +21,7 @@ namespace RallysportGame
 #endif
         static float gain = 0.1f;
         static int index = 0;
-        static string[] audioFiles;
+        static string[] audioFiles,sfxFiles;
 
         static Dictionary<int, int> sourceToBuffer;
         static Audio()
@@ -37,6 +37,7 @@ namespace RallysportGame
             }
 
             audioFiles = Directory.GetFiles(filepath, "*.wav");
+            sfxFiles = Directory.GetFiles(Path.Combine(filepath,"sfx").ToString(), "*.wav");
         }
 
 
@@ -95,6 +96,15 @@ namespace RallysportGame
                 default: throw new NotSupportedException("The specified sound format is not supported.");
             }
         }
+        private static ALFormat GetSoundFormatHack(int channels, int bits)
+        {
+            switch (channels)
+            {
+                case 1: return bits == 8 ? ALFormat.Mono8 : ALFormat.Mono16;
+                case 2: return bits == 8 ? ALFormat.Mono8 : ALFormat.Mono16;
+                default: throw new NotSupportedException("The specified sound format is not supported.");
+            }
+        }
         /// <summary>
         /// Generates buffer and source from openAL
         /// </summary>
@@ -134,17 +144,24 @@ namespace RallysportGame
         /// </summary>
         /// <param name="buffer"></param>
         /// <param name="source"></param>
-        public static void loadSound(int source,int index)
+        public static void loadSound(int source,int index,string[] fileList,bool stereo)
         {
-            string filename = audioFiles[index];
+            string filename = fileList[index];
 
             int buffer;
             sourceToBuffer.TryGetValue(source, out buffer);
             int channels, bits_per_sample, sample_rate;
             byte[] sound_data = LoadWave(File.Open(filename, FileMode.Open), out channels, out bits_per_sample, out sample_rate);
-            AL.BufferData(buffer, GetSoundFormat(channels, bits_per_sample), sound_data, sound_data.Length, sample_rate);
+            if (stereo)
+            {
+                AL.BufferData(buffer, GetSoundFormat(channels, bits_per_sample), sound_data, sound_data.Length, sample_rate);
+                AL.Source(source, ALSourcef.Gain, gain);
+            }
+            else
+            {
+                AL.BufferData(buffer, GetSoundFormatHack(channels, bits_per_sample), sound_data, sound_data.Length, sample_rate);
+            }
             AL.Source(source, ALSourcei.Buffer, buffer);
-            AL.Source(source, ALSourcef.Gain, gain);
         }
         
         /// <summary>
@@ -154,11 +171,16 @@ namespace RallysportGame
         public static int initSound()
         {
             int source = generateBS();
-
-            Audio.loadSound(source, index);
-
+            Audio.loadSound(source, index,audioFiles,true);
             return source;
 
+        }
+
+        public static int initSfx()
+        {
+            int source = generateBS();
+            Audio.loadSound(source, index,sfxFiles,false);
+            return source;
         }
 
         /// <summary>
@@ -242,7 +264,7 @@ namespace RallysportGame
             if(index == audioFiles.Length)
                 index = 0;
             
-            loadSound(source,index);
+            loadSound(source,index,audioFiles,true);
 
             playSound(source);
 
@@ -280,6 +302,11 @@ namespace RallysportGame
             float x,y,z;
             AL.GetListener(ALListener3f.Position,out x,out y,out z);
             return new Vector3(x, y, z);
+        }
+
+        public static void sfxSpeed(int source,float speed)
+        {
+            AL.Source(source, ALSourcef.Pitch, 1+ speed*0.04f);
         }
     }
 }

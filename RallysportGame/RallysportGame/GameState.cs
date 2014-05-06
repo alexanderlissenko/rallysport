@@ -40,8 +40,8 @@ namespace RallysportGame
         //*****************************************************************************
         //	Global variables
         //*****************************************************************************
-        static int mergeShader, megaParticleShader, perlinShader, perlinFBO, basicShaderProgram, shadowShaderProgram, firstPassShader, secondPassShader, postShader, verticalGaussianFilterShader, horizontalGaussianFilterShader, copyShader;
-        //static Vector3 lightPosition;
+        static int mergeShader, megaParticleShader, perlinShader, perlinFBO, shadowShaderProgram, firstPassShader, secondPassShader, postShader, verticalGaussianFilterShader, horizontalGaussianFilterShader, copyShader,glowShader,godShader,skyboxshader;
+        static Vector3 lightPosition;
 
         static GaussianFilter gaussBlurr;
         static MegapParticleFilter megaPartFilter;
@@ -62,19 +62,23 @@ namespace RallysportGame
         static int shadowMapTexture, shadowMapFBO;
         //
 
+        //CSM constants
+        static int currNumSplits;
+
         //Deferred Rendering
         static int deferredTex, deferredNorm, deferredDepth, deferredFBO, deferredVel, deferredSSAO;
         static int megaPartTex, megaPartNorm, megaPartPos, megaPartDepth, megaParticleFBO;
+        static int skyboxTex, skyboxFBO;
         static int[] perlinNoise = new int[PERLIN_REZ_Z];
         //
 
         //postProcessing
-        static int postFBO, postTex;
+        static int postFBO, postTex,glowFBO,glowTex,godFBO,godTex;
         //
 
         static float light_theta = pi / 6.0f;
         static float light_phi = pi / 4.0f;
-        static float light_r = 200.0f;
+        static float light_r = 1800.0f;
 
         //test particles
         static ParticleSystem megaParticles;// = new ParticleSystem(new OpenTK.Vector3(0, 0, 0), 60f, 5, new TimeSpan(0, 0, 0, 4), new Entity());
@@ -89,7 +93,7 @@ namespace RallysportGame
         static ArrayList keyList = new ArrayList();
 
 
-        static int source = 0;
+        static int source = 0, sfx = 0;
         static bool musicPaused;
         static bool keyHandled = false;
         static MouseState current;
@@ -114,7 +118,29 @@ namespace RallysportGame
                                 (float)(r * Math.Cos(theta) * Math.Sin(phi))));
         }
 
-        
+        //Project from 3D to 2D space
+        public OpenTK.Vector2 Convert(
+                                  OpenTK.Vector3 pos,
+                                  Matrix4 viewMatrix,
+                                  Matrix4 projectionMatrix,
+                                  float screenWidth,
+                                  float screenHeight)
+        {
+            Matrix4 orth_proj = new Matrix4(new Vector4((float)(1 / screenWidth), 0, 0, 0),
+                                new Vector4(0, (float)(1 / screenHeight), 0, 0),
+                                new Vector4(0, 0, (float)(-2f / (1000f - 1f)), (float)(-(1000f + 1f) / (1000f - 1f))),
+                                new Vector4(0, 0, 0, 1));
+            pos = OpenTK.Vector3.Transform(pos, viewMatrix);
+            pos = OpenTK.Vector3.Transform(pos, orth_proj);
+          
+           pos = pos/pos.Z;
+           
+           pos.X = (pos.X + 1) * screenWidth / 2;
+           pos.Y = (pos.Y + 1) * screenHeight / 2;
+           
+
+           return new OpenTK.Vector2(pos.X, pos.Y);
+        }
 
         public static int loadShaderProgram(String vShaderPath, String fShaderPath)
         {
@@ -178,8 +204,6 @@ namespace RallysportGame
                 }
             }
         }
-
-
         static void updateCamera()
         {
             foreach (Key key in keyList)
@@ -306,6 +330,117 @@ namespace RallysportGame
             GL.UseProgram(0);
         }
 
+        //some CSM methods start here
+        private class Frustum
+        {
+            public float nearDist;
+            public float farDist;
+            public float fov;
+            public float ratio;
+            public Vector3[] point = new Vector3[8];
+        }
+
+        void calculateSMSplitDepth(Frustum[] frustums, float near, float far)
+        {
+            float lambda = 0.75f;
+            float ratio = far / near;
+
+            frustums[0].nearDist = near;
+
+            for (int i = 1; i < currNumSplits; i++)
+            {
+                float splitIndex = i / (float)currNumSplits;
+
+                frustums[i].nearDist = lambda * (near * (float)Math.Pow(ratio, splitIndex)) 
+                                        + (1 - lambda) * (near + (far - near) * splitIndex);
+
+                frustums[i - 1].farDist = frustums[i].nearDist * 1.005f; //farDist slightly infront of nearDist, pls no hate magic number
+
+            }
+
+            frustums[currNumSplits - 1].farDist = far;
+        }
+
+        void updateFrustumPoints(Frustum f, Vector3 center, Vector3 viewDir)
+        {
+            Vector3 right = Vector3.Cross(viewDir, up);
+            right = Vector3.Normalize(right);
+            Vector3 farCenter = center + viewDir * f.farDist;
+            Vector3 nearCenter = center + viewDir * f.nearDist;
+            Vector3 up2 = Vector3.Normalize(Vector3.Cross(right, viewDir));
+
+            float nearHeight = (float)Math.Tan(f.fov/2)*f.nearDist;
+            float nearWidth = nearHeight*f.ratio;
+            float farHeight = (float)Math.Tan(f.fov/2)*f.farDist;
+            float farWidth = farHeight*f.ratio;
+
+            f.point[0] = nearCenter - up2 * nearHeight - right * nearWidth;
+            f.point[1] = nearCenter + up2 * nearHeight - right * nearWidth;
+            f.point[2] = nearCenter + up2 * nearHeight + right * nearWidth;
+            f.point[3] = nearCenter - up2 * nearHeight + right * nearWidth;
+
+            f.point[4] = farCenter - up2 * farHeight - right * farWidth;
+            f.point[5] = farCenter + up2 * farHeight - right * farWidth;
+            f.point[6] = farCenter + up2 * farHeight + right * farWidth;
+            f.point[7] = farCenter - up2 * farHeight + right * farWidth;
+
+        }
+
+        float applyCropMatrix(Frustum f)
+        {
+            Matrix4 shadowmodelView = new Matrix4();
+            Matrix4 shadowProjection = new Matrix4();
+            Matrix4 shaodowCrop = new Matrix4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+            float maxX = -1000;
+            float maxY = -1000;
+            float maxZ;
+            float minX = 1000;
+            float minY = 1000;
+            float minZ = 0;
+            
+            Vector4 transf;
+            GL.GetFloat(GetPName.ModelviewMatrix, out shadowmodelView);
+
+            transf = Vector4.Transform(new Vector4(f.point[0], 1.0f), shadowmodelView);
+
+            minZ = transf.Z;
+            maxZ = transf.Z;
+
+            for (int i = 1; i < 8; i++ )
+            {
+                transf = Vector4.Transform(new Vector4(f.point[i], 1.0f), shadowmodelView);
+                if(transf.Z > maxZ) maxZ = transf.Z;
+                if(transf.Z < minZ) minZ = transf.Z;
+            }
+
+           // for (int i = 0; i < shadowcaster.Count(); i++ )
+           // {
+           //     transf = Vector4.Transform(new Vector4(shadowcaster[i].pos, 1.0f), shadowmodelView);
+           // }
+
+
+            shadowProjection = Matrix4.CreateOrthographicOffCenter(-1, 1, -1, 1, -maxZ, -minZ);
+
+
+            return -1;
+        }
+
+        static void ohogonalShadowMap(Frustum f)
+        {
+            Vector3 frustumCentrum = new Vector3();
+
+            foreach(Vector3 p in f.point )
+            {
+                frustumCentrum += p;
+            }
+            frustumCentrum /= 8;
+
+
+        }
+
+
+        //end CSM
+
         /// <summary>
         /// Renders a shadowmap for a given light
         /// </summary>
@@ -314,7 +449,6 @@ namespace RallysportGame
         /// <param name="lightProjectionMatrix">Projectionmatrix of the light</param>
         static Matrix4 renderSM(int program, Matrix4 viewMatrix, Matrix4 lightViewMatrix, Matrix4 lightProjectionMatrix)
         {
-
             //ändra till 300f
             GL.UseProgram(shadowShaderProgram);
             //SHADOW MAP FBO RENDERING
@@ -326,8 +460,8 @@ namespace RallysportGame
                 //GL.CullFace(CullFaceMode.Front);
                 GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-                GL.Enable(EnableCap.PolygonOffsetFill);
-                GL.PolygonOffset(1.0f, 1.0f);
+                //GL.Enable(EnableCap.PolygonOffsetFill);
+                //GL.PolygonOffset(1.0f, 1.0f);
 
                 //GL.BindTexture(TextureTarget.Texture2D, shadowMapTexture);
                 playerCar.renderShadowMap(shadowShaderProgram, lightProjectionMatrix, lightViewMatrix);
@@ -371,20 +505,22 @@ namespace RallysportGame
 
             // Dynamic objects
             collisionHandler = new CollisionHandler();
-            environment = new Environment("map\\finalTrack_0.07");//uggly_test_track_Triangulate");//"plane");//
+            environment = new Environment("map\\finalTrack_0.3");//uggly_test_track_Triangulate");//"plane");//
                     
             //environment.loadTexture();
             //environment.setUpBlenderModel(); //Handled in constructor
 
-            playerCar = new Car(@"Mustang\mustang-textured-scale_mini", @"Mustang\one_wheel_corected_normals_recenterd", new Vector3(15, 40, 0), collisionHandler.space);
-            skybox = new Entity("Cube\\inside_koob");
+            playerCar = new Car(@"Mustang\mustang-textured-scale_mini", @"Mustang\one_wheel_corected_normals_recenterd", new Vector3(182, 2, -6), collisionHandler.space);
+            skybox = new Entity("map\\skyDome");
             superSphere = new Entity("isoSphere_15");
             unitSphere = new Entity("Cube\\unitSphere");
             myCar2 = new Entity("Cube\\inside_koob");
 
-            //superSphere.setUpMtl();
-            superSphere.loadTexture();
+            superSphere.setUpMultMtl();
+            superSphere.setUpMultText();
+            skybox.skyboxScale();
                     
+            
             //collisionHandler.addObject(playerCar);
             collisionHandler.addObject(environment);
                     
@@ -441,17 +577,17 @@ namespace RallysportGame
             GL.BindAttribLocation(copyShader, 0, "positionIn");
             GL.BindFragDataLocation(copyShader, 0, "fragColor");
             GL.LinkProgram(copyShader);
-
+            //BTW TEXTCORD ÄR 2 INTE 1 ÄNDRA TILLBAKA OM DETTA BLIR WIERD!!
             verticalGaussianFilterShader = loadShaderProgram(shaderDir + "gaussianFilter\\verticalGaussianFilterVertexShader",shaderDir + "gaussianFilter\\verticalGaussianFilterFragmentShader");
             GL.BindAttribLocation(verticalGaussianFilterShader, 0, "vertexPos");
-            GL.BindAttribLocation(verticalGaussianFilterShader, 1, "texCoordIn");
+            GL.BindAttribLocation(verticalGaussianFilterShader, 2, "texCoordIn");
 
             GL.BindFragDataLocation(verticalGaussianFilterShader, 0, "fragColor");
             GL.LinkProgram(verticalGaussianFilterShader );
 
             horizontalGaussianFilterShader = loadShaderProgram(shaderDir + "gaussianFilter\\horizontalGaussianFilterVertexShader", shaderDir + "gaussianFilter\\horizontalGaussianFilterFragmentShader");
             GL.BindAttribLocation(horizontalGaussianFilterShader, 0, "vertexPos");
-            GL.BindAttribLocation(horizontalGaussianFilterShader, 1, "texCoordIn");
+            GL.BindAttribLocation(horizontalGaussianFilterShader, 2, "texCoordIn");
 
             GL.BindFragDataLocation(horizontalGaussianFilterShader, 0, "fragColor");
             GL.LinkProgram(horizontalGaussianFilterShader);
@@ -459,16 +595,33 @@ namespace RallysportGame
 
             postShader = loadShaderProgram(shaderDir + "postProcessing\\postProcessing_VS.glsl", shaderDir + "postProcessing\\postProcessing_FS.glsl");
             GL.BindAttribLocation(postShader, 0, "positionIn");
+            GL.BindAttribLocation(postShader, 1, "lightPos");
+
             GL.BindFragDataLocation(postShader, 0, "fragColor");
             GL.LinkProgram(postShader);
 
+            glowShader = loadShaderProgram(shaderDir + "postProcessing\\glowShader_VS.glsl", shaderDir + "postProcessing\\glowShader_FS.glsl");
+            GL.BindAttribLocation(glowShader, 0, "positionIn");
+            GL.BindFragDataLocation(glowShader, 0, "fragColor");
+            GL.LinkProgram(glowShader);
 
+            godShader = loadShaderProgram(shaderDir + "postProcessing\\godShader_VS.glsl", shaderDir + "postProcessing\\godShader_FS.glsl");
+            GL.BindAttribLocation(godShader, 0, "positionIn");
+            GL.BindFragDataLocation(godShader, 0, "fragColor");
+            GL.LinkProgram(godShader);
+
+            skyboxshader = loadShaderProgram(shaderDir + "postProcessing\\skyboxShader_VS.glsl", shaderDir + "postProcessing\\skyboxShader_FS.glsl");
+            GL.BindAttribLocation(skyboxshader, 0, "positionIn");
+            GL.BindAttribLocation(skyboxshader, 2, "textureCoordIn");
+            GL.BindFragDataLocation(skyboxshader, 0, "fragColor");
+            GL.LinkProgram(skyboxshader);
 
             Console.WriteLine(GL.GetProgramInfoLog(shadowShaderProgram));
             Console.WriteLine(GL.GetProgramInfoLog(firstPassShader));
             Console.WriteLine(GL.GetProgramInfoLog(secondPassShader));
             Console.WriteLine(GL.GetProgramInfoLog(postShader));
             Console.WriteLine(GL.GetProgramInfoLog(copyShader));
+            Console.WriteLine(GL.GetProgramInfoLog(skyboxshader));
             //Load uniforms and texture
             GL.UseProgram(firstPassShader);
 
@@ -482,7 +635,7 @@ namespace RallysportGame
 
             //Shadowmaps
             #region ShadowMap
-            shadowMapRes = 1080;
+            shadowMapRes = 2000;
             shadowMapTexture = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2D, shadowMapTexture);
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent32, shadowMapRes, shadowMapRes, 0, PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
@@ -530,6 +683,46 @@ namespace RallysportGame
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, postFBO);
             GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, postTex, 0);
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+
+            glowFBO = GL.GenFramebuffer();
+            glowTex = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2D, glowTex);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, gameWindow.Width, gameWindow.Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, (IntPtr)0);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
+
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, glowFBO);
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, glowTex, 0);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+
+            godFBO = GL.GenFramebuffer();
+            godTex = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2D, godTex);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, gameWindow.Width, gameWindow.Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, (IntPtr)0);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
+
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, godFBO);
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, godTex, 0);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+
+            skyboxFBO = GL.GenFramebuffer();
+            skyboxTex = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2D, skyboxTex);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, gameWindow.Width, gameWindow.Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, (IntPtr)0);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
+
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, skyboxFBO);
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, skyboxTex, 0);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+
             #endregion
             //Deferred Rendering 
 
@@ -555,7 +748,7 @@ namespace RallysportGame
 
             deferredNorm = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2D, deferredNorm);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb16f, gameWindow.Width, gameWindow.Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, (IntPtr)0);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, gameWindow.Width, gameWindow.Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, (IntPtr)0);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
@@ -657,16 +850,17 @@ namespace RallysportGame
 
             #endregion
 
-                    
+            
            
             gameWindow.KeyDown += handleKeyDown;
             gameWindow.KeyUp += handleKeyUp;
 
             Network.Init(collisionHandler.space);
             networkhandler = Network.getInstance();
+            networkhandler.setCar(playerCar);
             //Music
             //source = Audio.initSound();
-
+            //sfx = Audio.initSfx();
 
             //enable depthtest and face culling
             GL.Enable(EnableCap.DepthTest);
@@ -688,7 +882,7 @@ namespace RallysportGame
             GL.ClearDepth(1.0f);
 
             #region Let there be light
-            Vector3 lightPosition = sphericalToCartesian(light_theta, light_phi, light_r, new Vector3(0, 0, 0));
+            lightPosition = new Vector3(-545, 329, -138);//sphericalToCartesian(light_theta, light_phi, light_r, new Vector3(0, 0, 0));//
             Vector3 scaleVector = new Vector3(10, 10, 10);
             //Vector3 scaleVector = new Vector3(1000, 1000, 1000);
 
@@ -697,22 +891,29 @@ namespace RallysportGame
             int w = gameWindow.Width;
             int h = gameWindow.Height;
 
+            Vector3 back = new Vector3(0, 5, 15);
+            Vector3 behindcar;
+            Quaternion rot2 = playerCar.getCarAngle();
+            rot2.Z = 0;
+            rot2.X = rot2.X*0.5f;
+            Vector3.Transform(ref back, ref rot2, out behindcar);
 
-            Vector3 camera_position = sphericalToCartesian(camera_theta, camera_phi, camera_r, playerCar.getCarPos());
+            Vector3 camera_position = sphericalToCartesian(camera_theta, camera_phi, camera_r, playerCar.getCarPos());//playerCar.getCarPos()+ behindcar;
             //camera_lookAt = new Vector3(0.0f, camera_target_altitude, 0.0f);
             Vector3 camera_lookAt = playerCar.getCarPos();// new Vector3(0, 0, 0);//Vector4.Transform(camera_lookAt, camera_rotation_matrix);//new Vector3(0.0f, 0.0f, 0.0f);//
             Matrix4 viewMatrix = Matrix4.LookAt(camera_position, camera_lookAt, up);
             Matrix4 projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(pi / 4, (float)w / (float)h, 1f, 1000f);
             // Here we start getting into the lighting model
+            //Audio.setUpListener(ref camera_position, ref camera_lookAt, ref up);
+            //Audio.setUpSourcePos(sfx,playerCar.getCarPos());
+            //Matrix4 bias = new Matrix4(0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.5f, 0.0f, 0.5f, 0.5f, 0.5f, 1.0f);
 
-            //Matrix4 bias = new Matrix4(0.9f, 0.0f, 0.0f, 0.0f, 0.0f, 0.9f, 0.0f, 0.0f, 0.0f, 0.0f, 0.9f, 0.0f, 0.9f, 0.9f, 0.9f, 1.0f);
-
-
+            //Console.WriteLine(camera_position.ToString());
             //Render Shadowmap
 
             #region shadowMapRender
             Matrix4 lightViewMatrix = Matrix4.LookAt(lightPosition, new Vector3(0.0f, 0.0f, 0.0f), up);
-            Matrix4 lightProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(pi / 4, 1.0f, 2180f, 3580f);
+            Matrix4 lightProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(pi / 4, 1.0f, 1080f, 3580f);
 
             Matrix4 lightMatrix = renderSM(shadowShaderProgram, viewMatrix, lightViewMatrix, lightProjectionMatrix);
 
@@ -775,18 +976,16 @@ namespace RallysportGame
             GL.Disable(EnableCap.Blend);
             DrawBuffersEnum[] draw_buffs2 = { DrawBuffersEnum.ColorAttachment0, DrawBuffersEnum.ColorAttachment1, DrawBuffersEnum.ColorAttachment2, DrawBuffersEnum.ColorAttachment3 };
             GL.DrawBuffers(4, draw_buffs2);
-
-
-
+            /* Görs is Först pass numera
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, environment.getTextureId());
             GL.Uniform1(GL.GetUniformLocation(firstPassShader, "firstTexture"), 0);
-
+            */
             //megaParticles.firstPass(firstPassShader, projectionMatrix, viewMatrix);
+
             environment.firstPass(firstPassShader, projectionMatrix, viewMatrix);
 
             GL.BindTexture(TextureTarget.Texture2D, 0);
-            //myCar2.firstPass(firstPassShader, projectionMatrix, viewMatrix);
             playerCar.firstPass(firstPassShader, projectionMatrix, viewMatrix);
             if (playerCar.getRenderP())
             {
@@ -800,12 +999,33 @@ namespace RallysportGame
             {
                 c.firstPass(firstPassShader, projectionMatrix, viewMatrix);
             }
-            //skybox.firstPass(firstPassShader, projectionMatrix, viewMatrix);
+           
             TriggerManager.renderPowerUps(firstPassShader, projectionMatrix, viewMatrix);
             GL.DepthMask(false);
             GL.Disable(EnableCap.DepthTest);
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
             #endregion
+
+            // RENDER SKYBOX
+            
+            #region skybox
+            GL.UseProgram(skyboxshader);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, skyboxFBO);
+            GL.Viewport(0, 0, w, h);
+            GL.ClearColor(0.2f, 0.2f, 0.2f, 0.1f);
+            GL.ClearDepth(1.0f);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            GL.DepthMask(true);
+            GL.Enable(EnableCap.DepthTest);
+            GL.Disable(EnableCap.Blend);
+
+            skybox.firstPass(skyboxshader, projectionMatrix, viewMatrix);
+            GL.DepthMask(false);
+            GL.Disable(EnableCap.DepthTest);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+            #endregion
+
+            //END OF RENDER SKYBOX
 
             Matrix4 invProj = Matrix4.Invert(projectionMatrix);
 
@@ -837,11 +1057,13 @@ namespace RallysportGame
             GL.BindTexture(TextureTarget.Texture2D, shadowMapTexture);
 
 
+
             GL.Uniform1(GL.GetUniformLocation(secondPassShader, "diffuseTex"), 0);
             GL.Uniform1(GL.GetUniformLocation(secondPassShader, "normalTex"), 1);
             GL.Uniform1(GL.GetUniformLocation(secondPassShader, "depthTex"), 2);
             GL.Uniform1(GL.GetUniformLocation(secondPassShader, "velTex"), 3);
             GL.Uniform1(GL.GetUniformLocation(secondPassShader, "shadowMapTex"), 4);
+            //GL.UniformMatrix4(GL.GetUniformLocation(secondPassShader, "biasMatrix"), false, ref bias);
 
             Vector2 size = new Vector2(gameWindow.Width, gameWindow.Height);
             GL.Uniform2(GL.GetUniformLocation(secondPassShader, "screenSize"), ref size);
@@ -914,7 +1136,57 @@ namespace RallysportGame
             GL.UseProgram(mergeShader);
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, postFBO);
 
-            #endregion
+            #endregion // VAD ÄR DETTA????
+
+
+            GL.UseProgram(glowShader);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, glowFBO);
+            GL.DepthMask(false);
+            GL.Disable(EnableCap.DepthTest);
+            GL.Viewport(0, 0, w, h);
+            GL.ClearColor(0.0f, 0.0f, 0.0f, 0.0f); //ambient light
+            GL.Clear(ClearBufferMask.ColorBufferBit);
+
+
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, deferredTex);
+
+            GL.Uniform1(GL.GetUniformLocation(deferredTex, "texture"), 0);
+            GL.BindVertexArray(plane.vertexArrayObject);
+            GL.DrawArrays(PrimitiveType.Triangles, 0, plane.numOfTri * 3);
+
+            GL.Enable(EnableCap.DepthTest);
+            GL.DepthMask(true);
+
+            
+
+            gaussBlurr.gaussianBlurr(glowTex, w, h, projectionMatrix, viewMatrix);
+            //gaussBlurr.gaussianBlurr(glowTex, w, h, projectionMatrix, viewMatrix);
+            
+            //GOD PASS
+            GL.UseProgram(godShader);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, godFBO);
+            GL.DepthMask(false);
+            GL.Disable(EnableCap.DepthTest);
+            GL.Viewport(0, 0, w, h);
+            GL.ClearColor(0.2f, 0.2f, 0.28f, 1.0f); 
+            GL.Clear(ClearBufferMask.ColorBufferBit);
+
+            environment.firstPass(godShader, projectionMatrix, viewMatrix);
+            playerCar.firstPass(godShader, projectionMatrix, viewMatrix);
+            foreach (Car c in otherCars)
+            {
+                c.firstPass(godShader, projectionMatrix, viewMatrix);
+            }
+            GL.Uniform1(GL.GetUniformLocation(godShader, "isLight"), 1);
+            superSphere.firstPass(godShader, projectionMatrix, viewMatrix);
+
+            GL.Uniform1(GL.GetUniformLocation(godShader, "isLight"), 0);
+            GL.Enable(EnableCap.DepthTest);
+            GL.DepthMask(true);
+            //God ends here
+            
+
 
 
             #region PostProcessing pass
@@ -941,15 +1213,26 @@ namespace RallysportGame
             GL.ActiveTexture(TextureUnit.Texture4);
             GL.BindTexture(TextureTarget.Texture2D, distorted_megaPartDepth);
 
+            GL.ActiveTexture(TextureUnit.Texture5);
+            GL.BindTexture(TextureTarget.Texture2D, glowTex);
 
+            GL.ActiveTexture(TextureUnit.Texture6);
+            GL.BindTexture(TextureTarget.Texture2D, godTex);
 
+            GL.ActiveTexture(TextureUnit.Texture7);
+            GL.BindTexture(TextureTarget.Texture2D, skyboxTex);
+
+            Vector2 lightPos2d = Convert(lightPosition,viewMatrix,projectionMatrix,w,h);
             GL.Uniform1(GL.GetUniformLocation(postShader, "postTex"), 0);
             GL.Uniform1(GL.GetUniformLocation(postShader, "postVel"), 1);
             GL.Uniform1(GL.GetUniformLocation(postShader, "postDepth"), 2);
             GL.Uniform1(GL.GetUniformLocation(postShader, "megaPartTex"), 3);
             GL.Uniform1(GL.GetUniformLocation(postShader, "megaPartDepth"), 4);
-
+            GL.Uniform1(GL.GetUniformLocation(postShader, "glowTexture"), 5);
+            GL.Uniform1(GL.GetUniformLocation(postShader, "godTex"), 6);
+            GL.Uniform1(GL.GetUniformLocation(postShader, "skyboxTex"), 7);
             GL.Uniform1(GL.GetUniformLocation(postShader, "velScale"), (float)gameWindow.RenderFrequency / 30.0f);
+            GL.Uniform2(GL.GetUniformLocation(postShader, "lightPos"), ref lightPos2d);
 
 
             GL.BindVertexArray(plane.vertexArrayObject);
@@ -982,91 +1265,109 @@ namespace RallysportGame
         /// <param name="e"></param>
         public override void Update(GameWindow gameWindow) 
         {
-        #region Update
-                    //Network
+            #region Update
+            //Network
             if (networkhandler.getStatus())
             {
-                    if (testtimer == 180)
-                    {
-                        networkhandler.sendData(playerCar.position);
-                        testtimer = 0;
-                    }
-                    testtimer++;
-                    networkhandler.recieveData(ref otherCars);
+                if (testtimer == 60)
+                {
+                    networkhandler.sendData(playerCar.getCarPos(),playerCar.getCarAngle(),playerCar.carRate);
+                    testtimer = 0;
+                }
+                testtimer++;
+                networkhandler.recieveData(ref otherCars);
             }
-                    //Network
-                    camera_rotation_matrix = Matrix4.Identity;
-                    // add game logic, input handling
-                    if (gameWindow.Keyboard[Key.Escape])
+            //Network
+            camera_rotation_matrix = Matrix4.Identity;
+            // add game logic, input handling
+            #region extrakeys
+            if (gameWindow.Keyboard[Key.Escape])
+            {
+                if (!keyHandled)
+                {
+                    returnToMenu();
+                }
+            }
+            else if (gameWindow.Keyboard[Key.Number9])
+            {
+                if (!keyHandled)
+                {
+                    Audio.increaseGain(source);
+                    keyHandled = !keyHandled;
+                }
+            }
+            else if (gameWindow.Keyboard[Key.Number0])
+            {
+                if (!keyHandled)
+                {
+                    Audio.decreaseGain(source);
+                    keyHandled = !keyHandled;
+                }
+            }
+            else if (gameWindow.Keyboard[Key.Space])
+            {
+                if (!keyHandled)
+                {
+                    if (musicPaused)
                     {
-                        if (!keyHandled)
-                        {
-                            returnToMenu();
-                        }
-                    }
-                    else if (gameWindow.Keyboard[Key.Number9])
-                    {
-                        if (!keyHandled)
-                        {
-                            Audio.increaseGain(source);
-                            keyHandled = !keyHandled;
-                        }
-                    }
-                    else if (gameWindow.Keyboard[Key.Number0])
-                    {
-                        if (!keyHandled)
-                        {
-                            Audio.decreaseGain(source);
-                            keyHandled = !keyHandled;
-                        }
-                    }
-                    else if (gameWindow.Keyboard[Key.Space])
-                    {
-                        if (!keyHandled)
-                        {
-                            if (musicPaused)
-                            {
-                                Audio.playSound(source);
-                                musicPaused = !musicPaused;
-                                keyHandled = !keyHandled;
-                            }
-                            else
-                            {
-                                Audio.pauseSound(source);
-                                musicPaused = !musicPaused;
-                                keyHandled = !keyHandled;
-                            }
-                        }
-                    }
-                    else if (gameWindow.Keyboard[Key.O])
-                    {
-                        if (!keyHandled)
-                        {
-                            source = Audio.nextTrack(source);
-                            keyHandled = !keyHandled;
-                        }
-                    }
-                    collisionHandler.Update();
-                    TriggerManager.updatePowerUps();
-
-                    updateCamera();
-                    UpdateMouse();
-                    playerCar.Update();
-                    //////////////////////////////////////////////////////ÄNDRA TILLBAKA!!!
-                    //Audio management
-                    /*
-                    if (Audio.audioStatus(source) == 1)
                         Audio.playSound(source);
-                    else if (Audio.audioStatus(source) == 3)
-                        source = Audio.nextTrack(source);
-                    */
-                    //move light
+                        musicPaused = !musicPaused;
+                        keyHandled = !keyHandled;
+                    }
+                    else
+                    {
+                        Audio.pauseSound(source);
+                        musicPaused = !musicPaused;
+                        keyHandled = !keyHandled;
+                    }
+                }
+            }
+            else if (gameWindow.Keyboard[Key.O])
+            {
+                if (!keyHandled)
+                {
+                    source = Audio.nextTrack(source);
+                    keyHandled = !keyHandled;
+                }
+            }
+            else if (gameWindow.Keyboard[Key.N])
+            {
+                if (!keyHandled)
+                {
+                    networkhandler.sendStart();
+                }
+            }
+            #endregion
+            collisionHandler.Update();
+            TriggerManager.updatePowerUps();
 
-                    light_theta += camera_horizontal_delta*0.1f;
+            updateCamera();
+            UpdateMouse();
+            playerCar.Update();
+            foreach (Car c in otherCars)
+            {
+                c.Update();
+            }
+            superSphere.modelMatrix = Matrix4.CreateTranslation(lightPosition);
+            
+            //////////////////////////////////////////////////////ÄNDRA TILLBAKA!!!
+            //Audio management
+            /*
+            if (Audio.audioStatus(source) == 1)
+                Audio.playSound(source);
+            else if (Audio.audioStatus(source) == 3)
+                source = Audio.nextTrack(source);
+
+            if (Audio.audioStatus(sfx) == 1||Audio.audioStatus(sfx) == 3)
+                Audio.playSound(sfx);
+            Audio.sfxSpeed(sfx, playerCar.carHull.LinearVelocity.Length());
+            //move light
+            */
+            light_theta += camera_horizontal_delta*0.1f;
             GameTimer.tick();
             megaParticles.tick();
-                }
-                #endregion
+        }
+        #endregion
 
 
         public void prepareSwap(GameWindow window)

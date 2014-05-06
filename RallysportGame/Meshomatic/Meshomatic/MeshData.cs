@@ -18,6 +18,7 @@ namespace Meshomatic {
 	// XXX: Sources: http://www.opentk.com/files/ObjMeshLoader.cs, OOGL (MS3D), Icarus (Colladia)
 	public class MeshData {
         public Dictionary<string, int> facesPerMaterial;
+        public Dictionary<string, int> offsetPerMaterial;
 		public Vector3[] Vertices;
 		public Vector2[] TexCoords;
 		public Vector3[] Normals;
@@ -54,6 +55,16 @@ namespace Meshomatic {
             Tris = tri;
             facesPerMaterial = dic;
 
+            Verify();
+        }
+        public MeshData(Vector3[] vert, Vector3[] norm, Vector2[] tex, Tri[] tri, Dictionary<string, int> dic,Dictionary<string,int> offset)
+        {
+            Vertices = vert;
+            TexCoords = tex;
+            Normals = norm;
+            Tris = tri;
+            facesPerMaterial = dic;
+            offsetPerMaterial = offset;
             Verify();
         }
 		/// <summary>
