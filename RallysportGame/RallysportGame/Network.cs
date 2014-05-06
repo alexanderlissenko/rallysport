@@ -20,7 +20,7 @@ namespace RallysportGame
 
         private Socket socket;
         private EndPoint ep;
-        private IPAddress multicastAddr = IPAddress.Parse("234.123.123.123");
+        private IPAddress multicastAddr = IPAddress.Parse("233.234.234.234");
 
         private bool networkStarted;
         public int userId;
