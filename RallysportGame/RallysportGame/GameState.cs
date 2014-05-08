@@ -1046,6 +1046,14 @@ namespace RallysportGame
                             keyHandled = !keyHandled;
                         }
                     }
+                    else if (gameWindow.Keyboard[Key.T])
+                    {
+                        if (!keyHandled)
+                        {
+                            megaParticles.setThrottle(0);
+                            keyHandled = !keyHandled;
+                        }
+                    }
                     collisionHandler.Update();
                     TriggerManager.updatePowerUps();
 

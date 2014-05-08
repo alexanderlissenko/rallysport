@@ -23,6 +23,7 @@ namespace RallysportGame
         private float maximumVelocity;
         
         private static bool emit;
+        private float throttle;
         private static Random random;
         private DateTime prevTime;
         private ArrayList particleList; 
@@ -45,10 +46,11 @@ namespace RallysportGame
         /// <param name="particle">The particle object that is to be rendered.</param>
         /// <param name="spawnRate">Particals spawned eatch tenth of a second</param>
         /// <param name="gravity">Sets the systems gravity</param>
-        #region constructors
+       
         public ParticleSystem(Entity particle,Vector3 pos,Vector3 frustomDirIn, float frustum, int rate, float velocityMax, Vector3 gravity,
                         TimeSpan liveTime)
         {
+            throttle = 1;
             particleObject = particle;
             systemGravity = gravity;
             random = new Random();
@@ -79,7 +81,7 @@ namespace RallysportGame
 
 
         #endregion
-
+        #region methods
         public void move(Vector3 newEmitterPos, Vector3 newFrustumDir)
         {
             if (newFrustumDir != null)
@@ -103,6 +105,24 @@ namespace RallysportGame
         {
             emit = false;
         }
+        /// <summary>
+        /// Is a procentage value between 1 and 0 that decides how much of the maximum nummber of particles 
+        /// </summary>
+        /// <param name="inThrottle"> a value between 0 and 1</param>
+        public void setThrottle(float inThrottle) 
+        {
+
+            if (inThrottle <= 1 &&  0 <= inThrottle )
+            {
+                throttle = inThrottle;
+            }
+            else
+            {
+                throttle = 1;
+            }
+        }
+        public float getThrottle() { return throttle; }
+
 
         /// <summary>
         /// Overloads the firstPass method in Entity. Renders the particleObject at each particles position into
@@ -132,7 +152,7 @@ namespace RallysportGame
             {
                 prevTime = DateTime.Now;
 
-                for (int i = 0; i <= spawnRate; i++)
+                for (int i = 0; i < (spawnRate+1) * throttle; i++)
                 {
                     //calculate the length of "Normal" in the XY-plane
                     float lengthxy = frustumDir.X * frustumDir.X + frustumDir.Y * frustumDir.Y; // sqared length
@@ -321,6 +341,7 @@ namespace RallysportGame
         /// <returns>the particle's current position.</returns>
         public Vector3 GetPosition(){ return pPosition; }
     }
+
 
     #endregion
 
