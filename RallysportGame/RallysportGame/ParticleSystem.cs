@@ -62,7 +62,7 @@ namespace RallysportGame
             emit = true;
             prevTime = new DateTime(0);
             frustumDir = frustomDirIn;
-            int capacity = (int)Math.Ceiling(meanLiveTime.Seconds * spawnRate* 15.0f); // *10 * 1.5  10 bechus it's in milli seconds and 1.5 bechus of margins
+            int capacity = (int)Math.Ceiling(meanLiveTime.Seconds * spawnRate* 150.0f); // *10 * 1.5  10 bechus it's in milli seconds and 1.5 bechus of margins
             particleList = new ArrayList(capacity); //might be bad, if memory seems suspicious, double check
         }
        
@@ -111,8 +111,11 @@ namespace RallysportGame
         /// <param name="inThrottle"> a value between 0 and 1</param>
         public void setThrottle(float inThrottle) 
         {
+            if (inThrottle < 0)
+                inThrottle = -inThrottle;
 
-            if (inThrottle <= 1 &&  0 <= inThrottle )
+
+            if (inThrottle <= 1)
             {
                 throttle = inThrottle;
             }
@@ -148,7 +151,7 @@ namespace RallysportGame
         public void tick()
         {
 
-            if (emit && (prevTime.Add(new TimeSpan(0,0, 0, 0, 100)) <= DateTime.Now))
+            if (emit && (prevTime.Add(new TimeSpan(0,0, 0, 0, 10)) <= DateTime.Now))
             {
                 prevTime = DateTime.Now;
 

@@ -943,6 +943,7 @@ namespace RallysportGame
             /********************************************************************************************
                 *This is where you should render all objects that is to be turned smoky in the next step   *
                 ********************************************************************************************/
+            playerCar.exhaust.firstPass(firstPassShader, projectionMatrix, viewMatrix);
             megaParticles.firstPass(firstPassShader, projectionMatrix, viewMatrix);
             //environment.firstPass(firstPassShader, projectionMatrix, viewMatrix);
 
@@ -951,7 +952,7 @@ namespace RallysportGame
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
             #endregion
             #region from balls to smoke
-            //gaussBlurr.gaussianBlurr(megaPartTex, w, h, projectionMatrix, viewMatrix);
+            gaussBlurr.gaussianBlurr(megaPartTex, w, h, projectionMatrix, viewMatrix);
 
             /************************************************************************************************************
                 * The reson the depth is placed in a different texture is that I could not get it to work another whay.    *
@@ -1365,7 +1366,15 @@ namespace RallysportGame
                     */
                     light_theta += camera_horizontal_delta*0.1f;
             GameTimer.tick();
-            megaParticles.tick();
+            playerCar.tick();
+            
+            //playerCar.exhaust.tick();
+           Vector3 temp = new Vector3(0.3f, -0.2f, 3f);
+           Quaternion temp2 = playerCar.getCarAngle();
+           Vector3.Transform(ref temp, ref temp2, out temp);
+           
+           playerCar.exhaust.move(Utilities.ConvertToTK(playerCar.carHull.Position)+temp,temp);
+           playerCar.exhaust.tick();
                 }
                 #endregion
 

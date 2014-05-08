@@ -38,6 +38,7 @@ namespace RallysportGame
         // The simulation representation of this car
         public ConvexHull carHull;
         public Vehicle vehicle;
+        public ParticleSystem exhaust;
         // The wheels
         public List<Entity> wheelents;
         public List<BEPUphysics.Entities.Entity> wheels;
@@ -158,6 +159,8 @@ namespace RallysportGame
             }
             Console.WriteLine("car has id " + carHull.InstanceId);
             m = new Missile(@"Missile", new Vector3(0, -200, 0), space);
+            exhaust = new ParticleSystem(new Entity(@"Cube\\smoke"), carHull.Position, -carHull.LinearVelocity, (60f * 3.14f / 180f), 10, 0.006f, new Vector3(0f, 0.000001f, 0f), new TimeSpan(0, 0, 3));
+            exhaust.setThrottle(1);
         }
 
         #endregion
@@ -241,8 +244,6 @@ namespace RallysportGame
 
 
         }
-
-       
 
         public void accelerate(float rate)
         {
@@ -462,6 +463,9 @@ namespace RallysportGame
                boostTimeActive = false;
                //RaceState.setCurrentState(RaceState.States.RACING);
            }
+
+
+
        }
 
        public void usePowerUp()
@@ -505,6 +509,7 @@ namespace RallysportGame
            return boostTimeActive;
        }
 
+        
        public String getPowerUp()
        {
            return powerUpSlot;
