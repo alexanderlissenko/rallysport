@@ -1,0 +1,168 @@
+# Blender MTL File: 'finalTrack_0.1.blend'
+# Material Count: 15
+newmtl Ramp
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.208590 0.007861 0.021151
+Ks 0.162420 0.162420 0.162420
+Ni 1.000000
+d 1.000000
+illum 2
+
+
+newmtl Ramp_rocky_johan_ekdahl.jp
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.208590 0.007861 0.021151
+Ks 0.162420 0.162420 0.162420
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd map\textures\100_1377_seamless_public_domain.jpg
+
+
+newmtl Tarmac_tarmac.jpg
+Ns 5.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.008891 0.008891 0.008891
+Ks 0.006212 0.006212 0.006212
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd map\textures\tarmac.jpg
+map_Bump map\textures\pattern_288\normal.jpg
+
+
+newmtl desert_diffuse.tga.004
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.800000 0.725333 0.725333
+Ks 0.025478 0.025478 0.025478
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd map\textures\pattern_286\diffuse.jpg
+map_Bump map\textures\pattern_286\normal.jpg
+
+
+newmtl grass_Grass_Texture_by_cate
+Ns 76.470588
+Ka 0.000000 0.000000 0.000000
+Kd 0.000000 0.074046 0.001189
+Ks 0.010000 0.010000 0.010000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd map\textures\Grass_Texture_by_catemate.jpg
+map_Bump map\textures\pattern_288\normal.jpg
+
+
+newmtl marble
+Ns 92.156863
+Ka 0.000000 0.000000 0.000000
+Kd 0.312295 0.318297 0.313795
+Ks 0.203822 0.203822 0.203822
+Ni 1.000000
+d 1.000000
+illum 2
+
+
+newmtl rail
+Ns 13.725490
+Ka 0.000000 0.000000 0.000000
+Kd 0.274379 0.108057 0.000000
+Ks 0.150000 0.150000 0.150000
+Ni 1.000000
+d 1.000000
+illum 2
+
+
+newmtl rock
+Ns 10.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.047337 0.047337 0.047337
+Ks 0.000532 0.000532 0.000532
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd map\textures\100_1377_seamless_public_domain.jpg
+map_Bump map\textures\pattern_289\normal.jpg
+
+
+newmtl rock_rocky_johan_ekdahl.jp
+Ns 10.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.047337 0.047337 0.047337
+Ks 0.000532 0.000532 0.000532
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd map\textures\100_1377_seamless_public_domain.jpg
+map_Bump map\textures\pattern_289\normal.jpg
+
+
+newmtl sides
+Ns 92.156863
+Ka 0.000000 0.000000 0.000000
+Kd 0.007835 0.007300 0.007199
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
+
+
+newmtl stone
+Ns 10.156863
+Ka 0.000000 0.000000 0.000000
+Kd 0.017886 0.015317 0.016251
+Ks 0.050000 0.050000 0.050000
+Ni 1.000000
+d 1.000000
+illum 2
+
+
+newmtl third_phase_diffuse.tga.003
+Ns 10.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.755414 0.694147 0.703810
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
+map_Kd map\textures\pattern_289\diffuse.jpg
+map_Bump map\textures\pattern_289\normal.jpg
+
+
+newmtl third_phase_rocky_johan_ekdahl.jp
+Ns 10.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.755414 0.694147 0.703810
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
+map_Kd map\textures\100_1377_seamless_public_domain.jpg
+map_Bump map\textures\pattern_289\normal.jpg
+
+
+newmtl whater_tex_Water.jpg.001
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.117259 0.038665 0.305676
+Ks 0.200637 0.200637 0.200637
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd map\textures\tex_Water.jpg
+
+
+newmtl world
+Ns 9.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.029485 0.032611 0.020483
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
+
+

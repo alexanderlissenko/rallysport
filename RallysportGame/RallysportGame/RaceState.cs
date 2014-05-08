@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using OpenTK;
 
 namespace RallysportGame
 {
@@ -44,6 +46,30 @@ namespace RallysportGame
                 default:
                     break;
             }
+        }
+
+        public static void StartRace(Car playerCar,ref ArrayList carList)
+        {
+            int offset = 0;
+            bool playerAdded = false;
+            for (int i = 0; i < carList.Count; i++ )
+            {
+                if(Network.getInstance().getUserID() < (int)Network.getInstance().getUserList()[i]&& !playerAdded)
+                {
+                    playerCar.setCarPos(new Vector3(182, 2, -6 + i*2));
+                    playerAdded = true;
+                    offset = 3;
+                }
+                object o = carList[i];
+                Car c = o as Car;
+                c.setCarPos(new Vector3(182, 2, -6+ i*4 + offset));
+            }
+            if(!playerAdded)
+            {
+                playerCar.setCarPos(new Vector3(182, 2, -6 + 4*carList.Count));
+            }
+            setCurrentState(States.PRESTART);
+            GameTimer.countDown(5);
         }
     }
 }

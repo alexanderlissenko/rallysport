@@ -20,23 +20,23 @@ namespace RallysportGame
 
         private Socket socket;
         private EndPoint ep;
-        private IPAddress multicastAddr = IPAddress.Parse("234.123.123.123");
+        private IPAddress multicastAddr = IPAddress.Parse("233.234.234.234");
 
         private bool networkStarted;
-        private int userId;
+        public int userId;
         private bool isLeader = false;
         private int ids=1;
         private static Network instance;
-
         private ArrayList userList;
         Space space;
+        private Car car;
         private Network() { }
         private Network(Space space)
         {
             networkStarted = false;
             this.space = space;
             userList = new ArrayList();
-            IPAddress localIp = IPAddress.Parse("127.0.0.1");// getLocalIp();//
+            IPAddress localIp = IPAddress.Parse("127.0.0.1");//getLocalIp();//
             socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             
             IPEndPoint localEP = new IPEndPoint(localIp, 11245);
@@ -47,6 +47,7 @@ namespace RallysportGame
             socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
             socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.MulticastTimeToLive, 1);
             ep = (EndPoint)localEP;
+            socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveBuffer, 0);
         }
 
         public static void Init(Space space)
@@ -55,6 +56,11 @@ namespace RallysportGame
             {
                 instance = new Network(space);
             }
+        }
+
+        public void setCar(Car c)
+        {
+            this.car = c;
         }
 
         public bool getStatus()
@@ -72,6 +78,7 @@ namespace RallysportGame
 
         public void startSending()
         {
+            socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveBuffer,1);
             networkStarted = true;
             Thread.Sleep(2000);
             if(socket.Available==0)
@@ -126,6 +133,27 @@ namespace RallysportGame
             Console.WriteLine("network data sending userlist: " + userList.Count);
             socket.SendTo(msg, endpoint);
         }
+        public void sendData(Vector3 vector,Quaternion rot)
+        {
+            IPEndPoint endpoint = new IPEndPoint(multicastAddr, 11245);
+            byte[] msg = Encoding.UTF8.GetBytes("3;" + userId + ";" + vector.X + ";" + vector.Y + ";" + vector.Z + ";" + rot.X + ";" + rot.Y + ";" + rot.Z + ";" + rot.W + ";");
+            Console.WriteLine("network data sending userlist: " + userList.Count);
+            socket.SendTo(msg, endpoint);
+        }
+        public void sendData(Vector3 vector, Quaternion rot,float acceleration)
+        {
+            IPEndPoint endpoint = new IPEndPoint(multicastAddr, 11245);
+            byte[] msg = Encoding.UTF8.GetBytes("3;" + userId + ";" + vector.X + ";" + vector.Y + ";" + vector.Z + ";" + rot.X + ";" + rot.Y + ";" + rot.Z + ";" + rot.W + ";"+ acceleration+";");
+            Console.WriteLine("network data sending userlist: " + userList.Count);
+            socket.SendTo(msg, endpoint);
+        }
+        public void sendStart()
+        {
+            IPEndPoint endpoint = new IPEndPoint(multicastAddr, 11245);
+            byte[] msg = Encoding.UTF8.GetBytes("4;0");
+            Console.WriteLine("raceing starts");
+            socket.SendTo(msg, endpoint);
+        }
 
         public void recieveData(ref ArrayList carList)
         {
@@ -168,7 +196,7 @@ namespace RallysportGame
                         index = userList.IndexOf(id);
                         carList.RemoveAt(index);
                         userList.Remove(id);
-                        if (id == userId)
+                        if (int.Parse(unParsedData[2]) == userId)
                             isLeader = true;
                         break;
                     case "3":
@@ -179,13 +207,25 @@ namespace RallysportGame
                             if (index == -1)
                             {
                                 userList.Add(id);
-                                carList.Add(new Car(@"Mustang\mustang-no-wheels", @"Mustang\one-wheel-tex-scale", new Vector3(float.Parse(unParsedData[2].Substring(1)), float.Parse(unParsedData[3]), float.Parse(unParsedData[4].Remove(unParsedData[4].Length - 1))),space));
+                                carList.Add(new Car(@"Mustang\mustang-textured-scale_mini", @"Mustang\one_wheel_corected_normals_recenterd", new Vector3(float.Parse(unParsedData[2]), float.Parse(unParsedData[3]), float.Parse(unParsedData[4])), space));
                                 Console.WriteLine(carList.Count);
                             }
                             else
                             {
-                                
+                                object o = carList[index];
+                                Car c = o as Car;
+                                //c.setCarPos(new Vector3(float.Parse(unParsedData[2].Substring(1)), float.Parse(unParsedData[3]), float.Parse(unParsedData[4].Remove(unParsedData[4].Length - 1))));
+                                c.setCarPos(new Vector3(float.Parse(unParsedData[2]), float.Parse(unParsedData[3]), float.Parse(unParsedData[4])),new Quaternion(float.Parse(unParsedData[5]),float.Parse(unParsedData[6]),float.Parse(unParsedData[7]),float.Parse(unParsedData[8])));
+                                c.accelerate(float.Parse(unParsedData[9]));
+                                //carList[index] = c;
                             }
+                        }
+                        break;
+                    case "4":
+                        int trigger = int.Parse(unParsedData[1]);
+                        if (trigger == 0)
+                        {
+                            RaceState.StartRace(car,ref carList);
                         }
                         break;
                     default:
@@ -198,7 +238,7 @@ namespace RallysportGame
         {
             userList.Reverse();
             if(userList.Count != 0)
-                sendData("2;" + userList[0]);
+                sendData("2;"+userId +";"+ userList[0]);
             try
             {
                 socket.Shutdown(SocketShutdown.Both);
@@ -208,6 +248,16 @@ namespace RallysportGame
                 Console.WriteLine(e.ToString());
             }
             socket.Close();
+        }
+
+        public int getUserID()
+        {
+            return userId;
+        }
+
+        public ArrayList getUserList()
+        {
+            return userList;
         }
 
         private IPAddress getLocalIp()

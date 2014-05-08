@@ -19,10 +19,12 @@ out float extAmbientLight;
 out vec4 positionOut;
 out vec4 prevPositionOut;
 
+
 void main(void)
 {
    fragmentTexCoord = texCoordIn;
    fragmentNormal = normalize((modelMatrix*vec4(normalIn, 0.0)).xyz);
+
    positionOut = modelViewProjectionMatrix*vec4(positionIn,1);
    prevPositionOut = prevMVP * vec4(positionIn,1);
    gl_Position = positionOut;

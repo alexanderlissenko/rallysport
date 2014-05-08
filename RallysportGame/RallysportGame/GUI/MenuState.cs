@@ -83,7 +83,7 @@ namespace RallysportGame.GUI
 
             mainMenu.AddTextButton("Options", swapToSettings);
 
-            Action exitAction = delegate { gameWindow.Exit(); };
+            Action exitAction = delegate { gameWindow.Exit(); Network.getInstance().closeSocket(); };
 
             mainMenu.AddTextButton("Exit", exitAction);
 
@@ -94,17 +94,18 @@ namespace RallysportGame.GUI
 
         private void startSingleplayer()
         {
+            mainMenu.clearAllHitboxes();
             StateHandler.Instance.changeStateToGame();
-            GameTimer.countDown(5);
+            RaceState.setCurrentState(RaceState.States.RACING);
         }
 
         private void startMultiplayer()
         {
+            mainMenu.clearAllHitboxes();
             Network.getInstance().startSending();
             
             StateHandler.Instance.changeStateToGame();
-
-            GameTimer.countDown(5);
+            RaceState.setCurrentState(RaceState.States.RACING);
         }
 
         private void swapToMainMenu()
@@ -181,9 +182,12 @@ namespace RallysportGame.GUI
         }
         public override void MouseButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (e.Button.Equals(MouseButton.Left))
+            if (StateHandler.Instance.isInMenu())
             {
-                currentTextMenu.ClickSelected();
+                if (e.Button.Equals(MouseButton.Left))
+                {
+                    currentTextMenu.ClickSelected();
+                }
             }
         }
 
