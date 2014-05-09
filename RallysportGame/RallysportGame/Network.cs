@@ -279,7 +279,7 @@ namespace RallysportGame
                                 if (index == -1)
                                 {
                                     userList.Add(id);
-                                    carList.Add(new Car(@"Mustang\mustang-textured-scale_mini", @"Mustang\one_wheel_corected_normals_recenterd", new Vector3(float.Parse(unParsedData[2]), float.Parse(unParsedData[3]), float.Parse(unParsedData[4])), space));
+                                    carList.Add(new Car(@"Mustang\mustang-textured-scale_mini", @"Mustang\one_wheel_corected_normals_recenterd", new Vector3(float.Parse(unParsedData[2]), float.Parse(unParsedData[3]), float.Parse(unParsedData[4])), space, id));
                                     Console.WriteLine(carList.Count);
                                 }
                                 else

@@ -43,6 +43,7 @@ namespace RallysportGame
         public List<Entity> wheelents;
         public List<BEPUphysics.Entities.Entity> wheels;
         public float carRate;
+        private int userid = -1;
         // The angle between the direction and forward vectors
         private float turning_angle;
         // Friction coefficient, material-dependent
@@ -112,7 +113,14 @@ namespace RallysportGame
 
             carHull.WorldTransform = BEPUutilities.Matrix.CreateTranslation(Utilities.ConvertToBepu(pos));
             modelMatrix = carHull.WorldTransform;
-            carHull.Tag = "Player Car";
+            if (userid == -1)
+            {
+                carHull.Tag = "Player Car";
+            }
+            else
+            {
+                carHull.Tag = "Player Car "+userid;
+            }
             this.space.Add(carHull);
             // Add wheels
             /*
@@ -168,6 +176,11 @@ namespace RallysportGame
             exhaust = new ParticleSystem(new Entity(@"Cube\\smoke"), carHull.Position, -carHull.LinearVelocity, (60f * 3.14f / 180f), 10, 0.006f, new Vector3(0f, 0.000001f, 0f), new TimeSpan(0, 0, 1));
             exhaust.setScale(0.5f);
             exhaust.setThrottle(1);
+        }
+         public Car(String bodyPath, String wheelPath, Vector3 pos,Space space,int userid) //Defacto  constructor!
+            : this(bodyPath, wheelPath, pos, space)
+        {
+           this.userid = userid;
         }
 
         #endregion
