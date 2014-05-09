@@ -63,7 +63,7 @@ namespace RallysportGame
         private float maximumTurnAngle = BEPUutilities.MathHelper.Pi * 0.2f;
         private BEPUutilities.Vector3 testDir;
 
-        private static String powerUpSlot = "Missile";
+        private static String powerUpSlot = "SmookeScreen";
         private bool renderPower = false;
         static System.Timers.Timer boostTime;
         private static bool boostTimeActive = false;
@@ -71,8 +71,13 @@ namespace RallysportGame
         static DateTime countDownTarget, gameTimer;
         static TimeSpan timeLeft;
         static int timeDiff = 0, previousTimeDiff = 0;
-
+        
         private Missile m;
+
+
+        private int smookeScreenCounter;
+        
+        
         #endregion
 
         #region Constructors
@@ -96,6 +101,7 @@ namespace RallysportGame
         public Car(String bodyPath, String wheelPath, Vector3 pos,Space space) //Defacto  constructor!
             : base(bodyPath)
         {
+            smookeScreenCounter = 0;
             this.space = space;
             //position = pos;
             BEPUutilities.Matrix temp = BEPUutilities.Matrix.Identity;
@@ -159,7 +165,8 @@ namespace RallysportGame
             }
             Console.WriteLine("car has id " + carHull.InstanceId);
             m = new Missile(@"Missile", new Vector3(0, -200, 0), space);
-            exhaust = new ParticleSystem(new Entity(@"Cube\\smoke"), carHull.Position, -carHull.LinearVelocity, (60f * 3.14f / 180f), 10, 0.006f, new Vector3(0f, 0.000001f, 0f), new TimeSpan(0, 0, 3));
+            exhaust = new ParticleSystem(new Entity(@"Cube\\smoke"), carHull.Position, -carHull.LinearVelocity, (60f * 3.14f / 180f), 10, 0.006f, new Vector3(0f, 0.000001f, 0f), new TimeSpan(0, 0, 1));
+            exhaust.setScale(0.5f);
             exhaust.setThrottle(1);
         }
 
@@ -221,27 +228,47 @@ namespace RallysportGame
                     {
                         renderPower = false;
                         //powerUpSlot="None";
-        }
+                    }
 
+                }
+                else if (powerUpSlot.Equals("SmookeScreen"))
+                {
+                    if (smookeScreenCounter <= 0){
+                        smookeScreenCounter=1;
+                        exhaust.setScale(4f);
+                    }
+                    else
+                    {
+                        smookeScreenCounter++;
+                        if (smookeScreenCounter >= 8 * 60)
+                        {
+                            exhaust.setScale(0.5f);
+                            smookeScreenCounter = 0;
+                            powerUpSlot = "None";
+                            renderPower = false;
+                        }
+                    }
                 }
                 else if (powerUpSlot.Equals("SpeedBoost"))
                 {
-
-
                 }
                 else if (powerUpSlot.Equals("LightsOut"))
                 {
-
-
-
                 }
                 else
                 {
-                    powerUpSlot = "None";
+                    //powerUpSlot = "None";
                 }
             }
             #endregion
 
+
+            Vector3 temp1 = new Vector3(0.3f, -0.2f, 3f);
+            Quaternion temp2 = getCarAngle();
+            Vector3.Transform(ref temp1, ref temp2, out temp1);
+
+            exhaust.move(Utilities.ConvertToTK(carHull.Position) + temp1, temp1);
+            exhaust.tick();
 
         }
 
@@ -489,6 +516,10 @@ namespace RallysportGame
             {
 
             }
+           else if (powerUpSlot.Equals("SmookeScreen"))
+           {
+
+           }
             else
             {
                powerUpSlot = "None";
