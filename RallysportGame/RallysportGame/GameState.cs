@@ -876,7 +876,7 @@ namespace RallysportGame
             rot2.X = rot2.X*0.5f;
             Vector3.Transform(ref back, ref rot2, out behindcar);
             
-            Vector3 camera_position = sphericalToCartesian(camera_theta, camera_phi, camera_r, playerCar.getCarPos());//playerCar.getCarPos()+ behindcar;
+            Vector3 camera_position = sphericalToCartesian(camera_theta, camera_phi, camera_r, playerCar.getCarPos());//playerCar.getCarPos()+ behindcar;//
             //camera_lookAt = new Vector3(0.0f, camera_target_altitude, 0.0f);
             Vector3 camera_lookAt = playerCar.getCarPos();// new Vector3(0, 0, 0);//Vector4.Transform(camera_lookAt, camera_rotation_matrix);//new Vector3(0.0f, 0.0f, 0.0f);//
             Matrix4 viewMatrix = Matrix4.LookAt(camera_position, camera_lookAt, up);
@@ -1131,9 +1131,9 @@ namespace RallysportGame
             
 
             gaussBlurr.gaussianBlurr(glowTex, w, h, projectionMatrix, viewMatrix);
-            //gaussBlurr.gaussianBlurr(glowTex, w, h, projectionMatrix, viewMatrix);
-            
+
             //GOD PASS
+            #region godpass
             GL.UseProgram(godShader);
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, godFBO);
             GL.DepthMask(false);
@@ -1155,8 +1155,8 @@ namespace RallysportGame
             GL.Enable(EnableCap.DepthTest);
             GL.DepthMask(true);
             //God ends here
-            
 
+            #endregion
 
 
             #region PostProcessing pass
@@ -1319,6 +1319,7 @@ namespace RallysportGame
                 c.Update();
             }
             superSphere.modelMatrix = Matrix4.CreateTranslation(lightPosition);
+            skybox.position = new Vector3(playerCar.getCarPos().X,0,playerCar.getCarPos().Z);
             
             //////////////////////////////////////////////////////ÄNDRA TILLBAKA!!!
             //Audio management
