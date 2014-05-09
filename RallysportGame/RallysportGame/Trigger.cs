@@ -76,7 +76,8 @@ namespace RallysportGame
         void Events_PairRemoved(EntityCollidable sender, BroadPhaseEntry other)
         {
             var otherEnt = other as EntityCollidable;
-            if (otherEnt.Entity.Tag.Equals("Player Car"))
+            string[] temp = otherEnt.Tag.ToString().Split();
+            if (temp[0].Equals("Player"))
             {
                 triggerHappend = false;
             }
@@ -85,9 +86,14 @@ namespace RallysportGame
         void Events_PairCreated(EntityCollidable sender, BroadPhaseEntry other, NarrowPhasePair pair)
         {
             var otherEnt = other as EntityCollidable;
+            string[] temp = otherEnt.Tag.ToString().Split();
             if (!triggerHappend && otherEnt.Entity.Tag.Equals("Player Car"))
             {
                 TriggerHandler.triggerEvent(sender.Entity.Tag.ToString(),otherEnt.Entity.Tag.ToString());
+                triggerHappend = !triggerHappend;
+            }
+            else if(!triggerHappend && temp[0].Equals("Player"))
+            {
                 triggerHappend = !triggerHappend;
             }
         }
