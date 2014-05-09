@@ -230,8 +230,8 @@ namespace RallysportGame
                     case "2":
                         id = int.Parse(unParsedData[1]);
                         index = userList.IndexOf(id);
-                        Car c = carList[index] as Car;
-                        c.deleteCarFromSpace();
+                        Car ca = carList[index] as Car;
+                        ca.deleteCarFromSpace();
                         carList.RemoveAt(index);
                         userList.Remove(id);
                         if (int.Parse(unParsedData[2]) == userId)
