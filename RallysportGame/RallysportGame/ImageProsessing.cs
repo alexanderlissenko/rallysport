@@ -207,7 +207,8 @@ namespace RallysportGame
 
                     GL.ActiveTexture(TextureUnit.Texture0);
                     GL.BindTexture(TextureTarget.Texture2D, texture);
-
+                    GL.Uniform1(GL.GetUniformLocation(horizontalGaussianFilterShader, "rt_w"), width);
+                    GL.Uniform1(GL.GetUniformLocation(horizontalGaussianFilterShader, "rt_h"), height);
                     GL.Uniform1(GL.GetUniformLocation(horizontalGaussianFilterShader, "diffuseTex"), 0);
 
                     //GL.UniformMatrix4(GL.GetUniformLocation(verticalGaussianFilterShader, "projectionMatrix"), false, ref projectionMatrix);
@@ -230,7 +231,8 @@ namespace RallysportGame
 
                     GL.ActiveTexture(TextureUnit.Texture0);
                     GL.BindTexture(TextureTarget.Texture2D, tempTex);
-
+                    GL.Uniform1(GL.GetUniformLocation(verticalGaussianFilterShader, "rt_w"), width);
+                    GL.Uniform1(GL.GetUniformLocation(verticalGaussianFilterShader, "rt_h"), height);
                     GL.Uniform1(GL.GetUniformLocation(verticalGaussianFilterShader, "diffuseTex"), 0);
 
                     //GL.UniformMatrix4(GL.GetUniformLocation(verticalGaussianFilterShader, "projectionMatrix"), false, ref projectionMatrix);

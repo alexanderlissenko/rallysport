@@ -133,9 +133,9 @@ namespace RallysportGame
                                 new Vector4(0, 0, 0, 1));
             pos = OpenTK.Vector3.Transform(pos, viewMatrix);
             pos = OpenTK.Vector3.Transform(pos, orth_proj);
-        
+          
            pos = pos/pos.Z;
-
+           
            pos.X = (pos.X + 1) * screenWidth / 2;
            pos.Y = (pos.Y + 1) * screenHeight / 2;
            
@@ -520,7 +520,7 @@ namespace RallysportGame
             superSphere.setUpMultMtl();
             superSphere.setUpMultText();
             skybox.skyboxScale();
-                    
+
             
             //collisionHandler.addObject(playerCar);
             collisionHandler.addObject(environment);
@@ -851,7 +851,7 @@ namespace RallysportGame
 
             #endregion
 
-                    
+            
            
             gameWindow.KeyDown += handleKeyDown;
             gameWindow.KeyUp += handleKeyUp;
@@ -888,7 +888,7 @@ namespace RallysportGame
             //Vector3 scaleVector = new Vector3(1000, 1000, 1000);
 
             #endregion
-
+            
             int w = gameWindow.Width;
             int h = gameWindow.Height;
 
@@ -898,8 +898,8 @@ namespace RallysportGame
             rot2.Z = 0;
             rot2.X = rot2.X*0.5f;
             Vector3.Transform(ref back, ref rot2, out behindcar);
-
-            Vector3 camera_position = sphericalToCartesian(camera_theta, camera_phi, camera_r, playerCar.getCarPos());//playerCar.getCarPos()+ behindcar;
+            
+            Vector3 camera_position = sphericalToCartesian(camera_theta, camera_phi, camera_r, playerCar.getCarPos());//playerCar.getCarPos()+ behindcar;//
             //camera_lookAt = new Vector3(0.0f, camera_target_altitude, 0.0f);
             Vector3 camera_lookAt = playerCar.getCarPos();// new Vector3(0, 0, 0);//Vector4.Transform(camera_lookAt, camera_rotation_matrix);//new Vector3(0.0f, 0.0f, 0.0f);//
             Matrix4 viewMatrix = Matrix4.LookAt(camera_position, camera_lookAt, up);
@@ -988,7 +988,7 @@ namespace RallysportGame
             GL.Uniform1(GL.GetUniformLocation(firstPassShader, "firstTexture"), 0);
             */
             //megaParticles.firstPass(firstPassShader, projectionMatrix, viewMatrix);
-
+           
             environment.firstPass(firstPassShader, projectionMatrix, viewMatrix);
 
             GL.BindTexture(TextureTarget.Texture2D, 0);
@@ -1030,7 +1030,7 @@ namespace RallysportGame
             GL.Disable(EnableCap.DepthTest);
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
             #endregion
-
+            
             //END OF RENDER SKYBOX
 
             Matrix4 invProj = Matrix4.Invert(projectionMatrix);
@@ -1167,9 +1167,9 @@ namespace RallysportGame
             
 
             gaussBlurr.gaussianBlurr(glowTex, w, h, projectionMatrix, viewMatrix);
-            //gaussBlurr.gaussianBlurr(glowTex, w, h, projectionMatrix, viewMatrix);
             
             //GOD PASS
+            #region godpass
             GL.UseProgram(godShader);
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, godFBO);
             GL.DepthMask(false);
@@ -1192,7 +1192,7 @@ namespace RallysportGame
             GL.DepthMask(true);
             //God ends here
             
-
+            #endregion
 
 
             #region PostProcessing pass
@@ -1271,71 +1271,71 @@ namespace RallysportGame
         /// <param name="e"></param>
         public override void Update(GameWindow gameWindow) 
         {
-        #region Update
-                    //Network
+            #region Update
+            //Network
             if (networkhandler.getStatus())
             {
                 if (testtimer == 60)
-                    {
+                {
                     networkhandler.sendData(playerCar.getCarPos(),playerCar.getCarAngle(),playerCar.carRate);
-                        testtimer = 0;
-                    }
-                    testtimer++;
-                    networkhandler.recieveData(ref otherCars);
+                    testtimer = 0;
+                }
+                testtimer++;
+                 networkhandler.recieveData(ref otherCars);
             }
-                    //Network
-                    camera_rotation_matrix = Matrix4.Identity;
-                    // add game logic, input handling
+            //Network
+            camera_rotation_matrix = Matrix4.Identity;
+            // add game logic, input handling
             #region extrakeys
-                    if (gameWindow.Keyboard[Key.Escape])
+            if (gameWindow.Keyboard[Key.Escape])
+            {
+                if (!keyHandled)
+                {
+                    returnToMenu();
+                }
+            }
+            else if (gameWindow.Keyboard[Key.Number9])
+            {
+                if (!keyHandled)
+                {
+                    Audio.increaseGain(source);
+                    keyHandled = !keyHandled;
+                }
+            }
+            else if (gameWindow.Keyboard[Key.Number0])
+            {
+                if (!keyHandled)
+                {
+                    Audio.decreaseGain(source);
+                    keyHandled = !keyHandled;
+                }
+            }
+            else if (gameWindow.Keyboard[Key.Space])
+            {
+                if (!keyHandled)
+                {
+                    if (musicPaused)
                     {
-                        if (!keyHandled)
-                        {
-                            returnToMenu();
-                        }
+                        Audio.playSound(source);
+                        musicPaused = !musicPaused;
+                        keyHandled = !keyHandled;
                     }
-                    else if (gameWindow.Keyboard[Key.Number9])
+                    else
                     {
-                        if (!keyHandled)
-                        {
-                            Audio.increaseGain(source);
-                            keyHandled = !keyHandled;
-                        }
+                        Audio.pauseSound(source);
+                        musicPaused = !musicPaused;
+                        keyHandled = !keyHandled;
                     }
-                    else if (gameWindow.Keyboard[Key.Number0])
-                    {
-                        if (!keyHandled)
-                        {
-                            Audio.decreaseGain(source);
-                            keyHandled = !keyHandled;
-                        }
-                    }
-                    else if (gameWindow.Keyboard[Key.Space])
-                    {
-                        if (!keyHandled)
-                        {
-                            if (musicPaused)
-                            {
-                                Audio.playSound(source);
-                                musicPaused = !musicPaused;
-                                keyHandled = !keyHandled;
-                            }
-                            else
-                            {
-                                Audio.pauseSound(source);
-                                musicPaused = !musicPaused;
-                                keyHandled = !keyHandled;
-                            }
-                        }
-                    }
-                    else if (gameWindow.Keyboard[Key.O])
-                    {
-                        if (!keyHandled)
-                        {
-                            source = Audio.nextTrack(source);
-                            keyHandled = !keyHandled;
-                        }
-                    }
+                }
+            }
+            else if (gameWindow.Keyboard[Key.O])
+            {
+                if (!keyHandled)
+                {
+                    source = Audio.nextTrack(source);
+                    keyHandled = !keyHandled;
+                }
+            }
             else if (gameWindow.Keyboard[Key.N])
             {
                 if (!keyHandled)
@@ -1344,32 +1344,33 @@ namespace RallysportGame
                 }
             }
             #endregion
-                    collisionHandler.Update();
-                    TriggerManager.updatePowerUps();
+            collisionHandler.Update();
+            TriggerManager.updatePowerUps();
 
-                    updateCamera();
-                    UpdateMouse();
-                    playerCar.Update();
+            updateCamera();
+            UpdateMouse();
+            playerCar.Update();
             foreach (Car c in otherCars)
             {
                 c.Update();
             }
             superSphere.modelMatrix = Matrix4.CreateTranslation(lightPosition);
+            skybox.position = new Vector3(playerCar.getCarPos().X,0,playerCar.getCarPos().Z);
             
-                    //////////////////////////////////////////////////////ÄNDRA TILLBAKA!!!
-                    //Audio management
-                    /*
-                    if (Audio.audioStatus(source) == 1)
-                        Audio.playSound(source);
-                    else if (Audio.audioStatus(source) == 3)
-                        source = Audio.nextTrack(source);
+            //////////////////////////////////////////////////////ÄNDRA TILLBAKA!!!
+            //Audio management
+            /*
+            if (Audio.audioStatus(source) == 1)
+                Audio.playSound(source);
+            else if (Audio.audioStatus(source) == 3)
+                source = Audio.nextTrack(source);
 
             if (Audio.audioStatus(sfx) == 1||Audio.audioStatus(sfx) == 3)
                 Audio.playSound(sfx);
             Audio.sfxSpeed(sfx, playerCar.carHull.LinearVelocity.Length());
             //move light
-                    */
-                    light_theta += camera_horizontal_delta*0.1f;
+            */
+            light_theta += camera_horizontal_delta*0.1f;
             GameTimer.tick();
             playerCar.tick();
             
@@ -1380,8 +1381,8 @@ namespace RallysportGame
            
            playerCar.exhaust.move(Utilities.ConvertToTK(playerCar.carHull.Position)+temp,temp);
            playerCar.exhaust.tick();
-                }
-                #endregion
+        }
+        #endregion
 
 
         public void prepareSwap(GameWindow window)
