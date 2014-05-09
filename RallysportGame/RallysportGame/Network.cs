@@ -175,6 +175,9 @@ namespace RallysportGame
                 case "LightsOut":
                     powerupInt = 3;
                     break;
+                case "SmookeScreen":
+                    powerupInt = 4;
+                    break;
                 default:
                     break;
 
@@ -300,7 +303,7 @@ namespace RallysportGame
                                         c.addPowerUp("LightsOut");
                                         break;
                                     case 4:
-                                        c.addPowerUp("SpeedBoost");
+                                        c.addPowerUp("SmookeScreen");
                                         break;
                                     default:
                                         break;
