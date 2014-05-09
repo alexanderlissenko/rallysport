@@ -266,19 +266,46 @@ namespace RallysportGame
                         }
                         if(trigger == 2)
                         {
-                            int powerup = int.Parse(unParsedData[3]);
-                            switch (powerup)
+                            Car c = null; 
+                            id = int.Parse(unParsedData[1]);
+                            index = userList.IndexOf(id);
+                            if (id != userId)
                             {
-                                case 0:
-                                    break;
-                                case 1:
-                                    break;
-                                case 2:
-                                    break;
-                                case 3:
-                                    break;
-                                default:
-                                    break;
+                                if (index == -1)
+                                {
+                                    userList.Add(id);
+                                    carList.Add(new Car(@"Mustang\mustang-textured-scale_mini", @"Mustang\one_wheel_corected_normals_recenterd", new Vector3(float.Parse(unParsedData[2]), float.Parse(unParsedData[3]), float.Parse(unParsedData[4])), space));
+                                    Console.WriteLine(carList.Count);
+                                }
+                                else
+                                {
+                                    object o = carList[index];
+                                    c = o as Car;
+                                    c.setCarPos(new Vector3(float.Parse(unParsedData[3]), float.Parse(unParsedData[4]), float.Parse(unParsedData[5])), new Quaternion(float.Parse(unParsedData[6]), float.Parse(unParsedData[7]), float.Parse(unParsedData[8]), float.Parse(unParsedData[9])));
+                                    c.accelerate(float.Parse(unParsedData[10]));
+                                }
+                            }
+                            if (c != null)
+                            {
+                                int powerup = int.Parse(unParsedData[2]);
+                                switch (powerup)
+                                {
+                                    case 1:
+                                        c.addPowerUp("SpeedBoost");
+                                        break;
+                                    case 2:
+                                        c.addPowerUp("Missile");
+                                        break;
+                                    case 3:
+                                        c.addPowerUp("LightsOut");
+                                        break;
+                                    case 4:
+                                        c.addPowerUp("SpeedBoost");
+                                        break;
+                                    default:
+                                        break;
+                                }
+                                c.usePowerUp();
                             }
                         }
                         break;
