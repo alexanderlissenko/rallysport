@@ -63,7 +63,7 @@ namespace RallysportGame
         private float maximumTurnAngle = BEPUutilities.MathHelper.Pi * 0.2f;
         private BEPUutilities.Vector3 testDir;
 
-        private static String powerUpSlot = "SmookeScreen";
+        private static String powerUpSlot = "Missile";
         private bool renderPower = false;
         static System.Timers.Timer boostTime;
         private static bool boostTimeActive = false;
@@ -221,13 +221,13 @@ namespace RallysportGame
                     if (!m.launched)
                     {
                         Vector3 temp = Vector3.Add(getCarPos()+ new Vector3(0,1,0), Vector3.Mult(Vector3.Transform(new Vector3(0,0,-1), carHull.Orientation),10));
-                        m.launch(temp, Vector3.Add(carHull.LinearVelocity,Vector3.Mult(Vector3.Transform(new Vector3(0,0,1), carHull.Orientation),100)),60*5); 
+                        m.launch(temp, Vector3.Add(carHull.LinearVelocity,Vector3.Mult(Vector3.Transform(new Vector3(0,0,-1), carHull.Orientation),100)),60*5); 
                     }
 
                     if (m.update())
                     {
                         renderPower = false;
-                        //powerUpSlot="None";
+                        powerUpSlot="None";
                     }
 
                 }
@@ -257,7 +257,8 @@ namespace RallysportGame
                 }
                 else
                 {
-                    //powerUpSlot = "None";
+                    renderPower = false;
+                    powerUpSlot = "None";
                 }
             }
             #endregion
@@ -452,21 +453,7 @@ namespace RallysportGame
        public void addPowerUp(String type)
        {
            powerUpSlot = type;
-           if (powerUpSlot.Equals("SpeedBoost"))
-           {
-               //Boost speed
-               //powerUpSlot = "None";
            }
-           else if (powerUpSlot.Equals("LightOut"))
-           {
-               //Light out
-               powerUpSlot = "None";
-           }
-           else
-           {
-               //No powerup in slot!
-           }
-       }
 
        public void timerBoost(int seconds)
        {

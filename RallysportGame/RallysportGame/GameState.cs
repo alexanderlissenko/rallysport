@@ -237,9 +237,6 @@ namespace RallysportGame
                         if (RaceState.getCurrentState() == RaceState.States.RACING)
                             playerCar.accelerate(-1f);
                         break;
-                    case Key.P:
-                        playerCar.usePowerUp();
-                        break;
                     case Key.Left:
                         camera_theta += camera_horizontal_delta;
                         break;
@@ -509,7 +506,7 @@ namespace RallysportGame
 
             // Dynamic objects
             collisionHandler = new CollisionHandler();
-            environment = new Environment("map\\finalTrack_0.3");//uggly_test_track_Triangulate");//"plane");//
+            environment = new Environment("map\\finalTrack_0.4");//uggly_test_track_Triangulate");//"plane");//
                     
             //environment.loadTexture();
             //environment.setUpBlenderModel(); //Handled in constructor
@@ -1353,6 +1350,13 @@ namespace RallysportGame
                 if (!keyHandled)
                 {
                     networkhandler.sendStart();
+                }
+            }
+            else if (gameWindow.Keyboard[Key.P])
+            {
+                if (!keyHandled)
+                {
+                    playerCar.usePowerUp();
                 }
             }
             #endregion
