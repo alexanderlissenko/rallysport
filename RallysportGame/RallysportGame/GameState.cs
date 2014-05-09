@@ -80,6 +80,7 @@ namespace RallysportGame
         static float light_phi = pi / 4.0f;
         static float light_r = 1800.0f;
 
+        int counter;
         //test particles
         static ParticleSystem megaParticles;// = new ParticleSystem(new OpenTK.Vector3(0, 0, 0), 60f, 5, new TimeSpan(0, 0, 0, 4), new Entity());
         static Entity myCar2, skybox, unitSphere, superSphere;
@@ -870,7 +871,7 @@ namespace RallysportGame
 
             gaussBlurr = new GaussianFilter(verticalGaussianFilterShader, horizontalGaussianFilterShader, gameWindow.Width, gameWindow.Height);
             megaPartFilter = new MegapParticleFilter(megaParticleShader, gameWindow.Width, gameWindow.Height);
-
+            counter = 0;
             setupPerlinNoise();
         #endregion
         }
@@ -959,7 +960,11 @@ namespace RallysportGame
                 * The reson that we make a new variable to put this new texture into is simply that we need the old depth  *
                 *  texture for the next time around                                                                        *
                 *************************************************************************************************************/
-            int distorted_megaPartDepth = megaPartFilter.displaceBlend(megaPartTex, megaPartDepth, gameWindow.Width, gameWindow.Height, perlinNoise[0], PERLIN_REZ_X, PERLIN_REZ_Y, copyShader, projectionMatrix, viewMatrix);
+            counter++;
+            if (counter>=30)
+                counter=0;
+
+            int distorted_megaPartDepth = megaPartFilter.displaceBlend(megaPartTex, megaPartDepth, gameWindow.Width, gameWindow.Height, perlinNoise[counter], PERLIN_REZ_X, PERLIN_REZ_Y, copyShader, projectionMatrix, viewMatrix);
             #endregion
 
 
