@@ -36,7 +36,7 @@ namespace RallysportGame
             networkStarted = false;
             this.space = space;
             userList = new ArrayList();
-            IPAddress localIp = IPAddress.Parse("127.0.0.1");//getLocalIp();//
+            IPAddress localIp = getLocalIp();//IPAddress.Parse("127.0.0.1");//
             socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             
             IPEndPoint localEP = new IPEndPoint(localIp, 11245);
@@ -175,6 +175,9 @@ namespace RallysportGame
                 case "LightsOut":
                     powerupInt = 3;
                     break;
+                case "SmookeScreen":
+                    powerupInt = 4;
+                    break;
                 default:
                     break;
 
@@ -227,6 +230,8 @@ namespace RallysportGame
                     case "2":
                         id = int.Parse(unParsedData[1]);
                         index = userList.IndexOf(id);
+                        Car ca = carList[index] as Car;
+                        ca.deleteCarFromSpace();
                         carList.RemoveAt(index);
                         userList.Remove(id);
                         if (int.Parse(unParsedData[2]) == userId)
@@ -266,19 +271,46 @@ namespace RallysportGame
                         }
                         if(trigger == 2)
                         {
-                            int powerup = int.Parse(unParsedData[3]);
-                            switch (powerup)
+                            Car c = null; 
+                            id = int.Parse(unParsedData[1]);
+                            index = userList.IndexOf(id);
+                            if (id != userId)
                             {
-                                case 0:
-                                    break;
-                                case 1:
-                                    break;
-                                case 2:
-                                    break;
-                                case 3:
-                                    break;
-                                default:
-                                    break;
+                                if (index == -1)
+                                {
+                                    userList.Add(id);
+                                    carList.Add(new Car(@"Mustang\mustang-textured-scale_mini", @"Mustang\one_wheel_corected_normals_recenterd", new Vector3(float.Parse(unParsedData[2]), float.Parse(unParsedData[3]), float.Parse(unParsedData[4])), space, id));
+                                    Console.WriteLine(carList.Count);
+                                }
+                                else
+                                {
+                                    object o = carList[index];
+                                    c = o as Car;
+                                    c.setCarPos(new Vector3(float.Parse(unParsedData[3]), float.Parse(unParsedData[4]), float.Parse(unParsedData[5])), new Quaternion(float.Parse(unParsedData[6]), float.Parse(unParsedData[7]), float.Parse(unParsedData[8]), float.Parse(unParsedData[9])));
+                                    c.accelerate(float.Parse(unParsedData[10]));
+                                }
+                            }
+                            if (c != null)
+                            {
+                                int powerup = int.Parse(unParsedData[2]);
+                                switch (powerup)
+                                {
+                                    case 1:
+                                        c.addPowerUp("SpeedBoost");
+                                        break;
+                                    case 2:
+                                        c.addPowerUp("Missile");
+                                        break;
+                                    case 3:
+                                        c.addPowerUp("LightsOut");
+                                        break;
+                                    case 4:
+                                        c.addPowerUp("SmookeScreen");
+                                        break;
+                                    default:
+                                        break;
+                                }
+                                c.usePowerUp();
                             }
                         }
                         break;

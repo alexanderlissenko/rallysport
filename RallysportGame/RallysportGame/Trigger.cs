@@ -76,19 +76,35 @@ namespace RallysportGame
         void Events_PairRemoved(EntityCollidable sender, BroadPhaseEntry other)
         {
             var otherEnt = other as EntityCollidable;
-            if (otherEnt.Entity.Tag.Equals("Player Car"))
+            string[] temp = null;
+            if (otherEnt.Entity.Tag != null)
             {
-                triggerHappend = false;
+                temp = otherEnt.Entity.Tag.ToString().Split();
+
+                if (temp[0].Equals("Player"))
+                {
+                    triggerHappend = false;
+                }
             }
         }
 
         void Events_PairCreated(EntityCollidable sender, BroadPhaseEntry other, NarrowPhasePair pair)
         {
             var otherEnt = other as EntityCollidable;
-            if (!triggerHappend && otherEnt.Entity.Tag.Equals("Player Car"))
+            string[] temp = null;
+            if (otherEnt.Entity.Tag != null)
             {
-                TriggerHandler.triggerEvent(sender.Entity.Tag.ToString(),otherEnt.Entity.Tag.ToString());
-                triggerHappend = !triggerHappend;
+                temp = otherEnt.Entity.Tag.ToString().Split();
+            
+                if (!triggerHappend && otherEnt.Entity.Tag.Equals("Player Car"))
+                {
+                    TriggerHandler.triggerEvent(sender.Entity.Tag.ToString(),otherEnt.Entity.Tag.ToString());
+                    triggerHappend = !triggerHappend;
+                }
+                else if(!triggerHappend && temp[0].Equals("Player"))
+                {
+                    triggerHappend = !triggerHappend;
+                }
             }
         }
 
