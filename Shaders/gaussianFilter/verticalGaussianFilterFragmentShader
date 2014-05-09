@@ -21,9 +21,9 @@ void main()
     tc = texture(diffuseTex, uv).rgb * weight[0];
     for (int i=1; i < 3; i++) 
     {
-      tc += texture(diffuseTex, uv + vec2(0.0, offset[i])/rt_h).rgb * weight[i];
+      tc += texture(diffuseTex, (uv + vec2(0.0, offset[i])/rt_h)).rgb * weight[i];
       
-      tc += texture(diffuseTex, uv - vec2(0.0, offset[i])/rt_h).rgb * weight[i];
+      tc += texture(diffuseTex, (uv - vec2(0.0, offset[i])/rt_h)).rgb * weight[i];
     }
 
   fragColor = vec4(tc, 1.0);

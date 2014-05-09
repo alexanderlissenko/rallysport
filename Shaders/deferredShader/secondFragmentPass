@@ -146,7 +146,7 @@ void main(void)
 	
 	
    
-		shading = ambient*scene_ambient_light//*occlusion
+		shading = ambient*scene_ambient_light*occlusion
 				+ (calculateSpecular(scene_light, fresnelSpecular,material_shininess,normal.xyz,directionToLight,directionFromEye)
 				+ calculateDiffuse(scene_light,diffuse.xyz,normal.xyz,directionToLight))*visibility;
 					
@@ -218,7 +218,7 @@ void main(void)
 // fragColor = diffuse;
 // fragColor = vec4(shininess,normal.a,normal.a,1);
 // fragColor = vec4(visibility);
-// fragColor = vec4(depth.x);
+// fragColor = vec4(depth.x,depth.x,depth.x,1);
 // fragColor = vec4(screenPos.xyz,1); // Scaling may be needed to range [0,1]
 // fragColor = light*vec4(1,1,1,1);
 // fragColor = vec4(1,1,1,occlusion);
