@@ -59,6 +59,8 @@ namespace RallysportGame
         public List<Material> matList;
        
 
+        public float scale;
+
         /// <summary>
         /// Constructor for Entity
         /// Make sure that the .obj file and .mtl is named the same
@@ -79,7 +81,7 @@ namespace RallysportGame
             matList = new List<Material>();
             setUpMultMtl();
             setUpMultText();
-            
+            scale = 1;
         }
 
         public Entity(String name, OpenTK.Vector3 position): this(name)
@@ -308,10 +310,10 @@ namespace RallysportGame
 
         }
 
-
+ 
         public void setCoordiants(float world_x,float world_y,float world_z)
         {
-            modelMatrix =Matrix4.Translation(world_x,world_y,world_z);
+            modelMatrix =Matrix4.Translation(world_x,world_y,world_z) + Matrix4.CreateScale(scale);
         }
 
 

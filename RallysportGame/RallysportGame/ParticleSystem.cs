@@ -64,6 +64,7 @@ namespace RallysportGame
             frustumDir = frustomDirIn;
             int capacity = (int)Math.Ceiling(meanLiveTime.Seconds * spawnRate* 150.0f); // *10 * 1.5  10 bechus it's in milli seconds and 1.5 bechus of margins
             particleList = new ArrayList(capacity); //might be bad, if memory seems suspicious, double check
+            particleObject.scale=1;
         }
        
         /// <summary>
@@ -138,7 +139,7 @@ namespace RallysportGame
         { 
             foreach(Particle p in particleList){
                 particleObject.setCoordiants(p.GetPosition().X, p.GetPosition().Y, p.GetPosition().Z);
-
+                
                 particleObject.firstPass(program,projectionMatrix,viewMatrix);
                 
             }
@@ -269,6 +270,7 @@ namespace RallysportGame
         
         }
 
+        public void setScale(float inScale){particleObject.scale=inScale;}
         #endregion
 
     }

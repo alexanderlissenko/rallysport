@@ -1387,12 +1387,7 @@ namespace RallysportGame
             playerCar.tick();
             
             //playerCar.exhaust.tick();
-           Vector3 temp = new Vector3(0.3f, -0.2f, 3f);
-           Quaternion temp2 = playerCar.getCarAngle();
-           Vector3.Transform(ref temp, ref temp2, out temp);
-           
-           playerCar.exhaust.move(Utilities.ConvertToTK(playerCar.carHull.Position)+temp,temp);
-           playerCar.exhaust.tick();
+
         }
         #endregion
 
