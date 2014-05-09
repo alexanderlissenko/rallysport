@@ -240,7 +240,7 @@ namespace RallysportGame
                     if (m.update())
                     {
                         renderPower = false;
-                        //powerUpSlot="None";
+                        powerUpSlot="None";
                     }
 
                 }
