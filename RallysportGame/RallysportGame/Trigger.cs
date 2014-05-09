@@ -77,13 +77,14 @@ namespace RallysportGame
         {
             var otherEnt = other as EntityCollidable;
             string[] temp = null;
-            if (otherEnt.Tag != null)
+            if (otherEnt.Entity.Tag != null)
             {
-                temp = otherEnt.Tag.ToString().Split();
-            }
-            if (temp[0].Equals("Player"))
-            {
-                triggerHappend = false;
+                temp = otherEnt.Entity.Tag.ToString().Split();
+
+                if (temp[0].Equals("Player"))
+                {
+                    triggerHappend = false;
+                }
             }
         }
 
@@ -91,18 +92,19 @@ namespace RallysportGame
         {
             var otherEnt = other as EntityCollidable;
             string[] temp = null;
-            if (otherEnt.Tag != null)
+            if (otherEnt.Entity.Tag != null)
             {
-                temp = otherEnt.Tag.ToString().Split();
-            }
-            if (!triggerHappend && otherEnt.Entity.Tag.Equals("Player Car"))
-            {
-                TriggerHandler.triggerEvent(sender.Entity.Tag.ToString(),otherEnt.Entity.Tag.ToString());
-                triggerHappend = !triggerHappend;
-            }
-            else if(!triggerHappend && temp[0].Equals("Player"))
-            {
-                triggerHappend = !triggerHappend;
+                temp = otherEnt.Entity.Tag.ToString().Split();
+            
+                if (!triggerHappend && otherEnt.Entity.Tag.Equals("Player Car"))
+                {
+                    TriggerHandler.triggerEvent(sender.Entity.Tag.ToString(),otherEnt.Entity.Tag.ToString());
+                    triggerHappend = !triggerHappend;
+                }
+                else if(!triggerHappend && temp[0].Equals("Player"))
+                {
+                    triggerHappend = !triggerHappend;
+                }
             }
         }
 
