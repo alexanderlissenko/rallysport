@@ -399,7 +399,7 @@ namespace RallysportGame
             wheels[1].Orientation = rot;
             wheels[2].Orientation = rot;
             wheels[3].Orientation = rot;
-
+            
         }
 
         public OpenTK.Quaternion getCarAngle()
@@ -414,6 +414,15 @@ namespace RallysportGame
         public void AddToSpace(Space s)
         {
             s.Add(carHull);
+        }
+
+        public void deleteCarFromSpace()
+        {
+            space.Remove(carHull);
+            foreach(BEPUphysics.Entities.Entity w in wheels)
+            {
+                space.Remove(w);
+            }
         }
 
        public void renderBackLight(int program, Entity renderTarget)

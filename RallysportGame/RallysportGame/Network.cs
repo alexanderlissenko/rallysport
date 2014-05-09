@@ -36,7 +36,7 @@ namespace RallysportGame
             networkStarted = false;
             this.space = space;
             userList = new ArrayList();
-            IPAddress localIp = IPAddress.Parse("127.0.0.1");//getLocalIp();//
+            IPAddress localIp = getLocalIp();//IPAddress.Parse("127.0.0.1");//
             socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             
             IPEndPoint localEP = new IPEndPoint(localIp, 11245);
@@ -230,6 +230,8 @@ namespace RallysportGame
                     case "2":
                         id = int.Parse(unParsedData[1]);
                         index = userList.IndexOf(id);
+                        Car c = carList[index] as Car;
+                        c.deleteCarFromSpace();
                         carList.RemoveAt(index);
                         userList.Remove(id);
                         if (int.Parse(unParsedData[2]) == userId)

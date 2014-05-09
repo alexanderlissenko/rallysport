@@ -957,6 +957,10 @@ namespace RallysportGame
                 *This is where you should render all objects that is to be turned smoky in the next step   *
                 ********************************************************************************************/
             playerCar.exhaust.firstPass(firstPassShader, projectionMatrix, viewMatrix);
+            foreach(Car c in otherCars)
+            {
+                c.exhaust.firstPass(firstPassShader, projectionMatrix, viewMatrix);
+            }
             megaParticles.firstPass(firstPassShader, projectionMatrix, viewMatrix);
             //environment.firstPass(firstPassShader, projectionMatrix, viewMatrix);
 
@@ -1101,6 +1105,10 @@ namespace RallysportGame
             //Render Car Lights
             playerCar.renderBackLight(secondPassShader, plane);
 
+            foreach(Car c in otherCars)
+            {
+                c.renderBackLight(secondPassShader, plane);
+            }
 
             //for (int i = 0; i < 100; i++ )
             //plane.pointLight(secondPassShader, new Vector3(0.0f, 1.0f, 0.0f), new Vector3(1, 0, 0), 10.0f);
