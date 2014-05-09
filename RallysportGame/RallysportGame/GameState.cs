@@ -234,7 +234,7 @@ namespace RallysportGame
                         break;
                     case Key.S:
                         if (RaceState.getCurrentState() == RaceState.States.RACING)
-                            playerCar.accelerate(-5f);
+                            playerCar.accelerate(-1f);
                         break;
                     case Key.P:
                         playerCar.usePowerUp();
