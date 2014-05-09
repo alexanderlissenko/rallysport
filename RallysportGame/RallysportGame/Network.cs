@@ -150,9 +150,42 @@ namespace RallysportGame
         public void sendStart()
         {
             IPEndPoint endpoint = new IPEndPoint(multicastAddr, 11245);
-            byte[] msg = Encoding.UTF8.GetBytes("4;0");
+            byte[] msg = Encoding.UTF8.GetBytes("4;"+userId+";0;");
             Console.WriteLine("raceing starts");
             socket.SendTo(msg, endpoint);
+        }
+        public void sendFinish()
+        {
+            IPEndPoint endpoint = new IPEndPoint(multicastAddr, 11245);
+            byte[] msg = Encoding.UTF8.GetBytes("4;" + userId + ";1;");
+            Console.WriteLine("Finish!");
+            socket.SendTo(msg, endpoint);
+        }
+        public void sendPowerUp(string powerup, Vector3 vector, Quaternion rot, float acceleration)
+        {
+            int powerupInt = -1;
+            switch(powerup)
+            {
+                case "SpeedBoost":
+                    powerupInt = 1;
+                    break;
+                case "Missile":
+                    powerupInt = 2;
+                    break;
+                case "LightsOut":
+                    powerupInt = 3;
+                    break;
+                default:
+                    break;
+
+            }
+            if (powerupInt != -1)
+            {
+                IPEndPoint endpoint = new IPEndPoint(multicastAddr, 11245);
+                byte[] msg = Encoding.UTF8.GetBytes("3;" + userId + ";" + powerupInt + ";" + vector.X + ";" + vector.Y + ";" + vector.Z + ";" + rot.X + ";" + rot.Y + ";" + rot.Z + ";" + rot.W + ";" + acceleration + ";");
+                Console.WriteLine("Finish!");
+                socket.SendTo(msg, endpoint);
+            }
         }
 
         public void recieveData(ref ArrayList carList)
@@ -222,10 +255,31 @@ namespace RallysportGame
                         }
                         break;
                     case "4":
-                        int trigger = int.Parse(unParsedData[1]);
+                        int trigger = int.Parse(unParsedData[2]);
                         if (trigger == 0)
                         {
                             RaceState.StartRace(car,ref carList);
+                        }
+                        if (trigger == 1)
+                        {
+                            Console.WriteLine("player " + int.Parse(unParsedData[1]) + "has past the finnish line");
+                        }
+                        if(trigger == 2)
+                        {
+                            int powerup = int.Parse(unParsedData[3]);
+                            switch (powerup)
+                            {
+                                case 0:
+                                    break;
+                                case 1:
+                                    break;
+                                case 2:
+                                    break;
+                                case 3:
+                                    break;
+                                default:
+                                    break;
+                            }
                         }
                         break;
                     default:

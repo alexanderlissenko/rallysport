@@ -986,7 +986,7 @@ namespace RallysportGame
             GL.Viewport(0, 0, w, h);
             DrawBuffersEnum[] draw_buffs = { DrawBuffersEnum.ColorAttachment0, DrawBuffersEnum.ColorAttachment1, DrawBuffersEnum.ColorAttachment2, DrawBuffersEnum.ColorAttachment3 };
             GL.DrawBuffers(4, draw_buffs);
-            GL.ClearColor(1.0f, 0f, 0f, 0.1f);
+            GL.ClearColor(0.0f, 0f, 0f, 0.1f);
             GL.ClearDepth(1.0f);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.DepthMask(true);

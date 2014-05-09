@@ -473,29 +473,27 @@ namespace RallysportGame
 
        public void usePowerUp()
        {
-                renderPower = true; 
+            renderPower = true; 
 
-           if (powerUpSlot.Equals("SpeedBoost"))
-            {
-
+            if (powerUpSlot.Equals("SpeedBoost"))
+            {                
                 Console.WriteLine("Timer started: 20s");
                 
                 timerBoost(20);
-               
-
-           }
-           else if (powerUpSlot.Equals("Missile"))
-           {
+            }
+            else if (powerUpSlot.Equals("Missile"))
+            {
                 
             }
-           else if (powerUpSlot.Equals("LightsOut"))
+            else if (powerUpSlot.Equals("LightsOut"))
             {
 
             }
             else
             {
-               powerUpSlot = "None";
+                powerUpSlot = "None";
             }
+            Network.getInstance().sendPowerUp(powerUpSlot, getCarPos(), getCarAngle(), carRate);
        }
 
         //stops the timer after 20 s
