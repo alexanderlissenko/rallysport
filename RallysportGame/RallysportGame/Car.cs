@@ -48,7 +48,7 @@ namespace RallysportGame
         // Friction coefficient, material-dependent
         private float friction_coefficient = 0.8f;
         // Do the wheels have contact with the ground?
-        private bool ground_contact = true;
+        private bool ground_contact = false;
         int counter = 0;
         private float speed=0;
 
@@ -153,8 +153,8 @@ namespace RallysportGame
             carHull.CollisionInformation.Events.CollisionEnded += new CollisionEndedEventHandler<EntityCollidable>(CollisionEnded);
             foreach (BEPUphysics.Entities.Entity w in wheels)
             {
-                w.CollisionInformation.Events.ContactCreated += new ContactCreatedEventHandler<EntityCollidable>(ContactCreated);
-                w.CollisionInformation.Events.PairTouched += new PairTouchedEventHandler<EntityCollidable>(PairTouched);
+                w.CollisionInformation.Events.ContactCreated += new ContactCreatedEventHandler<EntityCollidable>(ContactWheelCreated);
+                w.CollisionInformation.Events.CollisionEnded += new CollisionEndedEventHandler<EntityCollidable>(CollisionWheelEnded);
                 w.PositionUpdated += new Action<BEPUphysics.Entities.Entity>(PositionUpdated);
             }
             Console.WriteLine("car has id " + carHull.InstanceId);
@@ -248,44 +248,47 @@ namespace RallysportGame
         public void accelerate(float rate)
         {
             carRate = rate;
-            if (rate > 0)
+            if (ground_contact)
             {
-                drivingMotor1.Settings.VelocityMotor.GoalVelocity = 10;
-                drivingMotor2.Settings.VelocityMotor.GoalVelocity = 10;
-                backMotor1.Settings.VelocityMotor.GoalVelocity = 10;
-                backMotor2.Settings.VelocityMotor.GoalVelocity = 10;
+                if (rate > 0)
+                {
+                    drivingMotor1.Settings.VelocityMotor.GoalVelocity = 10;
+                    drivingMotor2.Settings.VelocityMotor.GoalVelocity = 10;
+                    backMotor1.Settings.VelocityMotor.GoalVelocity = 10;
+                    backMotor2.Settings.VelocityMotor.GoalVelocity = 10;
 
-                drivingMotor1.IsActive = true;
-                drivingMotor2.IsActive = true;
-                backMotor1.IsActive = true;
-                backMotor2.IsActive = true;
-            }
-            else if (rate < 0)
-            {
-                drivingMotor1.Settings.VelocityMotor.GoalVelocity = -10;
-                drivingMotor2.Settings.VelocityMotor.GoalVelocity = -10;
-                backMotor1.Settings.VelocityMotor.GoalVelocity = -10;
-                backMotor2.Settings.VelocityMotor.GoalVelocity = -10;
+                    drivingMotor1.IsActive = true;
+                    drivingMotor2.IsActive = true;
+                    backMotor1.IsActive = true;
+                    backMotor2.IsActive = true;
+                }
+                else if (rate < 0)
+                {
+                    drivingMotor1.Settings.VelocityMotor.GoalVelocity = -10;
+                    drivingMotor2.Settings.VelocityMotor.GoalVelocity = -10;
+                    backMotor1.Settings.VelocityMotor.GoalVelocity = -10;
+                    backMotor2.Settings.VelocityMotor.GoalVelocity = -10;
 
-                drivingMotor1.IsActive = true;
-                drivingMotor2.IsActive = true;
-                backMotor1.IsActive = true;
-                backMotor2.IsActive = true;
-            }
-            else
-            {
-                drivingMotor1.IsActive = false;
-                drivingMotor2.IsActive = false;
-                backMotor1.IsActive = false;
-                backMotor2.IsActive = false;
-            }
-            
-            Vector3 leftRot;
-            Quaternion rot2 = carHull.Orientation;
-            Vector3.Transform(ref forward, ref rot2, out leftRot);
+                    drivingMotor1.IsActive = true;
+                    drivingMotor2.IsActive = true;
+                    backMotor1.IsActive = true;
+                    backMotor2.IsActive = true;
+                }
+                else
+                {
+                    drivingMotor1.IsActive = false;
+                    drivingMotor2.IsActive = false;
+                    backMotor1.IsActive = false;
+                    backMotor2.IsActive = false;
+                }
 
-            Vector3.Multiply(ref leftRot, rate *0.8f, out acceleration);
-            carHull.LinearVelocity += Utilities.ConvertToBepu(acceleration);
+                Vector3 leftRot;
+                Quaternion rot2 = carHull.Orientation;
+                Vector3.Transform(ref forward, ref rot2, out leftRot);
+
+                Vector3.Multiply(ref leftRot, rate * 0.8f, out acceleration);
+                carHull.LinearVelocity += Utilities.ConvertToBepu(acceleration);
+            }
         }
 
         public void networkAccel(float rate)
@@ -561,6 +564,17 @@ namespace RallysportGame
 
         protected void CollisionEnded(EntityCollidable sender, Collidable other, CollidablePairHandler pair)
         {
+            //Console.WriteLine("Collision Ended");
+        }
+        protected void ContactWheelCreated(EntityCollidable sender, Collidable other, CollidablePairHandler pair, ContactData contact)
+        {
+            ground_contact = true;
+            //Console.WriteLine("Contact! " + sender.Entity.InstanceId + " and " + other);
+        }
+
+        protected void CollisionWheelEnded(EntityCollidable sender, Collidable other, CollidablePairHandler pair)
+        {
+            ground_contact = false;
             //Console.WriteLine("Collision Ended");
         }
 

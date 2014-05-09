@@ -264,6 +264,9 @@ namespace RallysportGame
                     case Key.K:
                         megaParticles.startEmit();
                         break;
+                    case Key.Q:
+                        Console.WriteLine(playerCar.carHull.Position);
+                        break;
                     default:
                         break;
                 }
@@ -530,7 +533,16 @@ namespace RallysportGame
             //SETUP TRIGGERS
                     
             TriggerManager.initTriggers(collisionHandler.space, environment);
-            TriggerManager.addPowerUp(new BEPUutilities.Vector3(200, 0, -250));
+            TriggerManager.addPowerUp(new BEPUutilities.Vector3(280, 0.9f, -238.5f));
+            TriggerManager.addPowerUp(new BEPUutilities.Vector3(200, -0.25f, 308));
+            TriggerManager.addPowerUp(new BEPUutilities.Vector3(52.5f, 62, -459.7f));
+            TriggerManager.addPowerUp(new BEPUutilities.Vector3(23.7f, 1.5f, -295));
+            TriggerManager.addPowerUp(new BEPUutilities.Vector3(3.6f, -6.8f, -164.5f));
+            TriggerManager.addPowerUp(new BEPUutilities.Vector3(-198, 2, -119));
+            TriggerManager.addPowerUp(new BEPUutilities.Vector3(-192, 21, 104));
+            TriggerManager.addPowerUp(new BEPUutilities.Vector3(-255, -7.8f, 335));
+            TriggerManager.addPowerUp(new BEPUutilities.Vector3(33, 2, 318));
+            TriggerManager.addPowerUp(new BEPUutilities.Vector3(218, 0.7f, 311));
             BEPUutilities.Vector3[] checkpoints = {new Vector3(150, 0, 300), new Vector3(150, 0, -300)} ;
             TriggerManager.addGoal(checkpoints);
             TriggerHandler.connectCar(ref playerCar);
