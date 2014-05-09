@@ -313,7 +313,9 @@ namespace RallysportGame
  
         public void setCoordiants(float world_x,float world_y,float world_z)
         {
-            modelMatrix =Matrix4.Translation(world_x,world_y,world_z) + Matrix4.CreateScale(scale);
+            modelMatrix = Matrix4.Identity * Matrix4.CreateScale(scale);
+            modelMatrix *= Matrix4.Translation(world_x, world_y, world_z);
+            //modelMatrix *= Matrix4.CreateScale(scale);
         }
 
 
