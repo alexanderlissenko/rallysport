@@ -31,7 +31,7 @@ namespace RallysportGame
 
         public static void addPowerUp(BEPUutilities.Vector3 pos)
         {
-            Trigger powerUp = new Trigger("Cube\\3ds-cube", pos, "powerUp", space, world.bepu_mesh);
+            Trigger powerUp = new Trigger("Cube\\testCube", pos, "powerUp", space, world.bepu_mesh);
 
             powerUps.Add(powerUp);
         }
