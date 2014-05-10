@@ -57,6 +57,7 @@ namespace RallysportGame
         public MeshData mesh;
 
         public List<Material> matList;
+        public Dictionary<string, int> textureLookup;
        
 
         public float scale;
@@ -539,15 +540,31 @@ namespace RallysportGame
         /// </summary>
         public void setUpMultText()
         {
+            textureLookup = new Dictionary<string,int>();
             foreach(Material m in matList)
             {
                 if(!(m.getTexturePath() == null))
                 {
-                    m.setTexture(loadTextureMult(m.getTexturePath()));
+                    if (!textureLookup.ContainsKey(m.getTexturePath()))
+                    {
+                        m.setTexture(loadTextureMult(m.getTexturePath()));
+                    }
+                    else
+                    {
+                        m.setTexture(textureLookup[m.getTexturePath()]);
+                    }
                 }
                 if (!(m.getNormalTexturePath() == null))
                 {
-                    m.setNormalTexture(loadTextureMult(m.getNormalTexturePath()));
+                    if (!textureLookup.ContainsKey(m.getNormalTexturePath()))
+                    {
+                        
+                        m.setNormalTexture(loadTextureMult(m.getNormalTexturePath()));
+                    }
+                    else
+                    {
+                        m.setNormalTexture(textureLookup[m.getNormalTexturePath()]);
+                    }
                 }
             }
         }
@@ -678,6 +695,7 @@ namespace RallysportGame
 
             
             GL.BindTexture(TextureTarget.Texture2D, 0);
+            textureLookup.Add(texPath, texture);
             return texture;
         }
 
