@@ -181,6 +181,7 @@ namespace RallysportGame
             : this(bodyPath, wheelPath, pos, space)
         {
            this.userid = userid;
+           carHull.Tag = "Player Car " + userid;
         }
 
         #endregion
