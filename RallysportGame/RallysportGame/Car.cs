@@ -466,8 +466,8 @@ namespace RallysportGame
            Vector3 test;
            Vector3.Transform(ref front, ref rot, out test);
            test.Normalize();
-           renderTarget.spotLight(program, Utilities.ConvertToTK(carHull.WorldTransform.Translation) + rightRot, test, new Vector3(1, 1, 1), 125, (float)Math.Cos(BEPUutilities.MathHelper.Pi /8));
-           renderTarget.spotLight(program, Utilities.ConvertToTK(carHull.WorldTransform.Translation) + leftRot, test, new Vector3(1, 1, 1), 125, (float)Math.Cos(BEPUutilities.MathHelper.Pi / 8));
+           renderTarget.spotLight(program, Utilities.ConvertToTK(carHull.WorldTransform.Translation) + rightRot, test, new Vector3(0.6f, 0.6f, 0.6f), 125, (float)Math.Cos(BEPUutilities.MathHelper.Pi / 8));
+           renderTarget.spotLight(program, Utilities.ConvertToTK(carHull.WorldTransform.Translation) + leftRot, test, new Vector3(0.6f, 0.6f, 0.6f), 125, (float)Math.Cos(BEPUutilities.MathHelper.Pi / 8));
 
 
         }

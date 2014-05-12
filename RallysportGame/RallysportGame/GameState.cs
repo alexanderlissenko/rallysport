@@ -224,11 +224,11 @@ namespace RallysportGame
                             //if speedboost active, accelerate 10f for 20 s
                             if (playerCar.getPowerUp().Equals("SpeedBoost") && playerCar.boostActive())
                             {
-                                playerCar.accelerate(10f);
+                                playerCar.accelerate(3f);
                             }
                             else
                             {
-                            playerCar.accelerate(1f);
+                            playerCar.accelerate(2f);
                                 //Console.WriteLine("Boost not active");
                             }
                         }
