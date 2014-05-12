@@ -674,6 +674,8 @@ namespace RallysportGame
 
             int texture = GL.GenTexture();
             GL.BindTexture(Target, texture);
+            if (GL.GetError() != ErrorCode.NoError)
+                throw new Exception("Error loading texture " + filename);
             GL.PixelStore(PixelStoreParameter.UnpackAlignment, 1);
             GL.TexEnv(TextureEnvTarget.TextureEnv, TextureEnvParameter.TextureEnvMode, (int)All.Modulate);
 
