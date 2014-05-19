@@ -967,8 +967,9 @@ namespace RallysportGame
             #endregion
             #region from balls to smoke
             gaussBlurr.gaussianBlurr(megaPartTex, w, h, projectionMatrix, viewMatrix);
+            gaussBlurr.gaussianBlurr(megaPartDepth, w, h, projectionMatrix, viewMatrix);
 
-            /************************************************************************************************************
+            /***********************************************************************************************************
                 * The reson the depth is placed in a different texture is that I could not get it to work another whay.    *
                 * The reson that we make a new variable to put this new texture into is simply that we need the old depth  *
                 *  texture for the next time around                                                                        *
