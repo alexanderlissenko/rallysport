@@ -56,17 +56,17 @@ namespace RallysportGame
             {
                 if(Network.getInstance().getUserID() < (int)Network.getInstance().getUserList()[i]&& !playerAdded)
                 {
-                    playerCar.setCarPos(new Vector3(182, 2, -6 + i*2));
+                    playerCar.setCarPos(new Vector3(182, 2, -6 + i*10));
                     playerAdded = true;
-                    offset = 3;
+                    offset = 10;
                 }
                 object o = carList[i];
                 Car c = o as Car;
-                c.setCarPos(new Vector3(182, 2, -6+ i*4 + offset));
+                c.setCarPos(new Vector3(182, 2, -6+ i*10 + offset));
             }
             if(!playerAdded)
             {
-                playerCar.setCarPos(new Vector3(182, 2, -6 + 4*carList.Count));
+                playerCar.setCarPos(new Vector3(182, 2, -6 + 10*carList.Count));
             }
             setCurrentState(States.PRESTART);
             GameTimer.countDown(5);
