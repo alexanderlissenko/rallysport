@@ -518,6 +518,8 @@ namespace RallysportGame
             unitSphere = new Entity("Cube\\unitSphere");
             myCar2 = new Entity("Cube\\inside_koob");
 
+            Camera.initCamera(playerCar.carHull);
+
             superSphere.setUpMultMtl();
             superSphere.setUpMultText();
             skybox.skyboxScale();
@@ -908,8 +910,8 @@ namespace RallysportGame
             rot2.Z = 0;
             rot2.X = rot2.X*0.5f;
             Vector3.Transform(ref back, ref rot2, out behindcar);
-            
-            Vector3 camera_position = sphericalToCartesian(camera_theta, camera_phi, camera_r, playerCar.getCarPos());//playerCar.getCarPos()+ behindcar;//
+
+            Vector3 camera_position = Camera.position;//playerCar.getCarPos()+ behindcar;//sphericalToCartesian(camera_theta, camera_phi, camera_r, playerCar.getCarPos());//
             //camera_lookAt = new Vector3(0.0f, camera_target_altitude, 0.0f);
             Vector3 camera_lookAt = playerCar.getCarPos();// new Vector3(0, 0, 0);//Vector4.Transform(camera_lookAt, camera_rotation_matrix);//new Vector3(0.0f, 0.0f, 0.0f);//
             Matrix4 viewMatrix = Matrix4.LookAt(camera_position, camera_lookAt, up);
@@ -968,8 +970,9 @@ namespace RallysportGame
             #endregion
             #region from balls to smoke
             gaussBlurr.gaussianBlurr(megaPartTex, w, h, projectionMatrix, viewMatrix);
+            gaussBlurr.gaussianBlurr(megaPartDepth, w, h, projectionMatrix, viewMatrix);
 
-            /************************************************************************************************************
+            /***********************************************************************************************************
                 * The reson the depth is placed in a different texture is that I could not get it to work another whay.    *
                 * The reson that we make a new variable to put this new texture into is simply that we need the old depth  *
                 *  texture for the next time around                                                                        *
@@ -1312,6 +1315,7 @@ namespace RallysportGame
             }
             //Network
             camera_rotation_matrix = Matrix4.Identity;
+            Camera.Update();
             // add game logic, input handling
             #region extrakeys
             if (gameWindow.Keyboard[Key.Escape])

@@ -64,7 +64,7 @@ namespace RallysportGame
         private float maximumTurnAngle = BEPUutilities.MathHelper.Pi * 0.2f;
         private BEPUutilities.Vector3 testDir;
 
-        private static String powerUpSlot = "Missile";
+        private static String powerUpSlot = "SpeedBoost";
         private bool renderPower = false;
         static System.Timers.Timer boostTime;
         private static bool boostTimeActive = false;
@@ -173,7 +173,7 @@ namespace RallysportGame
             }
             Console.WriteLine("car has id " + carHull.InstanceId);
             m = new Missile(@"Missile", new Vector3(0, -200, 0), space);
-            exhaust = new ParticleSystem(new Entity(@"Cube\\smoke"), carHull.Position, -carHull.LinearVelocity, (60f * 3.14f / 180f), 10, 0.006f, new Vector3(0f, 0.000001f, 0f), new TimeSpan(0, 0, 1));
+            exhaust = new ParticleSystem(new Entity(@"Cube\\smoke"), carHull.Position, -carHull.LinearVelocity, (20f * 3.14f / 180f), 20, 0.1f, new Vector3(0f, 0f, 0f), new TimeSpan(0, 0, 1));
             exhaust.setScale(0.5f);
             exhaust.setThrottle(1);
         }
@@ -278,11 +278,18 @@ namespace RallysportGame
             #endregion
 
 
-            Vector3 temp1 = new Vector3(0.3f, -0.2f, 3f);
+            Vector3 temp1 = new Vector3(0.3f, -0.1f, 3f);
+            Vector3 temp3 = new Vector3(0f, 0f, -1f);
             Quaternion temp2 = getCarAngle();
+            
             Vector3.Transform(ref temp1, ref temp2, out temp1);
+            Vector3.Transform(ref temp3, ref temp2, out temp3);
 
-            exhaust.move(Utilities.ConvertToTK(carHull.Position) + temp1, temp1);
+            temp3 = Vector3.Normalize(temp3);
+
+            System.Console.WriteLine(carHull.LinearVelocity.Length());
+            exhaust.setThrottle((float)Math.Floor((double)carHull.LinearVelocity.Length())/10);
+            exhaust.move(Utilities.ConvertToTK(carHull.Position) + temp1, carHull.LinearVelocity);
             exhaust.tick();
 
         }

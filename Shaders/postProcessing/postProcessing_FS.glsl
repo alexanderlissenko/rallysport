@@ -27,7 +27,7 @@ void main()
 	float depth = texture(postDepth,pos).x;
     float depth2 = texture(megaPartDepth,pos).x;
 	float offsetDepth;
-   if(depth.x == 1)
+   if(depth.x == 1 && depth2 == 1)
    {
 	result = vec4(texture2D(skyboxTex,pos).xyz,1);
    }

@@ -50,8 +50,7 @@ namespace RallysportGame
         {
 
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, FBO);
-            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, texture, 0);
-                      
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, texture, 0);          
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, FBO2);
             GL.UseProgram(filter);
             GL.Viewport(0, 0, width, height);
@@ -66,13 +65,16 @@ namespace RallysportGame
             GL.BindTexture(TextureTarget.Texture2D, perlinTexture);
             GL.ActiveTexture(TextureUnit.Texture1);
             GL.BindTexture(TextureTarget.Texture2D, texture);
+            GL.ActiveTexture(TextureUnit.Texture2);
+            GL.BindTexture(TextureTarget.Texture2D, depthTex);
 
 
 
 
             GL.Uniform1(GL.GetUniformLocation(filter, "perlinTexture"), 0);
             GL.Uniform1(GL.GetUniformLocation(filter, "megaTexture"), 1);
-
+            GL.Uniform1(GL.GetUniformLocation(filter, "depth"), 2);
+            
 
             Vector2 screanSizeVec = new Vector2(width, height);
             Vector2 perlinSizeVec = new Vector2(perlinWidth, perlinHeight);
@@ -113,10 +115,13 @@ namespace RallysportGame
             GL.BindTexture(TextureTarget.Texture2D, perlinTexture);
             GL.ActiveTexture(TextureUnit.Texture1);
             GL.BindTexture(TextureTarget.Texture2D, depthTex);
+            GL.ActiveTexture(TextureUnit.Texture2);
+            GL.BindTexture(TextureTarget.Texture2D, depthTex);
 
 
             GL.Uniform1(GL.GetUniformLocation(filter, "perlinTexture"), 0);
             GL.Uniform1(GL.GetUniformLocation(filter, "megaTexture"), 1);
+            GL.Uniform1(GL.GetUniformLocation(filter, "depth"), 2);
 
             GL.Uniform2(GL.GetUniformLocation(filter, "screenSize"), ref screanSizeVec);
             GL.Uniform2(GL.GetUniformLocation(filter, "perlinSize"), ref perlinSizeVec);

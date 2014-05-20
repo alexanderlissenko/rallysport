@@ -68,7 +68,7 @@ namespace RallysportGame
         {
             Random randomGen = new Random();
 
-            switch(randomGen.Next(3))
+            switch(randomGen.Next(4))
             {
                 case 0:
                     Console.WriteLine("Missile!");
@@ -81,9 +81,14 @@ namespace RallysportGame
                 case 2:
                     Console.WriteLine("Lights out!");
                     break;
+                case 3:
+                    Console.WriteLine("SmookeScreen!");
+                    car.addPowerUp("SmookeScreen");
+                    break;
                 default:
                     Console.WriteLine("Not added");
                     break;
+
             }
 
         }

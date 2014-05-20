@@ -79,6 +79,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Audio.cs" />
+    <Compile Include="Camera.cs" />
     <Compile Include="Car.cs" />
     <Compile Include="CarWheel.cs" />
     <Compile Include="Missile.cs" />
