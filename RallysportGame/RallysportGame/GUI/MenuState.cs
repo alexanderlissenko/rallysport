@@ -31,7 +31,7 @@ namespace RallysportGame.GUI
         private const int MAX_WIDTH = 600; //determines the max allowed width for the textRowMenu
         private const int TEXT_SIZE = 70; //80
         private const float LINE_SPACE = 1.3f;
-        private const int VERTICAL_OFFSET = 0;
+        private const int VERTICAL_OFFSET = 110;
         private KeyboardDevice keyBoard;
 
         public MenuState()
