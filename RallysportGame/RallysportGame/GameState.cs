@@ -13,6 +13,7 @@ using OpenTK.Input;
 using BEPUphysics.Vehicle;
 using System.Threading;
 using System.Timers;
+using QuickFont;
 
 
 
@@ -1346,6 +1347,15 @@ namespace RallysportGame
 
             #endregion
 
+
+            // DRAW HUD
+
+            GL.Disable(EnableCap.DepthTest);
+
+            
+
+            GL.Enable(EnableCap.DepthTest);
+            //
             GL.End();
 
             gameWindow.SwapBuffers();

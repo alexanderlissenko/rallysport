@@ -28,7 +28,7 @@ namespace RallysportGame
 
             offsetFromEntity = new Vector3(0, 5, 15);
 
-            distanceToTarget = 15.7f;
+            distanceToTarget = 10.7f;
 
             chaseCameraMargin = 1;
 
@@ -71,7 +71,7 @@ namespace RallysportGame
         {
             bool transformOffset = false;
 
-            Vector3 offset = transformOffset ? Matrix3x3.Transform(offsetFromEntity, chasedEntity.OrientationMatrix) : offsetFromEntity;//.BufferedStates.InterpolatedStates.OrientationMatrix
+            Vector3 offset = transformOffset ? Matrix3x3.Transform(offsetFromEntity, chasedEntity.BufferedStates.InterpolatedStates.OrientationMatrix) : offsetFromEntity;//.BufferedStates.InterpolatedStates.OrientationMatrix
             OpenTK.Vector3 temp = offsetFromEntity;
             OpenTK.Vector3 behindcar;
             OpenTK.Quaternion rot2 = chasedEntity.Orientation;
@@ -84,14 +84,21 @@ namespace RallysportGame
             OpenTK.Quaternion rot3 = chasedEntity.Orientation;
             OpenTK.Vector3.Transform(ref back, ref rot3, out backRay);
 
-            Vector3 lookAt = chasedEntity.WorldTransform.Translation + Utilities.ConvertToBepu(behindcar);
+            Vector3 downray = Vector3.Down;
+
+            Vector3 lookAt = chasedEntity.BufferedStates.InterpolatedStates.WorldTransform.Translation + Utilities.ConvertToBepu(behindcar);
             Vector3 backwards = -backRay;
 
             //Find the earliest ray hit that isn't the chase target to position the camera appropriately.
             RayCastResult result;
             float cameraDistance = chasedEntity.Space.RayCast(new Ray(lookAt, backwards), distanceToTarget, rayCastFilter, out result) ? result.HitData.T : distanceToTarget;
 
-            Camera.position = lookAt +(Math.Max(cameraDistance - chaseCameraMargin, 0)) * backwards; //Put the camera just before any hit spot.
+            RayCastResult downRes;
+            float cameraDownDistance = chasedEntity.Space.RayCast(new Ray(lookAt, downray), distanceToTarget, rayCastFilter, out downRes) ? downRes.HitData.T : distanceToTarget;
+
+
+
+            Camera.position = lookAt + (Math.Max(cameraDistance - chaseCameraMargin, 0)) * backwards + (Math.Max(cameraDownDistance - chaseCameraMargin*5, 0)) * -downray; //Put the camera just before any hit spot.
 
 
         }
