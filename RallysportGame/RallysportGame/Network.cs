@@ -36,7 +36,7 @@ namespace RallysportGame
             networkStarted = false;
             this.space = space;
             userList = new ArrayList();
-            IPAddress localIp = IPAddress.Parse("127.0.0.1");//getLocalIp();//
+            IPAddress localIp = getLocalIp();//IPAddress.Parse("127.0.0.1");//
             socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             
             IPEndPoint localEP = new IPEndPoint(localIp, 11245);
