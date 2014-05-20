@@ -34,7 +34,7 @@ namespace RallysportGame
         public Missile(String name, Vector3 pos, Space space)
         {
             triggerObj = new Entity(name);
-            triggerHull = new ConvexHull(Utilities.meshToVectorArray(triggerObj.mesh), 500f);
+            triggerHull = new ConvexHull(Utilities.meshToVectorArray(triggerObj.mesh), 70f);
             triggerHull.WorldTransform = BEPUutilities.Matrix.CreateTranslation(Utilities.ConvertToBepu(pos));
             
             triggerHull.IsAffectedByGravity = false;

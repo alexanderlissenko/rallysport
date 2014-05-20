@@ -910,7 +910,7 @@ namespace RallysportGame
             rot2.X = rot2.X*0.5f;
             Vector3.Transform(ref back, ref rot2, out behindcar);
 
-            Vector3 camera_position = Camera.position;//playerCar.getCarPos()+ behindcar;//sphericalToCartesian(camera_theta, camera_phi, camera_r, playerCar.getCarPos());//
+            Vector3 camera_position = sphericalToCartesian(camera_theta, camera_phi, camera_r, playerCar.getCarPos());//playerCar.getCarPos() + behindcar;//Camera.position;//
             //camera_lookAt = new Vector3(0.0f, camera_target_altitude, 0.0f);
             Vector3 camera_lookAt = playerCar.getCarPos();// new Vector3(0, 0, 0);//Vector4.Transform(camera_lookAt, camera_rotation_matrix);//new Vector3(0.0f, 0.0f, 0.0f);//
             Matrix4 viewMatrix = Matrix4.LookAt(camera_position, camera_lookAt, up);
@@ -935,11 +935,11 @@ namespace RallysportGame
 
             #region firstPass balls of smoke
             GL.UseProgram(firstPassShader);
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, megaParticleFBO);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, deferredFBO);
             GL.Viewport(0, 0, w, h);
             DrawBuffersEnum[] draw_buffs_smoky = { DrawBuffersEnum.ColorAttachment0, DrawBuffersEnum.ColorAttachment1, DrawBuffersEnum.ColorAttachment2 };
             GL.DrawBuffers(3, draw_buffs_smoky);
-            GL.ClearColor(0.0f, 0f, 0f, 0.1f);
+            GL.ClearColor(0.0f, 0f, 0f, 0.0f);
             GL.ClearDepth(1.0f);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.DepthMask(true);
@@ -960,16 +960,93 @@ namespace RallysportGame
             {
                 c.exhaust.firstPass(firstPassShader, projectionMatrix, viewMatrix);
             }
-            megaParticles.firstPass(firstPassShader, projectionMatrix, viewMatrix);
+            //megaParticles.firstPass(firstPassShader, projectionMatrix, viewMatrix);
             //environment.firstPass(firstPassShader, projectionMatrix, viewMatrix);
 
             GL.DepthMask(false);
             GL.Disable(EnableCap.DepthTest);
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
             #endregion
+
+
+
+
+
+
+            #region secondPass
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, megaParticleFBO);
+            GL.UseProgram(secondPassShader);
+
+            GL.DepthMask(false);
+            GL.Disable(EnableCap.DepthTest);
+            GL.Viewport(0, 0, w, h);
+            GL.DrawBuffer(DrawBufferMode.ColorAttachment0);
+            GL.ClearColor(0.0f, 0.0f, 0.0f, 0.0f); //ambient light
+            GL.Clear(ClearBufferMask.ColorBufferBit);
+            GL.Enable(EnableCap.Blend);
+
+            GL.BlendEquation(BlendEquationMode.FuncAdd);
+            GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.One);
+
+
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, deferredTex);
+            GL.ActiveTexture(TextureUnit.Texture1);
+            GL.BindTexture(TextureTarget.Texture2D, deferredNorm);
+            GL.ActiveTexture(TextureUnit.Texture2);
+            GL.BindTexture(TextureTarget.Texture2D, deferredDepth);
+            GL.ActiveTexture(TextureUnit.Texture3);
+            GL.BindTexture(TextureTarget.Texture2D, deferredVel);
+            GL.ActiveTexture(TextureUnit.Texture4);
+            GL.BindTexture(TextureTarget.Texture2D, shadowMapTexture);
+
+
+
+            GL.Uniform1(GL.GetUniformLocation(secondPassShader, "diffuseTex"), 0);
+            GL.Uniform1(GL.GetUniformLocation(secondPassShader, "normalTex"), 1);
+            GL.Uniform1(GL.GetUniformLocation(secondPassShader, "depthTex"), 2);
+            GL.Uniform1(GL.GetUniformLocation(secondPassShader, "velTex"), 3);
+            GL.Uniform1(GL.GetUniformLocation(secondPassShader, "shadowMapTex"), 4);
+            //GL.UniformMatrix4(GL.GetUniformLocation(secondPassShader, "biasMatrix"), false, ref bias);
+
+            Vector2 size = new Vector2(gameWindow.Width, gameWindow.Height);
+            GL.Uniform2(GL.GetUniformLocation(secondPassShader, "screenSize"), ref size);
+
+
+            GL.UniformMatrix4(GL.GetUniformLocation(secondPassShader, "lightMatrix"), false, ref lightMatrix);
+            int lTUniform = GL.GetUniformLocation(secondPassShader, "lightType");
+
+            //Directional Light
+            GL.Uniform1(lTUniform, 0.0f);
+            plane.directionalLight(secondPassShader, projectionMatrix.Inverted(), viewMatrix, lightPosition, camera_position);
+
+            //Point Lights
+            GL.Uniform1(lTUniform, 1.0f);
+
+
+            //Render Car Lights
+            playerCar.renderBackLight(secondPassShader, plane);
+
+            foreach (Car c in otherCars)
+            {
+                c.renderBackLight(secondPassShader, plane);
+            }
+
+            GL.Enable(EnableCap.DepthTest);
+            GL.DepthMask(true);
+            GL.Disable(EnableCap.Blend);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+            #endregion
+
+
+
+
+
+
+
             #region from balls to smoke
             gaussBlurr.gaussianBlurr(megaPartTex, w, h, projectionMatrix, viewMatrix);
-            gaussBlurr.gaussianBlurr(megaPartDepth, w, h, projectionMatrix, viewMatrix);
+            gaussBlurr.gaussianBlurr(deferredDepth, w, h, projectionMatrix, viewMatrix);
 
             /***********************************************************************************************************
                 * The reson the depth is placed in a different texture is that I could not get it to work another whay.    *
@@ -980,7 +1057,7 @@ namespace RallysportGame
             if (counter>=30)
                 counter=0;
 
-            int distorted_megaPartDepth = megaPartFilter.displaceBlend(megaPartTex, megaPartDepth, gameWindow.Width, gameWindow.Height, perlinNoise[counter], PERLIN_REZ_X, PERLIN_REZ_Y, copyShader, projectionMatrix, viewMatrix);
+            int distorted_megaPartDepth = megaPartFilter.displaceBlend(megaPartTex, deferredDepth, gameWindow.Width, gameWindow.Height, perlinNoise[counter], PERLIN_REZ_X, PERLIN_REZ_Y, copyShader, projectionMatrix, viewMatrix);
             #endregion
 
 
@@ -1087,12 +1164,12 @@ namespace RallysportGame
             GL.Uniform1(GL.GetUniformLocation(secondPassShader, "shadowMapTex"), 4);
             //GL.UniformMatrix4(GL.GetUniformLocation(secondPassShader, "biasMatrix"), false, ref bias);
 
-            Vector2 size = new Vector2(gameWindow.Width, gameWindow.Height);
+             size = new Vector2(gameWindow.Width, gameWindow.Height);
             GL.Uniform2(GL.GetUniformLocation(secondPassShader, "screenSize"), ref size);
 
 
             GL.UniformMatrix4(GL.GetUniformLocation(secondPassShader, "lightMatrix"), false, ref lightMatrix);
-            int lTUniform = GL.GetUniformLocation(secondPassShader, "lightType");
+            lTUniform = GL.GetUniformLocation(secondPassShader, "lightType");
 
             //Directional Light
             GL.Uniform1(lTUniform, 0.0f);

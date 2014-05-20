@@ -64,7 +64,7 @@ namespace RallysportGame
         private float maximumTurnAngle = BEPUutilities.MathHelper.Pi * 0.2f;
         private BEPUutilities.Vector3 testDir;
 
-        private static String powerUpSlot = "SpeedBoost";
+        private static String powerUpSlot = "None";
         private bool renderPower = false;
         static System.Timers.Timer boostTime;
         private static bool boostTimeActive = false;
@@ -235,7 +235,7 @@ namespace RallysportGame
                     if (!m.launched)
                     {
                         Vector3 temp = Vector3.Add(getCarPos()+ new Vector3(0,1,0), Vector3.Mult(Vector3.Transform(new Vector3(0,0,-1), carHull.Orientation),10));
-                        m.launch(temp, Vector3.Add(carHull.LinearVelocity,Vector3.Mult(Vector3.Transform(new Vector3(0,0,-1), carHull.Orientation),100)),60*5); 
+                        m.launch(temp, Vector3.Add(carHull.LinearVelocity,Vector3.Mult(Vector3.Transform(new Vector3(0,0,-1), carHull.Orientation),10)),60*5); 
                     }
 
                     if (m.update())
@@ -249,6 +249,7 @@ namespace RallysportGame
                 {
                     if (smookeScreenCounter <= 0){
                         smookeScreenCounter=1;
+                        //exhaust.move(carHull.Position - carHull.LinearVelocity, -carHull.LinearVelocity);
                         exhaust.setScale(4f);
                     }
                     else
