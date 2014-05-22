@@ -64,7 +64,7 @@ namespace RallysportGame
         private float maximumTurnAngle = BEPUutilities.MathHelper.Pi * 0.2f;
         private BEPUutilities.Vector3 testDir;
 
-        private static String powerUpSlot = "None";
+        private static String powerUpSlot = "Missile";
         private bool renderPower = false;
         static System.Timers.Timer boostTime;
         private static bool boostTimeActive = false;

@@ -79,7 +79,7 @@ namespace RallysportGame
                     car.addPowerUp("SpeedBoost");
                     break;
                 case 2:
-                    Console.WriteLine("Lights out!");
+                    Console.WriteLine("SpeedBoost");
                     break;
                 case 3:
                     Console.WriteLine("SmookeScreen!");
