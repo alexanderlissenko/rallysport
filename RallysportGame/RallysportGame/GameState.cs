@@ -916,7 +916,11 @@ namespace RallysportGame
             //camera_lookAt = new Vector3(0.0f, camera_target_altitude, 0.0f);
             Vector3 camera_lookAt = playerCar.getCarPos();// new Vector3(0, 0, 0);//Vector4.Transform(camera_lookAt, camera_rotation_matrix);//new Vector3(0.0f, 0.0f, 0.0f);//
             Matrix4 viewMatrix = Matrix4.LookAt(camera_position, camera_lookAt, up);
+            
             Matrix4 projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(pi / 4, (float)w / (float)h, 1f, 1000f);
+            Vector3 viewFrustumCenter = camera_position + Vector3.Normalize(camera_lookAt) * (1000 - 1) / 2; 
+
+            
             // Here we start getting into the lighting model
             //Audio.setUpListener(ref camera_position, ref camera_lookAt, ref up);
             //Audio.setUpSourcePos(sfx,playerCar.getCarPos());
@@ -926,8 +930,8 @@ namespace RallysportGame
             //Render Shadowmap
 
             #region shadowMapRender
-            Matrix4 lightViewMatrix = Matrix4.LookAt(lightPosition, new Vector3(0.0f, 0.0f, 0.0f), up);
-            Matrix4 lightProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(pi / 4, 1.0f, 1080f, 3580f);
+            Matrix4 lightViewMatrix = Matrix4.LookAt(lightPosition, viewFrustumCenter, up);
+            Matrix4 lightProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(pi / 4, 1.0f, lightPosition.Length - 200.0f, lightPosition.Length + 200.0f);
 
             Matrix4 lightMatrix = renderSM(shadowShaderProgram, viewMatrix, lightViewMatrix, lightProjectionMatrix);
 
