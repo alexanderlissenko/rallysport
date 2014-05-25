@@ -21,7 +21,7 @@ out vec4 fragColor;
 void main() 
 {
     
-    
+    vec4 godrayRes;
     vec4 result;
 	vec2 texelSize = 1.0/vec2(textureSize(postTex,0));
 	float depth = texture(postDepth,pos).x;
@@ -67,12 +67,18 @@ void main()
 	}
 	//fragColor = result;//vec4(velocity,0,1);//
     
+	
+	
+	vec4 glow = texture2D(glowTexture,pos );
+    //result = (result + godrayRes) / 2;
+	result =glow+ result;//+ godrayRes;
+	}
 	//viewspace godrays
 	int NUM_SAMPLES = 50;
 	float Exposure = 0.05;
 	float Density = 0.84;
 	float Weight = 1.0;
-	float Decay = 1.0;
+	float Decay = 0.5;
 	
 	vec2 tmpPos = pos;
 	
@@ -85,20 +91,16 @@ void main()
 	
 	for (int i = 0; i < NUM_SAMPLES; i++) 					//NUM_SAMPLES
 	{
-		tmpPos.xy -= deltaTexCoord;
-		sample2 = texture2D(godTex,tmpPos );//	
+		//tmpPos.xy -= deltaTexCoord;
+		sample2 = texture2D(godTex,tmpPos+deltaTexCoord*i);//	
 		sample2 *= illuminationDecay * Weight;				//Weight
 		
 		color += sample2;
 		illuminationDecay *= Decay;
 	}
 	
-	vec4 godrayRes = color * Exposure;					//Exposure
+	godrayRes = color ;//* Exposure;					//Exposure
 	//godrays end
 	
-	vec4 glow = texture2D(glowTexture,pos );
-    //result = (result + godrayRes) / 2;
-	result = result+glow;//+ godrayRes;
-	}
-    fragColor = result;// godrayRes;//
+    fragColor = result;//+ godrayRes;//
 }

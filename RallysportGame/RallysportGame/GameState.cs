@@ -144,6 +144,23 @@ namespace RallysportGame
            return new OpenTK.Vector2(pos.X, pos.Y);
         }
 
+        private Vector2 Convert3dto2d(
+  Vector3 pos,
+  Matrix4 viewMatrix,
+  Matrix4 projectionMatrix,
+  int screenWidth,
+  int screenHeight)
+        {
+            pos = Vector3.Transform(pos, viewMatrix);
+            pos = Vector3.Transform(pos, projectionMatrix);
+            pos.X /= pos.Z;
+            pos.Y /= pos.Z;
+            pos.X = (pos.X + 1) * screenWidth / 2;
+            pos.Y = (pos.Y + 1) * screenHeight / 2;
+
+            return new Vector2(pos.X, pos.Y);
+        }
+
         public static int loadShaderProgram(String vShaderPath, String fShaderPath)
         {
             int shaderProgram;
@@ -912,7 +929,7 @@ namespace RallysportGame
             rot2.X = rot2.X*0.5f;
             Vector3.Transform(ref back, ref rot2, out behindcar);
 
-            Vector3 camera_position = Camera.position;//sphericalToCartesian(camera_theta, camera_phi, camera_r, playerCar.getCarPos());//playerCar.getCarPos() + behindcar;//
+            Vector3 camera_position = sphericalToCartesian(camera_theta, camera_phi, camera_r, playerCar.getCarPos());//Camera.position;//playerCar.getCarPos() + behindcar;//
             //camera_lookAt = new Vector3(0.0f, camera_target_altitude, 0.0f);
             Vector3 camera_lookAt = playerCar.getCarPos();// new Vector3(0, 0, 0);//Vector4.Transform(camera_lookAt, camera_rotation_matrix);//new Vector3(0.0f, 0.0f, 0.0f);//
             Matrix4 viewMatrix = Matrix4.LookAt(camera_position, camera_lookAt, up);
@@ -1277,16 +1294,18 @@ namespace RallysportGame
             GL.ClearColor(0.2f, 0.2f, 0.28f, 1.0f); 
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
+            GL.Uniform1(GL.GetUniformLocation(godShader, "isLight"), 1);
+            superSphere.firstPass(godShader, projectionMatrix, viewMatrix);
+
+            GL.Uniform1(GL.GetUniformLocation(godShader, "isLight"), 0);
             environment.firstPass(godShader, projectionMatrix, viewMatrix);
             playerCar.firstPass(godShader, projectionMatrix, viewMatrix);
             foreach (Car c in otherCars)
             {
                 c.firstPass(godShader, projectionMatrix, viewMatrix);
             }
-            GL.Uniform1(GL.GetUniformLocation(godShader, "isLight"), 1);
-            superSphere.firstPass(godShader, projectionMatrix, viewMatrix);
-
-            GL.Uniform1(GL.GetUniformLocation(godShader, "isLight"), 0);
+            TriggerManager.renderPowerUps(firstPassShader, projectionMatrix, viewMatrix);
+            
             GL.Enable(EnableCap.DepthTest);
             GL.DepthMask(true);
             //God ends here
@@ -1327,7 +1346,15 @@ namespace RallysportGame
             GL.ActiveTexture(TextureUnit.Texture7);
             GL.BindTexture(TextureTarget.Texture2D, skyboxTex);
 
-            Vector2 lightPos2d = Convert(lightPosition,viewMatrix,projectionMatrix,w,h);
+            
+
+            /// TEST FOR LIGHT POS
+            /// 
+            Matrix4 viewProjection = viewMatrix* projectionMatrix;// superSphere.modelViewProjectionMatrix;//  ;
+            Vector3 lightpostest = Vector3.Transform(lightPosition, viewProjection);
+
+            Vector2 lightPos2d =Vector2.Divide(lightpostest.Xy,size); // Convert3dto2d(lightPosition, viewMatrix, projectionMatrix,w,h);// Convert(lightPosition, viewMatrix, projectionMatrix, w, h);// 
+            /// END
             GL.Uniform1(GL.GetUniformLocation(postShader, "postTex"), 0);
             GL.Uniform1(GL.GetUniformLocation(postShader, "postVel"), 1);
             GL.Uniform1(GL.GetUniformLocation(postShader, "postDepth"), 2);

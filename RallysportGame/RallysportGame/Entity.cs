@@ -47,7 +47,7 @@ namespace RallysportGame
 
         public Matrix4 modelMatrix;
         protected Matrix4 worldMatrix;
-        protected Matrix4 prevMVP, modelViewProjectionMatrix;
+        public Matrix4 prevMVP, modelViewProjectionMatrix;
         // 3D position in world space
         public OpenTK.Vector3 position;
         public List<int> vertIndices;
