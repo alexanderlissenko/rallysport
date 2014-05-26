@@ -649,7 +649,7 @@ namespace RallysportGame
 
             //Shadowmaps
             #region ShadowMap
-            shadowMapRes = 2000;
+            shadowMapRes = 1024;
             shadowMapTexture = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2D, shadowMapTexture);
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent32, shadowMapRes, shadowMapRes, 0, PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
