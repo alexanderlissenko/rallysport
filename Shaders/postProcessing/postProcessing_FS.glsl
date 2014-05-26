@@ -75,10 +75,10 @@ void main()
 	}
 	//viewspace godrays
 	int NUM_SAMPLES = 100;
-	float Exposure = 0.05;
+	float Exposure = 0.0014;
 	float Density = 0.84;
 	float Weight = 5.65;
-	float Decay = 0.5;
+	float Decay = 1.0;
 	
 	vec2 tmpPos = pos;
 	
@@ -91,8 +91,8 @@ void main()
 	
 	for (int i = 0; i < NUM_SAMPLES; i++) 					//NUM_SAMPLES
 	{
-		//tmpPos.xy -= deltaTexCoord;
-		sample2 = texture2D(godTex,tmpPos+deltaTexCoord*i);//	
+		tmpPos.xy -= deltaTexCoord;
+		sample2 = texture2D(godTex,tmpPos);//	
 		sample2 *= illuminationDecay * Weight;				//Weight
 		
 		color += sample2;

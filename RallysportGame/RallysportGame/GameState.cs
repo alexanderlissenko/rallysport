@@ -1356,7 +1356,9 @@ namespace RallysportGame
             lightpostest.X /= lightpostest.Z;
             lightpostest.Y /= lightpostest.Z;
             Vector2 lightPos2d = lightpostest.Xy;//Vector2.Divide(lightpostest.Xy, size); // Convert3dto2d(lightPosition, viewMatrix, projectionMatrix,w,h);// Convert(lightPosition, viewMatrix, projectionMatrix, w, h);// 
-            lightPos2d.Y = -lightPos2d.Y; 
+            //lightPos2d.Y = -lightPos2d.Y;
+            lightPos2d.X = lightPos2d.X * 0.5f + 0.5f;
+            lightPos2d.Y = lightPos2d.Y * 0.5f + 0.5f;
             /// END
             GL.Uniform1(GL.GetUniformLocation(postShader, "postTex"), 0);
             GL.Uniform1(GL.GetUniformLocation(postShader, "postVel"), 1);
