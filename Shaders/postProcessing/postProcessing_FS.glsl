@@ -74,10 +74,10 @@ void main()
 	result =glow+ result;//+ godrayRes;
 	}
 	//viewspace godrays
-	int NUM_SAMPLES = 50;
+	int NUM_SAMPLES = 100;
 	float Exposure = 0.05;
 	float Density = 0.84;
-	float Weight = 1.0;
+	float Weight = 5.65;
 	float Decay = 0.5;
 	
 	vec2 tmpPos = pos;
@@ -99,8 +99,8 @@ void main()
 		illuminationDecay *= Decay;
 	}
 	
-	godrayRes = color ;//* Exposure;					//Exposure
+	godrayRes = color * Exposure;					//Exposure
 	//godrays end
 	
-    fragColor = result;//+ godrayRes;//
+    fragColor = result+ godrayRes;//
 }

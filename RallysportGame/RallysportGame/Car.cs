@@ -288,7 +288,7 @@ namespace RallysportGame
 
             temp3 = Vector3.Normalize(temp3);
 
-            System.Console.WriteLine(carHull.LinearVelocity.Length());
+            //System.Console.WriteLine(carHull.LinearVelocity.Length());
             exhaust.setThrottle((float)Math.Floor((double)carHull.LinearVelocity.Length())/10);
             exhaust.move(Utilities.ConvertToTK(carHull.Position) + temp1, carHull.LinearVelocity);
             exhaust.tick();

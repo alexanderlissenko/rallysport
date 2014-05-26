@@ -285,7 +285,7 @@ namespace RallysportGame
 
         public void setUpBlenderModel()
         {
-            modelMatrix = modelMatrix + Matrix4.CreateScale(20f);
+            modelMatrix = modelMatrix + Matrix4.CreateScale(50f);
         }
 
         public void skyboxScale()

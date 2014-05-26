@@ -537,9 +537,10 @@ namespace RallysportGame
             myCar2 = new Entity("Cube\\inside_koob");
 
             Camera.initCamera(playerCar.carHull);
-
+            
             superSphere.setUpMultMtl();
             superSphere.setUpMultText();
+            superSphere.setUpBlenderModel();
             skybox.skyboxScale();
 
             
@@ -913,7 +914,7 @@ namespace RallysportGame
             GL.ClearDepth(1.0f);
 
             #region Let there be light
-            lightPosition = new Vector3(-545, 329, -138);//sphericalToCartesian(light_theta, light_phi, light_r, new Vector3(0, 0, 0));//
+            lightPosition = new Vector3(-545, 250, -138);//sphericalToCartesian(light_theta, light_phi, light_r, new Vector3(0, 0, 0));//
             Vector3 scaleVector = new Vector3(10, 10, 10);
             //Vector3 scaleVector = new Vector3(1000, 1000, 1000);
 
@@ -1352,8 +1353,10 @@ namespace RallysportGame
             /// 
             Matrix4 viewProjection = viewMatrix* projectionMatrix;// superSphere.modelViewProjectionMatrix;//  ;
             Vector3 lightpostest = Vector3.Transform(lightPosition, viewProjection);
-
-            Vector2 lightPos2d =Vector2.Divide(lightpostest.Xy,size); // Convert3dto2d(lightPosition, viewMatrix, projectionMatrix,w,h);// Convert(lightPosition, viewMatrix, projectionMatrix, w, h);// 
+            lightpostest.X /= lightpostest.Z;
+            lightpostest.Y /= lightpostest.Z;
+            Vector2 lightPos2d = lightpostest.Xy;//Vector2.Divide(lightpostest.Xy, size); // Convert3dto2d(lightPosition, viewMatrix, projectionMatrix,w,h);// Convert(lightPosition, viewMatrix, projectionMatrix, w, h);// 
+            lightPos2d.Y = -lightPos2d.Y; 
             /// END
             GL.Uniform1(GL.GetUniformLocation(postShader, "postTex"), 0);
             GL.Uniform1(GL.GetUniformLocation(postShader, "postVel"), 1);
@@ -1497,7 +1500,7 @@ namespace RallysportGame
             {
                 c.Update();
             }
-            superSphere.modelMatrix = Matrix4.CreateTranslation(lightPosition);
+            superSphere.modelMatrix = Matrix4.CreateScale(2.4f)* Matrix4.CreateTranslation(lightPosition);
             skybox.position = new Vector3(playerCar.getCarPos().X,0,playerCar.getCarPos().Z);
             
             //////////////////////////////////////////////////////ÄNDRA TILLBAKA!!!
