@@ -667,7 +667,7 @@ namespace RallysportGame
 
             //Shadowmaps
             #region ShadowMap
-            shadowMapRes = 2000;
+            shadowMapRes = 512;
             shadowMapTexture = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2D, shadowMapTexture);
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent32, shadowMapRes, shadowMapRes, 0, PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
@@ -930,7 +930,7 @@ namespace RallysportGame
             rot2.X = rot2.X*0.5f;
             Vector3.Transform(ref back, ref rot2, out behindcar);
 
-            Vector3 camera_position = sphericalToCartesian(camera_theta, camera_phi, camera_r, playerCar.getCarPos());//Camera.position;//playerCar.getCarPos() + behindcar;//
+            Vector3 camera_position = Camera.position;//sphericalToCartesian(camera_theta, camera_phi, camera_r, playerCar.getCarPos());//playerCar.getCarPos() + behindcar;//
             //camera_lookAt = new Vector3(0.0f, camera_target_altitude, 0.0f);
             Vector3 camera_lookAt = playerCar.getCarPos();// new Vector3(0, 0, 0);//Vector4.Transform(camera_lookAt, camera_rotation_matrix);//new Vector3(0.0f, 0.0f, 0.0f);//
             Matrix4 viewMatrix = Matrix4.LookAt(camera_position, camera_lookAt, up);

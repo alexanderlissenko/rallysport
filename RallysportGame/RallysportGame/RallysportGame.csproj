@@ -82,6 +82,7 @@
     <Compile Include="Camera.cs" />
     <Compile Include="Car.cs" />
     <Compile Include="CarWheel.cs" />
+    <Compile Include="MultipleEntity.cs" />
     <Compile Include="Missile.cs" />
     <Compile Include="CollisionHandler.cs" />
     <Compile Include="Entity.cs" />
