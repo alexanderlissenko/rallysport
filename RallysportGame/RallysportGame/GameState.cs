@@ -80,7 +80,7 @@ namespace RallysportGame
         static float light_theta = pi / 6.0f;
         static float light_phi = pi / 4.0f;
         static float light_r = 1800.0f;
-
+        static bool updateCamera_camera_pos=true;
         int counter;
         //test particles
         static ParticleSystem megaParticles;// = new ParticleSystem(new OpenTK.Vector3(0, 0, 0), 60f, 5, new TimeSpan(0, 0, 0, 4), new Entity());
@@ -92,6 +92,7 @@ namespace RallysportGame
         static ArrayList otherCars = new ArrayList();
 
 
+        Vector3 camera_position = new Vector3(0,0,0);
         static ArrayList keyList = new ArrayList();
 
 
@@ -282,6 +283,14 @@ namespace RallysportGame
                     case Key.Q:
                         Console.WriteLine(playerCar.carHull.Position);
                         break;
+                    case Key.C:
+                        updateCamera_camera_pos=false;
+                        break;
+                    case Key.F:
+                        updateCamera_camera_pos = true; 
+                        break;
+
+
                    
                     default:
                         break;
@@ -930,7 +939,14 @@ namespace RallysportGame
             rot2.X = rot2.X*0.5f;
             Vector3.Transform(ref back, ref rot2, out behindcar);
 
-            Vector3 camera_position = Camera.position;//sphericalToCartesian(camera_theta, camera_phi, camera_r, playerCar.getCarPos());//playerCar.getCarPos() + behindcar;//
+            if(updateCamera_camera_pos){
+                camera_position = sphericalToCartesian(camera_theta, camera_phi, camera_r, playerCar.getCarPos());//Camera.position;//playerCar.getCarPos() + behindcar;//
+            }
+            else
+            {
+               
+            }
+
             //camera_lookAt = new Vector3(0.0f, camera_target_altitude, 0.0f);
             Vector3 camera_lookAt = playerCar.getCarPos();// new Vector3(0, 0, 0);//Vector4.Transform(camera_lookAt, camera_rotation_matrix);//new Vector3(0.0f, 0.0f, 0.0f);//
             Matrix4 viewMatrix = Matrix4.LookAt(camera_position, camera_lookAt, up);
