@@ -187,14 +187,6 @@ namespace RallysportGame
         #endregion
         #region Public Methods
 
-        public override void render(int program, Matrix4 projectionMatrix, Matrix4 viewMatrix, Vector3 lightPosition, Matrix4 lightViewMatrix, Matrix4 lightProjectionMatrix)
-        {
-            base.render(program, projectionMatrix, viewMatrix, lightPosition, lightViewMatrix, lightProjectionMatrix);
-            foreach (Entity w in wheelents)
-            {
-                w.render(program, projectionMatrix, viewMatrix, lightPosition, lightViewMatrix, lightProjectionMatrix);
-            }
-        }
 
         public override void firstPass(int program, Matrix4 projectionMatrix, Matrix4 viewMatrix)
         {
