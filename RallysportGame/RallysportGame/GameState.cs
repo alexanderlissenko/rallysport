@@ -1102,7 +1102,7 @@ namespace RallysportGame
             GL.Uniform1(GL.GetUniformLocation(firstPassShader, "firstTexture"), 0);
             */
             //megaParticles.firstPass(firstPassShader, projectionMatrix, viewMatrix);
-
+           
             if(wireframe)
                 GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
             
