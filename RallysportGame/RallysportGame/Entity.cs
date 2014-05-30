@@ -78,7 +78,10 @@ namespace RallysportGame
             fileName = name;
             this.mesh = new Meshomatic.ObjLoader().LoadFile(modelsDir+name +".obj");
             numOfTri = mesh.Tris.Length;
+            if (GL.GetError() != ErrorCode.NoError)
+                throw new Exception("Error");
             makeVAO();
+
             matList = new List<Material>();
             setUpMultMtl();
             setUpMultText();
@@ -199,39 +202,6 @@ namespace RallysportGame
             GL.BindVertexArray(vertexArrayObject);
             GL.DrawArrays(PrimitiveType.Triangles, 0, numOfTri * 3);
         }
-        /*
-         *  Duh, renders the object using whatever shaders you've set up. 
-         */
-        public void render(int program){
-            GL.Uniform3(GL.GetUniformLocation(program, "material_diffuse_color"), diffuse);
-            GL.Uniform3(GL.GetUniformLocation(program, "material_specular_color"), specular);
-            GL.Uniform3(GL.GetUniformLocation(program, "material_emissive_color"), emisive);
-            GL.Uniform1(GL.GetUniformLocation(program, "material_shininess"), shininess);
-            
-            GL.BindVertexArray(vertexArrayObject);
-            //GL.DrawElements(PrimitiveType.Triangles, numOfTri*3, DrawElementsType.UnsignedInt, 0);
-            GL.DrawArrays(PrimitiveType.Triangles, 0, numOfTri * 3);
-        }
-
-        public virtual void render(int program, Matrix4 projectionMatrix, Matrix4 viewMatrix,OpenTK.Vector3 lightPosition,Matrix4 lightViewMatrix,Matrix4 lightProjectionMatrix)
-        {
-
-            setMatrices(program, projectionMatrix, viewMatrix);
-
-            OpenTK.Vector3 viewSpaceLightPosition = OpenTK.Vector3.Transform(lightPosition, viewMatrix);
-            GL.Uniform3(GL.GetUniformLocation(program, "viewSpaceLightPosition"), viewSpaceLightPosition);
-
-
-            GL.Uniform3(GL.GetUniformLocation(program, "material_diffuse_color"), diffuse);
-            GL.Uniform3(GL.GetUniformLocation(program, "material_specular_color"), specular);
-            GL.Uniform3(GL.GetUniformLocation(program, "material_emissive_color"), emisive);
-            GL.Uniform1(GL.GetUniformLocation(program, "material_shininess"), shininess);
-
-            GL.BindVertexArray(vertexArrayObject);
-            //GL.DrawElements(PrimitiveType.Triangles, numOfTri*3, DrawElementsType.UnsignedInt, 0);
-            GL.DrawArrays(PrimitiveType.Triangles, 0, numOfTri * 3);
-        }
-
 
         public virtual void renderShadowMap(int program, Matrix4 lightProjectionMatrix, Matrix4 lightViewMatrix)
         {
@@ -540,6 +510,8 @@ namespace RallysportGame
         /// </summary>
         public void setUpMultText()
         {
+            if (GL.GetError() != ErrorCode.NoError)
+                throw new Exception("Error");
             textureLookup = new Dictionary<string,int>();
             foreach(Material m in matList)
             {
@@ -575,7 +547,7 @@ namespace RallysportGame
         /// 
         public void setUpMtl()
         {
-
+            
             FileStream stream = new FileStream(modelsDir +fileName + ".mtl", FileMode.Open);
             StreamReader reader = new StreamReader(stream);
             
@@ -676,6 +648,7 @@ namespace RallysportGame
             GL.BindTexture(Target, texture);
             if (GL.GetError() != ErrorCode.NoError)
                 throw new Exception("Error loading texture " + filename);
+            
             GL.PixelStore(PixelStoreParameter.UnpackAlignment, 1);
             GL.TexEnv(TextureEnvTarget.TextureEnv, TextureEnvParameter.TextureEnvMode, (int)All.Modulate);
 
@@ -766,30 +739,50 @@ namespace RallysportGame
 
             //Sizes of the arrays, a bit less clutter here outside the calls
             IntPtr posSize = (IntPtr)(sizeof(float) * finalVertex.Count);//((sizeof(float))*mesh.VertexArray().Length);
-            IntPtr indSize = (IntPtr) (sizeof(int)*vertIndices.Count);
+            //IntPtr indSize = (IntPtr) (sizeof(int)*vertIndices.Count);
             IntPtr norSize = (IntPtr) (sizeof(float)*finalNormal.Count);
             IntPtr texSize = (IntPtr)(sizeof(float) * finalTexture.Count);
 
+            if (GL.GetError() != ErrorCode.NoError)
+                throw new Exception("Error");
+
             //Workaround, C# seems weird about pointers
-            fixed(uint* pbp = &positionBuffer, ibp = &indexBuffer, nbp = &normalBuffer, vaop = &vertexArrayObject,txp = &textureBuffer)
+            fixed(uint* pbp = &positionBuffer,  nbp = &normalBuffer, vaop = &vertexArrayObject,txp = &textureBuffer)//ibp = &indexBuffer,
             {
                 //Buffer for the vertices
                 GL.GenBuffers(1, pbp);
                 GL.BindBuffer(BufferTarget.ArrayBuffer, *pbp);
                 GL.BufferData(BufferTarget.ArrayBuffer, posSize, finalVertex.ToArray(), BufferUsageHint.StaticDraw);
+
+                if (GL.GetError() != ErrorCode.NoError)
+                    throw new Exception("Error");
                 //Buffer for indices into the vertex buffer. This is how we define the faces of our triangles.
                 //GL.GenBuffers(1, ibp);
                 //GL.BindBuffer(BufferTarget.ArrayBuffer, *ibp);
                 //GL.BufferData(BufferTarget.ArrayBuffer, indSize, vertIndices.ToArray(), BufferUsageHint.StaticDraw );
                 //Buffer for the normals
                 GL.GenBuffers(1, nbp);
+                if (GL.GetError() != ErrorCode.NoError)
+                    throw new Exception("Error");
+
                 GL.BindBuffer(BufferTarget.ArrayBuffer, *nbp);
+                if (GL.GetError() != ErrorCode.NoError)
+                    throw new Exception("Error");
+
                 GL.BufferData(BufferTarget.ArrayBuffer, norSize, finalNormal.ToArray(), BufferUsageHint.StaticDraw);
+                ErrorCode temp = GL.GetError();
+                if (temp != ErrorCode.NoError)
+                    throw new Exception(temp.ToString());
+
                 //Texture coords
   
                 GL.GenBuffers(1, txp);
                 GL.BindBuffer(BufferTarget.ArrayBuffer, *txp);
                 GL.BufferData(BufferTarget.ArrayBuffer, texSize, finalTexture.ToArray(), BufferUsageHint.StaticDraw);
+
+                if (GL.GetError() != ErrorCode.NoError)
+                    throw new Exception("Error");
+
                 //Finally, our VertexArrayObject
                 GL.GenVertexArrays(1, vaop);
                 GL.BindVertexArray(*vaop);
@@ -804,7 +797,8 @@ namespace RallysportGame
                 GL.EnableVertexAttribArray(1);
                 GL.EnableVertexAttribArray(2);
             }
-
+            if (GL.GetError() != ErrorCode.NoError)
+                throw new Exception("Error");
            }
 
         

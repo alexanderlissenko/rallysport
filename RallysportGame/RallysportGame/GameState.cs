@@ -109,6 +109,7 @@ namespace RallysportGame
         static int testtimer = 0;
         //
 
+        static bool wireframe = false;
 
        
         #endregion
@@ -1118,6 +1119,9 @@ namespace RallysportGame
             */
             //megaParticles.firstPass(firstPassShader, projectionMatrix, viewMatrix);
            
+            if(wireframe)
+                GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
+            
             environment.firstPass(firstPassShader, projectionMatrix, viewMatrix);
 
             GL.BindTexture(TextureTarget.Texture2D, 0);
@@ -1136,6 +1140,9 @@ namespace RallysportGame
             }
            
             TriggerManager.renderPowerUps(firstPassShader, projectionMatrix, viewMatrix);
+
+            GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
+
             GL.DepthMask(false);
             GL.Disable(EnableCap.DepthTest);
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
@@ -1505,6 +1512,13 @@ namespace RallysportGame
                 if (!keyHandled)
                 {
                     playerCar.usePowerUp();
+                }
+            }
+            else if (gameWindow.Keyboard[Key.V])
+            {
+                if (!keyHandled)
+                {
+                    wireframe = !wireframe;
                 }
             }
             #endregion
