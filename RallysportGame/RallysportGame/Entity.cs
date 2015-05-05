@@ -228,7 +228,7 @@ namespace RallysportGame
 
         }
 
-        private void setMatrices(int program, Matrix4 projectionMatrix, Matrix4 viewMatrix)
+        protected void setMatrices(int program, Matrix4 projectionMatrix, Matrix4 viewMatrix)
         {
 
             Matrix4 modelViewMatrix;

@@ -148,7 +148,7 @@ void main(void)
    
 		shading = ambient*scene_ambient_light*occlusion
 				+ (calculateSpecular(scene_light, fresnelSpecular,material_shininess,normal.xyz,directionToLight,directionFromEye)
-				+ calculateDiffuse(scene_light,diffuse.xyz,normal.xyz,directionToLight))*visibility;
+				+ calculateDiffuse(scene_light,diffuse.xyz,normal.xyz,directionToLight));/*visibility;
 					
    }
    if(lightType == 1.0)

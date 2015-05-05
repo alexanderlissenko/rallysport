@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using OpenTK;
+using OpenTK.Graphics;
 using BEPUphysics.Vehicle;
 using BEPUphysics.CollisionShapes.ConvexShapes;
 using BEPUphysics.CollisionRuleManagement;
@@ -192,12 +193,30 @@ namespace RallysportGame
         {
             base.modelMatrix = carHull.WorldTransform;
             base.firstPass(program, projectionMatrix, viewMatrix);
+            /*
+            OpenTK.Graphics.OpenGL.GL.Begin(OpenTK.Graphics.OpenGL.PrimitiveType.Triangles);
+            foreach (Vector3 v in carHull.Vertices)
+            {
+                OpenTK.Graphics.OpenGL.GL.Vertex3(v);//OpenTK.Vector3.Transform(v, carHull.WorldTransform));
+            }
+            OpenTK.Graphics.OpenGL.GL.End();
+            */
             
             foreach (Entity w in wheelents)
             {
                 w.firstPass(program, projectionMatrix, viewMatrix);
             }
-
+            
+            /*
+            OpenTK.Graphics.OpenGL.GL.Begin(OpenTK.Graphics.OpenGL.PrimitiveType.Lines);
+            foreach(BEPUphysics.Entities.Entity w in wheels)
+            {
+                ConvexHull temp = w as ConvexHull;
+                foreach (Vector3 v in temp.Vertices)
+                    OpenTK.Graphics.OpenGL.GL.Vertex3(v);//OpenTK.Vector3.Transform( v, temp.WorldTransform));
+            }
+            OpenTK.Graphics.OpenGL.GL.End();
+            */
                 m.firstPass(program, projectionMatrix, viewMatrix);
         }
         public override void renderShadowMap(int program, Matrix4 projectionMatrix, Matrix4 viewMatrix)
@@ -632,7 +651,7 @@ namespace RallysportGame
 
         BEPUphysics.Entities.Entity addBackWheel(BEPUutilities.Vector3 wheelOffSet, BEPUphysics.Entities.Entity body,out RevoluteMotor drivingMotor,Entity model)
         {
-            var wheel = new ConvexHull(Utilities.meshToVectorArray(model.mesh), 5f);
+            ConvexHull wheel = new ConvexHull(Utilities.meshToVectorArray(model.mesh), 5f);
             wheel.WorldTransform *= BEPUutilities.Matrix.CreateTranslation(Utilities.ConvertToBepu(wheelOffSet + body.Position));
             //wheel.CollisionInformation.LocalPosition = wheel.Position;
             model.modelMatrix = wheel.WorldTransform;

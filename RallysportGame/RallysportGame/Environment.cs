@@ -41,6 +41,23 @@ namespace RallysportGame
         {      
             //base.Update();
         }
+
+        public override void firstPass(int program, Matrix4 projectionMatrix, Matrix4 viewMatrix)
+        {
+            base.firstPass(program, projectionMatrix, viewMatrix);
+            /*
+            base.setMatrices(program, projectionMatrix, viewMatrix);
+
+            OpenTK.Graphics.OpenGL4.GL.UniformMatrix4(OpenTK.Graphics.OpenGL4.GL.GetUniformLocation(program, "projectionMatrix"), false, ref projectionMatrix);
+            OpenTK.Graphics.OpenGL4.GL.UniformMatrix4(OpenTK.Graphics.OpenGL4.GL.GetUniformLocation(program, "viewMatrix"), false, ref viewMatrix);
+            OpenTK.Graphics.OpenGL4.GL.UniformMatrix4(OpenTK.Graphics.OpenGL4.GL.GetUniformLocation(program, "modelMatrix"), false, ref modelMatrix);
+
+            OpenTK.Graphics.OpenGL.GL.Begin(OpenTK.Graphics.OpenGL.PrimitiveType.LinesAdjacency);
+            foreach (BEPUutilities.Vector3 v in bepu_mesh.Shape.TriangleMeshData.Vertices)
+                OpenTK.Graphics.OpenGL.GL.Vertex3(Utilities.ConvertToTK(v));
+            OpenTK.Graphics.OpenGL.GL.End();
+            */
+        }
         public void addToSpace(Space s)
         {
             s.Add(bepu_mesh);
