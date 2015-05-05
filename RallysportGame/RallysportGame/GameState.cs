@@ -535,7 +535,7 @@ namespace RallysportGame
 
             // Dynamic objects
             collisionHandler = new CollisionHandler();
-            environment = new Environment("map\\finalTrack_0.4");//uggly_test_track_Triangulate");//"plane");//
+            environment = new Environment("map\\uggly_test_track_Triangulate");//"map\\finalTrack_0.4");//"plane");//
                     
             //environment.loadTexture();
             //environment.setUpBlenderModel(); //Handled in constructor
@@ -620,20 +620,21 @@ namespace RallysportGame
             GL.BindFragDataLocation(copyShader, 0, "fragColor");
             GL.LinkProgram(copyShader);
             //BTW TEXTCORD ÄR 2 INTE 1 ÄNDRA TILLBAKA OM DETTA BLIR WIERD!!
+            /*
             verticalGaussianFilterShader = loadShaderProgram(shaderDir + "gaussianFilter\\verticalGaussianFilterVertexShader",shaderDir + "gaussianFilter\\verticalGaussianFilterFragmentShader");
             GL.BindAttribLocation(verticalGaussianFilterShader, 0, "vertexPos");
             GL.BindAttribLocation(verticalGaussianFilterShader, 2, "texCoordIn");
 
             GL.BindFragDataLocation(verticalGaussianFilterShader, 0, "fragColor");
             GL.LinkProgram(verticalGaussianFilterShader );
-
+            
             horizontalGaussianFilterShader = loadShaderProgram(shaderDir + "gaussianFilter\\horizontalGaussianFilterVertexShader", shaderDir + "gaussianFilter\\horizontalGaussianFilterFragmentShader");
             GL.BindAttribLocation(horizontalGaussianFilterShader, 0, "vertexPos");
             GL.BindAttribLocation(horizontalGaussianFilterShader, 2, "texCoordIn");
 
             GL.BindFragDataLocation(horizontalGaussianFilterShader, 0, "fragColor");
             GL.LinkProgram(horizontalGaussianFilterShader);
-
+            */
 
             postShader = loadShaderProgram(shaderDir + "postProcessing\\postProcessing_VS.glsl", shaderDir + "postProcessing\\postProcessing_FS.glsl");
             GL.BindAttribLocation(postShader, 0, "positionIn");
@@ -910,10 +911,10 @@ namespace RallysportGame
 
             //networkhandler.startSending();
 
-            gaussBlurr = new GaussianFilter(verticalGaussianFilterShader, horizontalGaussianFilterShader, gameWindow.Width, gameWindow.Height);
-            megaPartFilter = new MegapParticleFilter(megaParticleShader, gameWindow.Width, gameWindow.Height);
-            counter = 0;
-            setupPerlinNoise();
+            //gaussBlurr = new GaussianFilter(verticalGaussianFilterShader, horizontalGaussianFilterShader, gameWindow.Width, gameWindow.Height);
+            //megaPartFilter = new MegapParticleFilter(megaParticleShader, gameWindow.Width, gameWindow.Height);
+            //counter = 0;
+            //setupPerlinNoise();
         #endregion
         }
 
@@ -962,8 +963,9 @@ namespace RallysportGame
             #endregion
 
             ///END OF SHADOWMAP FBO RENDERING
-
+            
             #region firstPass balls of smoke
+            /*
             GL.UseProgram(firstPassShader);
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, deferredFBO);
             GL.Viewport(0, 0, w, h);
@@ -985,6 +987,7 @@ namespace RallysportGame
             /********************************************************************************************
                 *This is where you should render all objects that is to be turned smoky in the next step   *
                 ********************************************************************************************/
+            /*
             playerCar.exhaust.firstPass(firstPassShader, projectionMatrix, viewMatrix);
             foreach(Car c in otherCars)
             {
@@ -996,6 +999,7 @@ namespace RallysportGame
             GL.DepthMask(false);
             GL.Disable(EnableCap.DepthTest);
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+            */
             #endregion
 
 
@@ -1075,6 +1079,7 @@ namespace RallysportGame
 
 
             #region from balls to smoke
+            /*
             gaussBlurr.gaussianBlurr(megaPartTex, w, h, projectionMatrix, viewMatrix);
             gaussBlurr.gaussianBlurr(deferredDepth, w, h, projectionMatrix, viewMatrix);
 
@@ -1083,12 +1088,14 @@ namespace RallysportGame
                 * The reson that we make a new variable to put this new texture into is simply that we need the old depth  *
                 *  texture for the next time around                                                                        *
                 *************************************************************************************************************/
+            /*
             counter++;
             if (counter>=30)
                 counter=0;
 
             int distorted_megaPartDepth = megaPartFilter.displaceBlend(megaPartTex, deferredDepth, gameWindow.Width, gameWindow.Height, perlinNoise[counter], PERLIN_REZ_X, PERLIN_REZ_Y, copyShader, projectionMatrix, viewMatrix);
-            #endregion
+           */
+           #endregion
 
 
             #region firstPass
@@ -1299,7 +1306,7 @@ namespace RallysportGame
 
             
 
-            gaussBlurr.gaussianBlurr(glowTex, w, h, projectionMatrix, viewMatrix);
+            //gaussBlurr.gaussianBlurr(glowTex, w, h, projectionMatrix, viewMatrix);
             
             //GOD PASS
             #region godpass
@@ -1351,8 +1358,8 @@ namespace RallysportGame
             GL.ActiveTexture(TextureUnit.Texture3);
             GL.BindTexture(TextureTarget.Texture2D, megaPartTex);
 
-            GL.ActiveTexture(TextureUnit.Texture4);
-            GL.BindTexture(TextureTarget.Texture2D, distorted_megaPartDepth);
+            //GL.ActiveTexture(TextureUnit.Texture4);
+            //GL.BindTexture(TextureTarget.Texture2D, distorted_megaPartDepth);
 
             GL.ActiveTexture(TextureUnit.Texture5);
             GL.BindTexture(TextureTarget.Texture2D, glowTex);

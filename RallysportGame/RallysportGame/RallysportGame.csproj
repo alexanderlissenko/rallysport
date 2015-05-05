@@ -80,11 +80,11 @@
   <ItemGroup>
     <Compile Include="Audio.cs" />
     <Compile Include="Camera.cs" />
-    <Compile Include="Car.cs" />
-    <Compile Include="CarWheel.cs" />
-    <Compile Include="MultipleEntity.cs" />
-    <Compile Include="Missile.cs" />
-    <Compile Include="CollisionHandler.cs" />
+    <Compile Include="Entity\Car.cs" />
+    <Compile Include="Entity\CarWheel.cs" />
+    <Compile Include="Entity\MultipleEntity.cs" />
+    <Compile Include="Entity\Missile.cs" />
+    <Compile Include="Entity\CollisionHandler.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="Network.cs" />
     <Compile Include="Environment.cs" />
@@ -100,15 +100,15 @@
     <Compile Include="IState.cs" />
     <Compile Include="GUI\MenuState.cs" />
     <Compile Include="ParticleSystem.cs" />
-    <Compile Include="DynamicEntity.cs" />
+    <Compile Include="Entity\DynamicEntity.cs" />
     <Compile Include="GenericVector3.cs" />
     <Compile Include="PerlinNoise.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SettingsParser.cs" />
-    <Compile Include="Trigger.cs" />
-    <Compile Include="TriggerHandler.cs" />
-    <Compile Include="TriggerManager.cs" />
+    <Compile Include="Entity\Trigger.cs" />
+    <Compile Include="Entity\TriggerHandler.cs" />
+    <Compile Include="Entity\TriggerManager.cs" />
     <Compile Include="Utilities.cs" />
     <Compile Include="StateHandler.cs" />
   </ItemGroup>
