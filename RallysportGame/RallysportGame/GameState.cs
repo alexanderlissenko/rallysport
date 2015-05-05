@@ -80,7 +80,7 @@ namespace RallysportGame
         static float light_theta = pi / 6.0f;
         static float light_phi = pi / 4.0f;
         static float light_r = 1800.0f;
-
+        static bool updateCamera_camera_pos=true;
         int counter;
         //test particles
         static ParticleSystem megaParticles;// = new ParticleSystem(new OpenTK.Vector3(0, 0, 0), 60f, 5, new TimeSpan(0, 0, 0, 4), new Entity());
@@ -92,6 +92,7 @@ namespace RallysportGame
         static ArrayList otherCars = new ArrayList();
 
 
+        Vector3 camera_position = new Vector3(0,0,0);
         static ArrayList keyList = new ArrayList();
 
 
@@ -283,6 +284,14 @@ namespace RallysportGame
                     case Key.Q:
                         Console.WriteLine(playerCar.carHull.Position);
                         break;
+                    case Key.C:
+                        updateCamera_camera_pos=false;
+                        break;
+                    case Key.F:
+                        updateCamera_camera_pos = true; 
+                        break;
+
+                   
                    
                     default:
                         break;
